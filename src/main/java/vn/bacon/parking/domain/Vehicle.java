@@ -58,4 +58,9 @@ public class Vehicle {
         this.maSV = maSV;
     }
 
+    @Override
+    public String toString() {
+        return "Vehicle [bienSoXe=" + bienSoXe + ", maLoaiXe=" + maLoaiXe + ", maNV=" + maNV + ", maSV=" + maSV + "]";
+    }
+
 }

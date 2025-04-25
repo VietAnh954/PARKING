@@ -42,7 +42,7 @@ public class VehicleTypeController {
     }
 
     // Update vehicle type
-    @GetMapping("admin/vehicleType/update")
+    @GetMapping("admin/vehicleType/update/{maLoaiXe}")
     public String getUpdateVehicleTypePage(Model model, @PathVariable String maLoaiXe) {
         Optional<VehicleType> currentVehicleType = this.vehicleTypeService.getVehicleTypeById(maLoaiXe);
         model.addAttribute("newVehicleType", currentVehicleType);
@@ -60,7 +60,7 @@ public class VehicleTypeController {
         return "redirect:/admin/vehicleType";
     }
 
-    @GetMapping("admin/vehicleType/delete")
+    @GetMapping("admin/vehicleType/delete/{maLoaiXe}")
     public String deleteVehicleType(Model model, @PathVariable String maLoaiXe) {
         model.addAttribute("newVehicleType", new VehicleType());
         return "admin/vehicleType/delete";

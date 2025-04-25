@@ -43,8 +43,8 @@
                                             <td>${account.maTK}</td>
                                             <td>${account.password}</td>
                                             <td>${account.loaiTK}</td>
-                                            <td>${account.maNV}</td>
-                                            <td>${account.maSV}</td>
+                                            <td>${account.maNV != null ? account.maNV.maNV : ''}</td>
+                                            <td>${account.maSV != null ? account.maSV.maSV : ''}</td>
                                             <td>
                                                 <a href="/admin/account/${account.maTK}"
                                                     class="btn btn-success">View</a>

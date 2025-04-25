@@ -95,4 +95,10 @@ public class Staff {
         this.ngayVaoLam = ngayVaoLam;
     }
 
+    @Override
+    public String toString() {
+        return "Staff [maNV=" + maNV + ", hoTen=" + hoTen + ", sdt=" + sdt + ", email=" + email + ", cccd=" + cccd
+                + ", chucVu=" + chucVu + ", ngayVaoLam=" + ngayVaoLam + "]";
+    }
+
 }

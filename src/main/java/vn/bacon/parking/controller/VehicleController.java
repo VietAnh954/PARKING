@@ -40,7 +40,7 @@ public class VehicleController {
     }
 
     // Update vehicle
-    @GetMapping("admin/vehicle/update")
+    @GetMapping("admin/vehicle/update/{bienSoXe}")
     public String getUpdateVehiclePage(Model model, @PathVariable String bienSoXe) {
         Vehicle currentVehicle = this.vehicleService.getVehicleById(bienSoXe).get();
         model.addAttribute("newVehicle", currentVehicle);
@@ -60,7 +60,7 @@ public class VehicleController {
         return "redirect:/admin/vehicle";
     }
 
-    @GetMapping("admin/vehicle/delete")
+    @GetMapping("admin/vehicle/delete/{bienSoXe}")
     public String deleteVehicle(Model model, @PathVariable String bienSoXe) {
         model.addAttribute("newVehicle", new Vehicle());
         return "admin/vehicle/delete";

@@ -43,7 +43,7 @@ public class StaffController {
     }
 
     // Update staff
-    @GetMapping("admin/staff/update")
+    @GetMapping("admin/staff/update/{maNV}")
     public String getUpdateStaffPage(Model model, @PathVariable String maNV) {
         Optional<Staff> currentStaff = this.staffService.getStaffById(maNV);
         model.addAttribute("newStaff", currentStaff);
@@ -72,12 +72,12 @@ public class StaffController {
     public String getDeleteStaffPage(Model model, @PathVariable String maNV) {
         model.addAttribute("maNV", maNV);
 
-        model.addAttribute("newAccount", new Account());
+        model.addAttribute("newStaff", new Staff());
         return "admin/staff/delete";
     }
 
     @PostMapping("admin/staff/delete")
-    public String deleteStaff(@ModelAttribute("newAccount") Staff staff1) {
+    public String deleteStaff(@ModelAttribute("newStaff") Staff staff1) {
         this.staffService.deleteStaffById(staff1.getMaNV());
         return "redirect:/admin/staff";
     }

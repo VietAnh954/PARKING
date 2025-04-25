@@ -24,7 +24,7 @@ public class Student {
     @Column(name = "NgaySinh")
     private LocalDate ngaySinh;
 
-    @Column(name = "QueQuan")
+    @Column(name = "QueQuan", length = 50, columnDefinition = "nchar(50)")
     private String queQuan;
 
     @Column(name = "SDT", nullable = false, length = 15, unique = true, columnDefinition = "nvarchar(15)")
@@ -87,6 +87,12 @@ public class Student {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Student [maSV=" + maSV + ", hoTen=" + hoTen + ", diaChi=" + diaChi + ", ngaySinh=" + ngaySinh
+                + ", queQuan=" + queQuan + ", sdt=" + sdt + ", email=" + email + "]";
     }
 
 }

@@ -31,4 +31,9 @@ public class VehicleType {
         this.tenLoaiXe = tenLoaiXe;
     }
 
+    @Override
+    public String toString() {
+        return "VehicleType [maLoaiXe=" + maLoaiXe + ", tenLoaiXe=" + tenLoaiXe + "]";
+    }
+
 }

@@ -41,7 +41,7 @@ public class StudentController {
     }
 
     // Update student
-    @GetMapping("admin/student/update")
+    @GetMapping("admin/student/update/{maSV}")
     public String getUpdateStudentPage(Model model, @PathVariable String maSV) {
         Optional<Student> currentStudent = this.studentService.getStudentById(maSV);
         model.addAttribute("newStudent", currentStudent);
@@ -65,7 +65,7 @@ public class StudentController {
     }
 
     // Delete student
-    @GetMapping("admin/student/delete")
+    @GetMapping("admin/student/delete/{maSV}")
     public String getDeleteStudentPage(Model model, @PathVariable String maSV) {
         model.addAttribute("newStudent", new Student());
         model.addAttribute("maSV", maSV);

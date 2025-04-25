@@ -68,4 +68,10 @@ public class Account {
         this.maSV = maSV;
     }
 
+    @Override
+    public String toString() {
+        return "Account [maTK=" + maTK + ", password=" + password + ", loaiTK=" + loaiTK + ", maNV=" + maNV + ", maSV="
+                + maSV + "]";
+    }
+
 }
