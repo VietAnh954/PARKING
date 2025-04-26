@@ -69,7 +69,7 @@ public class StudentController {
     public String getDeleteStudentPage(Model model, @PathVariable String maSV) {
         model.addAttribute("newStudent", new Student());
         model.addAttribute("maSV", maSV);
-        this.studentService.deleteStudentById(maSV);
+
         return "admin/student/delete";
     }
 

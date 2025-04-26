@@ -32,4 +32,11 @@ public class AccountService {
         this.accountRepository.deleteById(maTK);
     }
 
+    public List<Account> getAccountsByLoaiTK(String loaiTK) {
+        return this.accountRepository.findByLoaiTK(loaiTK);
+    }
+
+    public List<Account> searchAccountsByKeyword(String keyword) {
+        return this.accountRepository.timKiemTheoTuKhoa(keyword);
+    }
 }

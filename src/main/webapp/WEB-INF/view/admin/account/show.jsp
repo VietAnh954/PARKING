@@ -22,6 +22,20 @@
                         <div class=" col-12 mx-auto">
                             <div class="d-flex justify-content-between">
                                 <h3>Table Accounts</h3>
+                                <form action="/admin/account/filter" method="get">
+                                    <select name="loaiTK">
+                                        <option value="Quanly" <%="Quanly" .equals(request.getParameter("loaiTK"))
+                                            ? "selected" : "" %>>Quản lý</option>
+                                        <option value="BaoVe" <%="BaoVe" .equals(request.getParameter("loaiTK"))
+                                            ? "selected" : "" %>>Bảo vệ</option>
+                                        <option value="SinhVien" <%="SinhVien" .equals(request.getParameter("loaiTK"))
+                                            ? "selected" : "" %>>Sinh viên</option>
+                                        <option value="all" <%="all" .equals(request.getParameter("loaiTK")) ||
+                                            request.getParameter("loaiTK")==null ? "selected" : "" %>>Tất cả</option>
+                                    </select>
+                                    <input type="submit" value="Lọc">
+                                </form>
+                                <a href="/admin/account/search">Tìm kiếm tài khoản</a>
                                 <a href="/admin/account/create" class="btn btn-primary">Create new account</a>
                             </div>
 
@@ -59,6 +73,9 @@
 
                                 </tbody>
                             </table>
+
+                            <h3>Lọc theo loại tài khoản</h3>
+
                         </div>
 
                     </div>
