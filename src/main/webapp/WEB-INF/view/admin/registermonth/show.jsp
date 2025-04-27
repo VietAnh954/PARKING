@@ -82,7 +82,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach items="${registerMonths}" var="registerMonth">
+                            <c:forEach items="${registerMonthList}" var="registerMonth">
                                 <tr>
                                     <td>${registerMonth.maDangKy}</td>
                                     <td>${registerMonth.bienSoXe.bienSoXe}</td>
@@ -103,6 +103,31 @@
                             </c:forEach>
                         </tbody>
                     </table>
+                    <!-- Phân trang -->
+                    <!-- <c:if test="${registerMonthPage.totalPages > 0}"> -->
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <c:if test="${!registerMonthPage.first}">
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page=${registerMonthPage.number - 1}&size=${registerMonthPage.size}">Trước</a>
+                                </li>
+                            </c:if>
+                            <c:forEach begin="0" end="${registerMonthPage.totalPages - 1}" var="i">
+                                <li class="page-item ${i == registerMonthPage.number ? 'active' : ''}">
+                                    <a class="page-link" href="?page=${i}&size=${registerMonthPage.size}">${i +
+                                        1}</a>
+                                </li>
+                            </c:forEach>
+                            <c:if test="${!registerMonthPage.last}">
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page=${registerMonthPage.number + 1}&size=${registerMonthPage.size}">Sau</a>
+                                </li>
+                            </c:if>
+                        </ul>
+                    </nav>
+                    <!-- </c:if> -->
                 </div>
 
                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

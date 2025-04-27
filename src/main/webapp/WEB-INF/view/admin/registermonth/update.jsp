@@ -19,9 +19,7 @@
                         </div>
                         <div class="form-group">
                             <label for="bienSoXe">Biển số xe</label>
-                            <form:select path="bienSoXe" class="form-control" required="required">
-                                <form:options items="${vehicles}" itemValue="bienSoXe" itemLabel="bienSoXe" />
-                            </form:select>
+                            <form:input path="bienSoXe.bienSoXe" class="form-control" required="required" />
                         </div>
                         <div class="form-group">
                             <label for="tGianDangKy">Thời gian đăng ký</label>
@@ -33,9 +31,7 @@
                         </div>
                         <div class="form-group">
                             <label for="nvGhiNhan">Nhân viên ghi nhận</label>
-                            <form:select path="nvGhiNhan" class="form-control" required="required">
-                                <form:options items="${staffs}" itemValue="maNV" itemLabel="hoTen" />
-                            </form:select>
+                            <form:input path="nvGhiNhan.maNV" class="form-control" required="required" />
                         </div>
                         <button type="submit" class="btn btn-primary">Cập nhật</button>
                         <a href="<c:url value='/admin/registermonth'/>" class="btn btn-secondary">Hủy</a>

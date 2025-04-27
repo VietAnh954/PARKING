@@ -3,12 +3,16 @@ package vn.bacon.parking.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import vn.bacon.parking.domain.Student;
 import vn.bacon.parking.service.StudentService;
@@ -21,12 +25,12 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/admin/student")
-    public String getStudentPage(Model model) {
-        List<Student> students = this.studentService.getAllStudents();
-        model.addAttribute("studentshow", students);
-        return "admin/student/show";
-    }
+    // @GetMapping("/admin/student")
+    // public String getStudentPage(Model model) {
+    // List<Student> students = this.studentService.getAllStudents();
+    // model.addAttribute("studentshow", students);
+    // return "admin/student/show";
+    // }
 
     @GetMapping("admin/student/create")
     public String getCreateStudentPage(Model model) {
@@ -77,5 +81,16 @@ public class StudentController {
     public String deleteStudent(@ModelAttribute("newStudent") Student student1) {
         this.studentService.deleteStudentById(student1.getMaSV());
         return "redirect:/admin/student";
+    }
+
+    @GetMapping("/admin/student")
+    public String listStudent(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Student> studentPage = studentService.getStudentPage(pageable);
+        model.addAttribute("studentPage", studentPage);
+        model.addAttribute("studentList", studentPage.getContent());
+        return "admin/student/show";
     }
 }

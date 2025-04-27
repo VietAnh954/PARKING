@@ -29,7 +29,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Họ Tên:</label>
-                                    <form:input type="email" class="form-control" path="hoTen" disabled="true" />
+                                    <form:input type="text" class="form-control" path="hoTen" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">SĐT:</label>
@@ -37,7 +37,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Email:</label>
-                                    <form:input type="text" class="form-control" path="email" />
+                                    <form:input type="email" class="form-control" path="email" readonly="true" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">CCCD:</label>

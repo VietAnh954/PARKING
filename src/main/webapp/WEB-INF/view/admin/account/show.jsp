@@ -52,7 +52,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="account" items="${accountshow}">
+                                    <c:forEach var="account" items="${accountList}">
                                         <tr>
                                             <td>${account.maTK}</td>
                                             <td>${account.password}</td>
@@ -74,7 +74,28 @@
                                 </tbody>
                             </table>
 
-                            <h3>Lọc theo loại tài khoản</h3>
+                            <!-- PHÂN TRANG -->
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <c:if test="${!accountPage.first}">
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page=${accountPage.number - 1}&size=${accountPage.size}">Trước</a>
+                                        </li>
+                                    </c:if>
+                                    <c:forEach begin="0" end="${accountPage.totalPages - 1}" var="i">
+                                        <li class="page-item ${i == accountPage.number ? 'active' : ''}">
+                                            <a class="page-link" href="?page=${i}&size=${accountPage.size}">${i + 1}</a>
+                                        </li>
+                                    </c:forEach>
+                                    <c:if test="${!accountPage.last}">
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page=${accountPage.number + 1}&size=${accountPage.size}">Sau</a>
+                                        </li>
+                                    </c:if>
+                                </ul>
+                            </nav>
 
                         </div>
 

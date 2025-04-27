@@ -3,12 +3,16 @@ package vn.bacon.parking.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import vn.bacon.parking.domain.Account;
 import vn.bacon.parking.domain.Staff;
@@ -23,12 +27,12 @@ public class StaffController {
         this.staffService = staffService;
     }
 
-    @GetMapping("/admin/staff")
-    public String getStaffPage(Model model) {
-        List<Staff> staffs = this.staffService.getAllStaffs();
-        model.addAttribute("staffshow", staffs);
-        return "admin/staff/show";
-    }
+    // @GetMapping("/admin/staff")
+    // public String getStaffPage(Model model) {
+    // List<Staff> staffs = this.staffService.getAllStaffs();
+    // model.addAttribute("staffshow", staffs);
+    // return "admin/staff/show";
+    // }
 
     @GetMapping("admin/staff/create")
     public String getCreateStaffPage(Model model) {
@@ -80,5 +84,16 @@ public class StaffController {
     public String deleteStaff(@ModelAttribute("newStaff") Staff staff1) {
         this.staffService.deleteStaffById(staff1.getMaNV());
         return "redirect:/admin/staff";
+    }
+
+    @GetMapping("/admin/staff")
+    public String listStaff(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Staff> staffPage = staffService.getStaffPage(pageable);
+        model.addAttribute("staffPage", staffPage);
+        model.addAttribute("staffList", staffPage.getContent());
+        return "admin/staff/show";
     }
 }

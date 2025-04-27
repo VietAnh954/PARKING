@@ -3,6 +3,8 @@ package vn.bacon.parking.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import vn.bacon.parking.domain.Account;
@@ -38,5 +40,9 @@ public class AccountService {
 
     public List<Account> searchAccountsByKeyword(String keyword) {
         return this.accountRepository.timKiemTheoTuKhoa(keyword);
+    }
+
+    public Page<Account> getAccountPage(Pageable pageable) {
+        return accountRepository.findAll(pageable);
     }
 }

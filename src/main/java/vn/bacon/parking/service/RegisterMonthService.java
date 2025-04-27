@@ -8,6 +8,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import vn.bacon.parking.domain.RegisterMonth;
 import vn.bacon.parking.repository.RegisterMonthRepository;
@@ -150,5 +152,9 @@ public class RegisterMonthService {
                 .toList();
 
         dangKySapHetHan.forEach(this::guiEmailThongBao);
+    }
+
+    public Page<RegisterMonth> getRegisterMonthPage(Pageable pageable) {
+        return registerMonthRepository.findAll(pageable);
     }
 }

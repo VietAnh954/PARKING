@@ -3,6 +3,9 @@ package vn.bacon.parking.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,13 +30,13 @@ public class AccountController {
     }
 
     // Show all accounts
-    @GetMapping("/admin/account")
-    public String getAccountPage(Model model) {
-        List<Account> accounts = this.accountService.getAllAccounts();
+    // @GetMapping("/admin/account")
+    // public String getAccountPage(Model model) {
+    // List<Account> accounts = this.accountService.getAllAccounts();
 
-        model.addAttribute("accountshow", accounts);
-        return "admin/account/show";
-    }
+    // model.addAttribute("accountshow", accounts);
+    // return "admin/account/show";
+    // }
 
     // Create new account
     @GetMapping("/admin/account/create")
@@ -61,7 +64,9 @@ public class AccountController {
         Account currentAccount = this.accountService.getAccountById(account1.getMaTK()).get();
         if (currentAccount != null) {
             currentAccount.setMaTK(account1.getMaTK());
-            currentAccount.setPassword(account1.getPassword());
+            if (account1.getPassword() != null && !account1.getPassword().trim().isEmpty()) {
+                currentAccount.setPassword(account1.getPassword());
+            }
             currentAccount.setLoaiTK(account1.getLoaiTK());
             currentAccount.setMaNV(account1.getMaNV());
             currentAccount.setMaSV(account1.getMaSV());
@@ -94,4 +99,14 @@ public class AccountController {
         return "admin/account/show";
     }
 
+    @GetMapping("/admin/account")
+    public String listAccount(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Account> accountPage = accountService.getAccountPage(pageable);
+        model.addAttribute("accountPage", accountPage);
+        model.addAttribute("accountList", accountPage.getContent());
+        return "admin/account/show";
+    }
 }

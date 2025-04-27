@@ -24,13 +24,13 @@
                             <hr />
                             <form:form method="post" action="/admin/vehicle/update" modelAttribute="newVehicle">
 
-                                <div class="mb-3 " style=display:none>
+                                <div class="mb-3 ">
                                     <label class="form-label">BIỂN SỐ XE:</label>
                                     <form:input type="text" class="form-control" path="bienSoXe" />
                                 </div>
                                 <div class="mb-3 ">
                                     <label class="form-label">MÃ LOẠI XE:</label>
-                                    <form:input type="text" class="form-control" path="maLoaiXe" disabled="true" />
+                                    <form:input type="text" class="form-control" path="maLoaiXe" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">MÃ NV:</label>

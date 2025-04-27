@@ -37,14 +37,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="staff" items="${staffshow}">
+                                    <c:forEach var="staff" items="${staffList}">
                                         <tr>
                                             <td>${staff.maNV}</td>
                                             <td>${staff.hoTen}</td>
                                             <td>${staff.sdt}</td>
                                             <td>${staff.email}</td>
                                             <td>
-                                                <a href="/admin/staff/${staff.maNV}" class="btn btn-success">View</a>
+                                                <!-- <a href="/admin/staff/${staff.maNV}" class="btn btn-success">View</a> -->
                                                 <a href="/admin/staff/update/${staff.maNV}"
                                                     class="btn btn-warning mx-2">Update</a>
                                                 <a href="/admin/staff/delete/${staff.maNV}"
@@ -56,6 +56,28 @@
 
                                 </tbody>
                             </table>
+                            <!-- PHÂN TRANG -->
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <c:if test="${!staffPage.first}">
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page=${staffPage.number - 1}&size=${staffPage.size}">Trước</a>
+                                        </li>
+                                    </c:if>
+                                    <c:forEach begin="0" end="${staffPage.totalPages - 1}" var="i">
+                                        <li class="page-item ${i == staffPage.number ? 'active' : ''}">
+                                            <a class="page-link" href="?page=${i}&size=${staffPage.size}">${i + 1}</a>
+                                        </li>
+                                    </c:forEach>
+                                    <c:if test="${!staffPage.last}">
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page=${staffPage.number + 1}&size=${staffPage.size}">Sau</a>
+                                        </li>
+                                    </c:if>
+                                </ul>
+                            </nav>
                         </div>
 
                     </div>

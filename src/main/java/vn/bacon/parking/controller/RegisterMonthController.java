@@ -3,6 +3,9 @@ package vn.bacon.parking.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +27,22 @@ public class RegisterMonthController {
     }
 
     // Show all register months
-    @GetMapping("admin/registermonth")
-    public String getRegisterMonthsPage(Model model) {
-        List<RegisterMonth> registerMonths = registerMonthService.getAllRegisterMonths();
-        model.addAttribute("registerMonths", registerMonths);
+    // @GetMapping("admin/registermonth")
+    // public String getRegisterMonthsPage(Model model) {
+    // List<RegisterMonth> registerMonths =
+    // registerMonthService.getAllRegisterMonths();
+    // model.addAttribute("registerMonths", registerMonths);
+    // return "admin/registermonth/show";
+    // }
+
+    @GetMapping("/admin/registermonth")
+    public String listRegisterMonth(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RegisterMonth> registerMonthPage = registerMonthService.getRegisterMonthPage(pageable);
+        model.addAttribute("registerMonthPage", registerMonthPage);
+        model.addAttribute("registerMonthList", registerMonthPage.getContent());
         return "admin/registermonth/show";
     }
 
@@ -112,7 +127,7 @@ public class RegisterMonthController {
     @GetMapping("admin/registermonth/search")
     public String searchRegisterMonth(@RequestParam("tuKhoa") String tuKhoa, Model model) {
         List<RegisterMonth> registerMonths = registerMonthService.timKiemTheoBienSoXe(tuKhoa);
-        model.addAttribute("registerMonths", registerMonths);
+        model.addAttribute("registerMonthList", registerMonths);
         model.addAttribute("tuKhoa", tuKhoa);
         return "admin/registermonth/show";
     }
@@ -121,7 +136,7 @@ public class RegisterMonthController {
     @GetMapping("admin/registermonth/active")
     public String getActiveRegisterMonths(Model model) {
         List<RegisterMonth> registerMonths = registerMonthService.timDangKyConHieuLuc();
-        model.addAttribute("registerMonths", registerMonths);
+        model.addAttribute("registerMonthList", registerMonths);
         model.addAttribute("filter", "active");
         return "admin/registermonth/show";
     }
@@ -130,7 +145,7 @@ public class RegisterMonthController {
     @GetMapping("admin/registermonth/expired")
     public String getExpiredRegisterMonths(Model model) {
         List<RegisterMonth> registerMonths = registerMonthService.timDangKyDaHetHan();
-        model.addAttribute("registerMonths", registerMonths);
+        model.addAttribute("registerMonthList", registerMonths);
         model.addAttribute("filter", "expired");
         return "admin/registermonth/show";
     }

@@ -30,7 +30,12 @@
                                 </div>
                                 <div class="mb-3 ">
                                     <label class="form-label">MÃ LOẠI XE:</label>
-                                    <form:input type="text" class="form-control" path="maLoaiXe" />
+                                    <!-- <form:input type="text" class="form-control" path="maLoaiXe" /> -->
+                                    <form:select class="form-select" path="maLoaiXe">
+                                        <form:option value="LX001" label="LX001 - Xe máy" />
+                                        <form:option value="LX002" label="LX002 - Ô tô" />
+
+                                    </form:select>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">MÃ NV:</label>

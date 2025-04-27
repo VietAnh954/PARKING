@@ -2,12 +2,16 @@ package vn.bacon.parking.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import vn.bacon.parking.domain.Vehicle;
 import vn.bacon.parking.service.VehicleService;
@@ -20,12 +24,12 @@ public class VehicleController {
         this.vehicleService = vehicleService;
     }
 
-    @GetMapping("/admin/vehicle")
-    public String getVehiclePage(Model model) {
-        List<Vehicle> vehicles = this.vehicleService.getAllVehicles();
-        model.addAttribute("vehicleshow", vehicles);
-        return "admin/vehicle/show";
-    }
+    // @GetMapping("/admin/vehicle")
+    // public String getVehiclePage(Model model) {
+    // List<Vehicle> vehicles = this.vehicleService.getAllVehicles();
+    // model.addAttribute("vehicleshow", vehicles);
+    // return "admin/vehicle/show";
+    // }
 
     @GetMapping("admin/vehicle/create")
     public String getCreateVehiclePage(Model model) {
@@ -70,5 +74,16 @@ public class VehicleController {
     public String deleteVehiclePost(@ModelAttribute("newVehicle") Vehicle vehicle1) {
         this.vehicleService.deleteVehicleById(vehicle1.getBienSoXe());
         return "redirect:/admin/vehicle";
+    }
+
+    @GetMapping("/admin/vehicle")
+    public String listVehicle(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Vehicle> vehiclePage = vehicleService.getVehiclePage(pageable);
+        model.addAttribute("vehiclePage", vehiclePage);
+        model.addAttribute("vehicleList", vehiclePage.getContent());
+        return "admin/vehicle/show";
     }
 }

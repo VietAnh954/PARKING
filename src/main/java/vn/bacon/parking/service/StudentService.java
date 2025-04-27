@@ -3,6 +3,8 @@ package vn.bacon.parking.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import vn.bacon.parking.domain.Student;
@@ -33,4 +35,7 @@ public class StudentService {
         this.studentRepository.deleteById(maSV);
     }
 
+    public Page<Student> getStudentPage(Pageable pageable) {
+        return studentRepository.findAll(pageable);
+    }
 }

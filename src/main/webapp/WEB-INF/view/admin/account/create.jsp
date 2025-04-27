@@ -34,7 +34,12 @@
                                 </div>
                                 <div class="mb-3  ">
                                     <label class="form-label">Loại TK:</label>
-                                    <form:input type="email" class="form-control" path="loaiTK" />
+                                    <form:select class="form-select" path="loaiTK">
+                                        <form:option value="Quanly" label="Quản lý" />
+                                        <form:option value="BaoVe" label="Bảo vệ" />
+                                        <form:option value="SinhVien" label="Sinh viên" />
+                                        <form:option value="GiaoVien" label="Giáo Viên" />
+                                    </form:select>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">MÃ NV:</label>
@@ -45,6 +50,7 @@
                                     <form:input type="text" class="form-control" path="maSV" />
                                 </div>
                                 <button type="submit" class="btn btn-primary">Create</button>
+                                <a href="/admin/account" class="btn btn-secondary">Cancel</a>
                             </form:form>
                         </div>
 

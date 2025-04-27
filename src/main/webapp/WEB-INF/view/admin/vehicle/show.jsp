@@ -37,12 +37,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="vehicle" items="${vehicleshow}">
+                                    <c:forEach var="vehicle" items="${vehicleList}">
                                         <tr>
                                             <td>${vehicle.bienSoXe}</td>
-                                            <td>${vehicle.maLoaiXe}</td>
-                                            <td>${vehicle.maNV}</td>
-                                            <td>${vehicle.maSV}</td>
+                                            <td>
+                                                <c:if test="${vehicle.maLoaiXe != null}">
+                                                    ${vehicle.maLoaiXe.maLoaiXe}
+                                                </c:if>
+                                            </td>
+                                            <td>
+                                                <c:if test="${vehicle.maNV != null}">
+                                                    ${vehicle.maNV.maNV}
+                                                </c:if>
+                                            </td>
+                                            <td>
+                                                <c:if test="${vehicle.maSV != null}">
+                                                    ${vehicle.maSV.maSV}
+                                                </c:if>
+                                            </td>
                                             <td>
                                                 <a href="/admin/vehicle/${vehicle.bienSoXe}"
                                                     class="btn btn-success">View</a>
@@ -57,6 +69,28 @@
 
                                 </tbody>
                             </table>
+                            <!-- PHÂN TRANG -->
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <c:if test="${!vehiclePage.first}">
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page=${vehiclePage.number - 1}&size=${vehiclePage.size}">Trước</a>
+                                        </li>
+                                    </c:if>
+                                    <c:forEach begin="0" end="${vehiclePage.totalPages - 1}" var="i">
+                                        <li class="page-item ${i == vehiclePage.number ? 'active' : ''}">
+                                            <a class="page-link" href="?page=${i}&size=${vehiclePage.size}">${i + 1}</a>
+                                        </li>
+                                    </c:forEach>
+                                    <c:if test="${!vehiclePage.last}">
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page=${vehiclePage.number + 1}&size=${vehiclePage.size}">Sau</a>
+                                        </li>
+                                    </c:if>
+                                </ul>
+                            </nav>
                         </div>
 
                     </div>

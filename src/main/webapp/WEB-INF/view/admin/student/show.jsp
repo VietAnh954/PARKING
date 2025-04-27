@@ -37,7 +37,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="student" items="${studentshow}">
+                                    <c:forEach var="student" items="${studentList}">
                                         <tr>
                                             <td>${student.maSV}</td>
                                             <td>${student.hoTen}</td>
@@ -57,6 +57,28 @@
 
                                 </tbody>
                             </table>
+                            <!-- PHÂN TRANG -->
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <c:if test="${!studentPage.first}">
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page=${studentPage.number - 1}&size=${studentPage.size}">Trước</a>
+                                        </li>
+                                    </c:if>
+                                    <c:forEach begin="0" end="${studentPage.totalPages - 1}" var="i">
+                                        <li class="page-item ${i == studentPage.number ? 'active' : ''}">
+                                            <a class="page-link" href="?page=${i}&size=${studentPage.size}">${i + 1}</a>
+                                        </li>
+                                    </c:forEach>
+                                    <c:if test="${!studentPage.last}">
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page=${studentPage.number + 1}&size=${studentPage.size}">Sau</a>
+                                        </li>
+                                    </c:if>
+                                </ul>
+                            </nav>
                         </div>
 
                     </div>
