@@ -14,14 +14,17 @@ public class Vehicle {
     @Column(name = "BienSoXe", length = 10, columnDefinition = "nchar(10)")
     private String bienSoXe;
 
+    // nhiều xe có thể thuộc về một loại xe
     @ManyToOne
     @JoinColumn(name = "MaLoaiXe", nullable = false)
     private VehicleType maLoaiXe;
 
+    // nhiều xe có thể thuộc về một nhân viên
     @ManyToOne
     @JoinColumn(name = "MaNV")
     private Staff maNV;
 
+    // nhiều xe có thể thuộc về một sinh viên
     @ManyToOne
     @JoinColumn(name = "MaSV")
     private Student maSV;

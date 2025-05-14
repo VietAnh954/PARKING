@@ -18,10 +18,6 @@ public class StaffService {
         this.staffRepository = staffRepository;
     }
 
-    public Staff saveStaff(Staff staff) {
-        return this.staffRepository.save(staff);
-    }
-
     public List<Staff> getAllStaffs() {
         return this.staffRepository.findAll();
     }
@@ -36,5 +32,9 @@ public class StaffService {
 
     public Page<Staff> getStaffPage(Pageable pageable) {
         return staffRepository.findAll(pageable);
+    }
+
+    public Staff saveStaff(Staff staff) {
+        return this.staffRepository.save(staff);
     }
 }
