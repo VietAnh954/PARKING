@@ -1,36 +1,33 @@
 package vn.bacon.parking.domain;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "SinhVien")
-
 public class Student {
     @Id
-    @Column(name = "MaSV", length = 10, columnDefinition = "nchar(10)")
+    @Column(name = "MaSV", length = 20, columnDefinition = "nchar(20)")
     private String maSV;
 
-    @Column(name = "HoTen", nullable = false, length = 40, columnDefinition = "nvarchar(40)")
+    @Column(name = "HoTen", nullable = false, length = 80, columnDefinition = "nvarchar(80)")
     private String hoTen;
 
-    @Column(name = "DiaChi", nullable = false, length = 100, columnDefinition = "nvarchar(100)")
+    @Column(name = "DiaChi", nullable = false, length = 200, columnDefinition = "nvarchar(200)")
     private String diaChi;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Column(name = "NgaySinh")
     private LocalDate ngaySinh;
 
-    @Column(name = "QueQuan", length = 50, columnDefinition = "nchar(50)")
+    @Column(name = "QueQuan", columnDefinition = "text")
     private String queQuan;
 
-    @Column(name = "SDT", nullable = false, length = 15, unique = true, columnDefinition = "nvarchar(15)")
+    @Column(name = "SDT", nullable = false, length = 30, unique = true, columnDefinition = "nvarchar(30)")
     private String sdt;
 
-    @Column(name = "Email", length = 100, unique = true, columnDefinition = "nvarchar(100)")
+    @Column(name = "Email", length = 200, unique = true, columnDefinition = "nvarchar(200)")
     private String email;
 
     public String getMaSV() {
@@ -94,5 +91,4 @@ public class Student {
         return "Student [maSV=" + maSV + ", hoTen=" + hoTen + ", diaChi=" + diaChi + ", ngaySinh=" + ngaySinh
                 + ", queQuan=" + queQuan + ", sdt=" + sdt + ", email=" + email + "]";
     }
-
 }

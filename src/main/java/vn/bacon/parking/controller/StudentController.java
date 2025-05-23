@@ -1,96 +1,91 @@
+
 package vn.bacon.parking.controller;
 
-import java.util.List;
-import java.util.Optional;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.bacon.parking.domain.Student;
 import vn.bacon.parking.service.StudentService;
+import java.util.Optional;
 
 @Controller
+@RequestMapping("/admin")
 public class StudentController {
-    private final StudentService studentService;
+    @Autowired
+    private StudentService studentService;
 
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
-
-    // @GetMapping("/admin/student")
-    // public String getStudentPage(Model model) {
-    // List<Student> students = this.studentService.getAllStudents();
-    // model.addAttribute("studentshow", students);
-    // return "admin/student/show";
-    // }
-
-    @GetMapping("admin/student/create")
-    public String getCreateStudentPage(Model model) {
-        model.addAttribute("newStudent", new Student());
-        return "admin/student/create";
-    }
-
-    @PostMapping("admin/student/create")
-    public String createStudent(@ModelAttribute("newStudent") Student student1) {
-        this.studentService.saveStudent(student1);
-        return "redirect:/admin/student";
-    }
-
-    // Update student
-    @GetMapping("admin/student/update/{maSV}")
-    public String getUpdateStudentPage(Model model, @PathVariable String maSV) {
-        Optional<Student> currentStudent = this.studentService.getStudentById(maSV);
-        model.addAttribute("newStudent", currentStudent);
-        return "admin/student/update";
-    }
-
-    @PostMapping("admin/student/update")
-    public String updateStudent(Model model, @ModelAttribute("newStudent") Student student1) {
-        Student currentStudent = this.studentService.getStudentById(student1.getMaSV()).get();
-        if (currentStudent != null) {
-            currentStudent.setMaSV(student1.getMaSV());
-            currentStudent.setHoTen(student1.getHoTen());
-            currentStudent.setSdt(student1.getSdt());
-            currentStudent.setEmail(student1.getEmail());
-            currentStudent.setDiaChi(student1.getDiaChi());
-            currentStudent.setNgaySinh(student1.getNgaySinh());
-            currentStudent.setQueQuan(student1.getQueQuan());
-            this.studentService.saveStudent(currentStudent);
-        }
-        return "redirect:/admin/student";
-    }
-
-    // Delete student
-    @GetMapping("admin/student/delete/{maSV}")
-    public String getDeleteStudentPage(Model model, @PathVariable String maSV) {
-        model.addAttribute("newStudent", new Student());
-        model.addAttribute("maSV", maSV);
-
-        return "admin/student/delete";
-    }
-
-    @PostMapping("admin/student/delete")
-    public String deleteStudent(@ModelAttribute("newStudent") Student student1) {
-        this.studentService.deleteStudentById(student1.getMaSV());
-        return "redirect:/admin/student";
-    }
-
-    @GetMapping("/admin/student")
-    public String listStudent(@RequestParam(defaultValue = "0") int page,
+    @GetMapping("/student")
+    public String listStudents(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Student> studentPage = studentService.getStudentPage(pageable);
         model.addAttribute("studentPage", studentPage);
-        model.addAttribute("studentList", studentPage.getContent());
         return "admin/student/show";
+    }
+
+    @GetMapping("/student/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("student", new Student());
+        return "admin/student/create";
+    }
+
+    @PostMapping("/student/create")
+    public String createStudent(@ModelAttribute("student") Student student, RedirectAttributes redirectAttributes) {
+        studentService.saveStudent(student);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm sinh viên " + student.getMaSV() + " thành công");
+        return "redirect:/admin/student";
+    }
+
+    @GetMapping("/student/{maSV}")
+    public String viewStudent(@PathVariable String maSV, Model model) {
+        Optional<Student> student = studentService.getStudentById(maSV);
+        if (student.isPresent()) {
+            model.addAttribute("student", student.get());
+            return "admin/student/view";
+        }
+        return "redirect:/admin/student";
+    }
+
+    @GetMapping("/student/update/{maSV}")
+    public String showUpdateForm(@PathVariable String maSV, Model model) {
+        Optional<Student> student = studentService.getStudentById(maSV);
+        if (student.isPresent()) {
+            model.addAttribute("student", student.get());
+            return "admin/student/update";
+        }
+        return "redirect:/admin/student";
+    }
+
+    @PostMapping("/student/update")
+    public String updateStudent(@ModelAttribute("student") Student student, RedirectAttributes redirectAttributes) {
+        studentService.saveStudent(student);
+        redirectAttributes.addFlashAttribute("successMessage",
+                "Cập nhật sinh viên " + student.getMaSV() + " thành công");
+        return "redirect:/admin/student";
+    }
+
+    @GetMapping("/student/delete/confirm/{maSV}")
+    public String showDeleteConfirm(@PathVariable String maSV, Model model) {
+        Optional<Student> student = studentService.getStudentById(maSV);
+        if (student.isPresent()) {
+            model.addAttribute("maSV", maSV);
+            return "admin/student/delete";
+        }
+        return "redirect:/admin/student";
+    }
+
+    @GetMapping("/student/delete/{maSV}")
+    public String deleteStudent(@PathVariable String maSV, RedirectAttributes redirectAttributes) {
+        if (studentService.getStudentById(maSV).isPresent()) {
+            studentService.deleteStudentById(maSV);
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa sinh viên " + maSV + " thành công");
+        }
+        return "redirect:/admin/student";
     }
 }

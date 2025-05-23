@@ -7,9 +7,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Delete Student - Student Management Dashboard">
+    <meta name="description" content="View Student - Student Management Dashboard">
     <meta name="author" content="">
-    <title>Delete Student - Admin Dashboard</title>
+    <title>View Student - Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -30,18 +30,27 @@
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="/admin/student">Students</a></li>
-                        <li class="breadcrumb-item active">Delete Student</li>
+                        <li class="breadcrumb-item active">View Student</li>
                     </ol>
 
                     <div class="container mt-4">
-                        <h3>Xóa sinh viên với MÃ SV = ${maSV}</h3>
+                        <h3>Chi tiết sinh viên</h3>
                         <div class="card">
                             <div class="card-body">
-                                <div class="alert alert-danger" role="alert">
-                                    Bạn có chắc chắn muốn xóa sinh viên này? Hành động này không thể hoàn tác.
+                                <p><strong>Mã SV:</strong> ${student.maSV}</p>
+                                <p><strong>Họ tên:</strong> ${student.hoTen}</p>
+                                <p><strong>Địa chỉ:</strong> ${student.diaChi}</p>
+                                <p><strong>Ngày sinh:</strong> ${student.ngaySinh}</p>
+                                <p><strong>Quê quán:</strong> ${student.queQuan}</p>
+                                <p><strong>SĐT:</strong> ${student.sdt}</p>
+                                <p><strong>Email:</strong> ${student.email}</p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="/admin/student" class="btn btn-primary">Quay lại</a>
+                                    <div>
+                                        <a href="/admin/student/update/${student.maSV}" class="btn btn-warning">Cập nhật</a>
+                                        <a href="/admin/student/delete/confirm/${student.maSV}" class="btn btn-danger">Xóa</a>
+                                    </div>
                                 </div>
-                                <a href="/admin/student/delete/${maSV}" class="btn btn-danger">Xác nhận xóa</a>
-                                <a href="/admin/student" class="btn btn-secondary">Hủy</a>
                             </div>
                         </div>
                     </div>
