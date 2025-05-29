@@ -38,4 +38,24 @@ public class StudentService {
     public Page<Student> getStudentPage(Pageable pageable) {
         return studentRepository.findAll(pageable);
     }
+
+    // Check if phone number exists
+    public boolean existsBySdt(String sdt) {
+        return studentRepository.existsBySdt(sdt);
+    }
+
+    // Check if email exists
+    public boolean existsByEmail(String email) {
+        return email != null && !email.isEmpty() && studentRepository.existsByEmail(email);
+    }
+
+    // Check if phone number exists for another student (used in update)
+    public boolean existsBySdtAndNotMaSV(String sdt, String maSV) {
+        return studentRepository.existsBySdtAndMaSVNot(sdt, maSV);
+    }
+
+    // Check if email exists for another student (used in update)
+    public boolean existsByEmailAndNotMaSV(String email, String maSV) {
+        return email != null && !email.isEmpty() && studentRepository.existsByEmailAndMaSVNot(email, maSV);
+    }
 }

@@ -7,5 +7,11 @@ import vn.bacon.parking.domain.Student;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, String> {
+    boolean existsBySdt(String sdt);
 
+    boolean existsByEmail(String email);
+
+    boolean existsBySdtAndMaSVNot(String sdt, String maSV);
+
+    boolean existsByEmailAndMaSVNot(String email, String maSV);
 }

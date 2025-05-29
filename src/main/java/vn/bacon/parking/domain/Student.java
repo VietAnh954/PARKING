@@ -1,6 +1,11 @@
 package vn.bacon.parking.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -9,12 +14,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Student {
     @Id
     @Column(name = "MaSV", length = 20, columnDefinition = "nchar(20)")
+    @NotBlank(message = "Mã SV không được để trống")
+    @Size(max = 20, message = "Mã SV không được vượt quá 20 ký tự")
     private String maSV;
 
     @Column(name = "HoTen", nullable = false, length = 80, columnDefinition = "nvarchar(80)")
+    @NotBlank(message = "Họ tên không được để trống")
+    @Size(max = 80, message = "Họ tên không được vượt quá 80 ký tự")
     private String hoTen;
 
     @Column(name = "DiaChi", nullable = false, length = 200, columnDefinition = "nvarchar(200)")
+    @NotBlank(message = "Địa chỉ không được để trống")
+    @Size(max = 200, message = "Địa chỉ không được vượt quá 200 ký tự")
     private String diaChi;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -22,12 +33,17 @@ public class Student {
     private LocalDate ngaySinh;
 
     @Column(name = "QueQuan", columnDefinition = "text")
+    @Size(max = 65535, message = "Quê quán quá dài")
     private String queQuan;
 
     @Column(name = "SDT", nullable = false, length = 30, unique = true, columnDefinition = "nvarchar(30)")
+    @NotBlank(message = "SĐT không được để trống")
+    @Pattern(regexp = "^\\d{10}$", message = "SĐT phải là số và có đúng 10 chữ số")
     private String sdt;
 
     @Column(name = "Email", length = 200, unique = true, columnDefinition = "nvarchar(200)")
+    @Email(message = "Email không hợp lệ")
+    @Size(max = 200, message = "Email không được vượt quá 200 ký tự")
     private String email;
 
     public String getMaSV() {
