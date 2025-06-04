@@ -30,6 +30,16 @@
                             <a href="/admin/staff/create" class="btn btn-primary float-end">Thêm nhân viên</a>
                         </div>
                         <div class="card-body">
+                            <c:if test="${not empty successMessage}">
+                                <div class="alert alert-success" role="alert">
+                                    ${successMessage}
+                                </div>
+                            </c:if>
+                            <c:if test="${not empty errorMessage}">
+                                <div class="alert alert-danger" role="alert">
+                                    ${errorMessage}
+                                </div>
+                            </c:if>
                             <c:if test="${empty staffPage.content}">
                                 <div class="alert alert-info" role="alert">
                                     Không có nhân viên nào trong danh sách. Vui lòng thêm nhân viên mới.
@@ -47,6 +57,7 @@
                                             <th>Chức vụ</th>
                                             <th>Ngày vào làm</th>
                                             <th>Avatar</th>
+                                            <th>Tài khoản</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
@@ -67,6 +78,16 @@
                                                     <c:if test="${empty staff.avatar}">
                                                         No Avatar
                                                     </c:if>
+                                                </td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty staff.account}">
+                                                            Có (<a href="/admin/account/update/${staff.maNV}">Cập nhật</a>)
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            Chưa có (<a href="/admin/account/create/${staff.maNV}">Tạo</a>)
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </td>
                                                 <td>
                                                     <a href="/admin/staff/${staff.maNV}" class="btn btn-info btn-sm">Xem</a>

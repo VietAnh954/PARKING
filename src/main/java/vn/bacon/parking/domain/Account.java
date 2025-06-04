@@ -11,14 +11,18 @@ import jakarta.persistence.Table;
 @Table(name = "TaiKhoan")
 public class Account {
     @Id
-    @Column(name = "MaTK", length = 10, columnDefinition = "nchar(10)")
-    private String maTK;
+    @Column(name = "Username", length = 50)
+    private String username;
 
     @Column(name = "Password", nullable = false, length = 100)
     private String password;
 
-    @Column(name = "LoaiTK", nullable = false, length = 20)
-    private String loaiTK;
+    @Column(name = "Enabled", nullable = false)
+    private boolean enabled;
+
+    @ManyToOne
+    @JoinColumn(name = "RoleID", nullable = false)
+    private Role role;
 
     @ManyToOne
     @JoinColumn(name = "MaNV")
@@ -28,12 +32,13 @@ public class Account {
     @JoinColumn(name = "MaSV")
     private Student maSV;
 
-    public String getMaTK() {
-        return maTK;
+    // Getters and Setters
+    public String getUsername() {
+        return username;
     }
 
-    public void setMaTK(String maTK) {
-        this.maTK = maTK;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -44,12 +49,20 @@ public class Account {
         this.password = password;
     }
 
-    public String getLoaiTK() {
-        return loaiTK;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setLoaiTK(String loaiTK) {
-        this.loaiTK = loaiTK;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public Staff getMaNV() {
@@ -70,8 +83,7 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account [maTK=" + maTK + ", password=" + password + ", loaiTK=" + loaiTK + ", maNV=" + maNV + ", maSV="
-                + maSV + "]";
+        return "Account [username=" + username + ", password=" + password + ", enabled=" + enabled + ", role=" + role
+                + ", maNV=" + maNV + ", maSV=" + maSV + "]";
     }
-
 }

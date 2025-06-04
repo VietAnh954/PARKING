@@ -56,6 +56,17 @@ public class Staff {
     @Column(name = "Avatar", length = 255)
     private String avatar;
 
+    @OneToOne(mappedBy = "maNV")
+    private Account account;
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
     public String getAvatar() {
         return avatar;
     }

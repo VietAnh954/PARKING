@@ -1,112 +1,190 @@
 package vn.bacon.parking.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import vn.bacon.parking.domain.Account;
+import vn.bacon.parking.domain.Student;
+import vn.bacon.parking.domain.Staff;
+import vn.bacon.parking.domain.Role;
+import vn.bacon.parking.service.AccountService;
+import vn.bacon.parking.service.StudentService;
+import vn.bacon.parking.service.StaffService;
+import vn.bacon.parking.repository.RoleRepository;
+
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import jakarta.servlet.http.HttpServletRequest;
-import vn.bacon.parking.domain.Account;
-import vn.bacon.parking.service.AccountService;
-
 @Controller
-
+@RequestMapping("/admin/account")
 public class AccountController {
 
     private final AccountService accountService;
+    private final StudentService studentService;
+    private final StaffService staffService;
+    private final RoleRepository roleRepository;
 
-    public AccountController(AccountService accountService) {
+    @Autowired
+    public AccountController(AccountService accountService, StudentService studentService, StaffService staffService,
+            RoleRepository roleRepository) {
         this.accountService = accountService;
+        this.studentService = studentService;
+        this.staffService = staffService;
+        this.roleRepository = roleRepository;
     }
 
-    // Show all accounts
-    // @GetMapping("/admin/account")
-    // public String getAccountPage(Model model) {
-    // List<Account> accounts = this.accountService.getAllAccounts();
+    @GetMapping("/create/{id}")
+    public String showCreateForm(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Student> student = studentService.getStudentById(id);
+        Optional<Staff> staff = staffService.getStaffById(id);
 
-    // model.addAttribute("accountshow", accounts);
-    // return "admin/account/show";
-    // }
-
-    // Create new account
-    @GetMapping("/admin/account/create")
-    public String getCreateAccountPage(Model model) {
-        model.addAttribute("newAccount", new Account());
-        return "admin/account/create";
-    }
-
-    @PostMapping("/admin/account/create")
-    public String createAccount(@ModelAttribute("newAccount") Account account1) {
-        this.accountService.saveAccount(account1);
-        return "redirect:/admin/account";
-    }
-
-    // Update account
-    @RequestMapping("/admin/account/update/{maTK}")
-    public String getUpdateAccountPage(Model model, @PathVariable String maTK) {
-        Optional<Account> currentAccount = this.accountService.getAccountById(maTK);
-        model.addAttribute("newAccount", currentAccount.get());
-        return "admin/account/update";
-    }
-
-    @PostMapping("/admin/account/update")
-    public String updateAccount(Model model, @ModelAttribute("newAccount") Account account1) {
-        Account currentAccount = this.accountService.getAccountById(account1.getMaTK()).get();
-        if (currentAccount != null) {
-            currentAccount.setMaTK(account1.getMaTK());
-            if (account1.getPassword() != null && !account1.getPassword().trim().isEmpty()) {
-                currentAccount.setPassword(account1.getPassword());
+        if (student.isPresent()) {
+            if (accountService.existsByUsername(id)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Tài khoản đã tồn tại cho sinh viên " + id);
+                return "redirect:/admin/student";
             }
-            currentAccount.setLoaiTK(account1.getLoaiTK());
-            currentAccount.setMaNV(account1.getMaNV());
-            currentAccount.setMaSV(account1.getMaSV());
-            this.accountService.saveAccount(currentAccount);
+            model.addAttribute("account", new Account());
+            model.addAttribute("userType", "student");
+            model.addAttribute("userId", id);
+            model.addAttribute("roles", roleRepository.findAll());
+            model.addAttribute("selectedRole", 3); // Default to ROLE_STUDENT
+            return "admin/account/create";
+        } else if (staff.isPresent()) {
+            if (accountService.existsByUsername(id)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Tài khoản đã tồn tại cho nhân viên " + id);
+                return "redirect:/admin/staff";
+            }
+            model.addAttribute("account", new Account());
+            model.addAttribute("userType", "staff");
+            model.addAttribute("userId", id);
+            model.addAttribute("roles", roleRepository.findAll());
+            model.addAttribute("selectedRole", staff.get().getChucVu().equals("Giảng viên") ? 4 : 2); // ROLE_TEACHER or
+                                                                                                      // ROLE_EMPLOYEE
+            return "admin/account/create";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Không tìm thấy sinh viên hoặc nhân viên với ID " + id);
+            return "redirect:/admin";
         }
-
-        return "redirect:/admin/account";
     }
 
-    // Delete account
-    @GetMapping("/admin/account/delete/{maTK}")
-    public String getDeleteAccountPage(Model model, @PathVariable String maTK) {
-        model.addAttribute("maTK", maTK);
-
-        model.addAttribute("newAccount", new Account());
-        return "admin/account/delete";
+    @PostMapping("/create")
+    public String createAccount(@RequestParam String userType,
+            @RequestParam String userId,
+            @RequestParam(required = false) Integer roleId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            if (roleId == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn một vai trò.");
+                return "redirect:/admin/account/create/" + userId;
+            }
+            if (userType.equals("student")) {
+                Optional<Student> student = studentService.getStudentById(userId);
+                if (student.isPresent()) {
+                    accountService.createAccountForStudent(student.get(), roleId);
+                    redirectAttributes.addFlashAttribute("successMessage",
+                            "Tạo tài khoản cho sinh viên " + userId + " thành công");
+                    return "redirect:/admin/student";
+                } else {
+                    throw new IllegalArgumentException("Sinh viên với ID " + userId + " không tồn tại");
+                }
+            } else if (userType.equals("staff")) {
+                Optional<Staff> staff = staffService.getStaffById(userId);
+                if (staff.isPresent()) {
+                    accountService.createAccountForStaff(staff.get(), roleId);
+                    redirectAttributes.addFlashAttribute("successMessage",
+                            "Tạo tài khoản cho nhân viên " + userId + " thành công");
+                    return "redirect:/admin/staff";
+                } else {
+                    throw new IllegalArgumentException("Nhân viên với ID " + userId + " không tồn tại");
+                }
+            } else {
+                throw new IllegalArgumentException("Loại người dùng không hợp lệ: " + userType);
+            }
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/" + userType;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi tạo tài khoản: " + e.getMessage());
+            return "redirect:/admin/" + userType;
+        }
     }
 
-    @PostMapping("/admin/account/delete")
-    public String deleteAccount(@ModelAttribute("newAccount") Account account1) {
-        this.accountService.deleteAccountById(account1.getMaTK());
-        return "redirect:/admin/account";
+    @GetMapping("/update/{username}")
+    public String showUpdateForm(@PathVariable String username, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Account> account = accountService.getAccountByUsername(username);
+        if (account.isPresent()) {
+            model.addAttribute("account", account.get());
+            model.addAttribute("username", username);
+            model.addAttribute("roles", roleRepository.findAll());
+            model.addAttribute("selectedRole", account.get().getRole().getRoleID());
+            return "admin/account/update";
+        }
+        redirectAttributes.addFlashAttribute("errorMessage", "Tài khoản không tồn tại");
+        return "redirect:/admin";
     }
 
-    // Xử lý lọc theo loại tài khoản
-    @GetMapping("/admin/account/filter")
-    public String filterAccount(@RequestParam String loaiTK, Model model) {
-
-        model.addAttribute("accountshow", accountService.getAccountsByLoaiTK(loaiTK));
-        return "admin/account/show";
+    @PostMapping("/update")
+    public String updateAccount(@Valid @ModelAttribute("account") Account account,
+            @RequestParam String newPassword,
+            @RequestParam Boolean enabled,
+            @RequestParam(required = false) Integer roleId,
+            BindingResult result,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "admin/account/update";
+        }
+        Optional<Account> existingAccount = accountService.getAccountByUsername(account.getUsername());
+        if (!existingAccount.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tài khoản không tồn tại");
+            return "redirect:/admin";
+        }
+        try {
+            if (roleId == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn một vai trò.");
+                return "redirect:/admin/account/update/" + account.getUsername();
+            }
+            accountService.updateAccount(existingAccount.get(), newPassword, enabled, roleId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Cập nhật tài khoản " + account.getUsername() + " thành công");
+            // Redirect based on whether the account is for a student or staff
+            String redirectUrl = accountService.isStudentAccount(existingAccount.get()) ? "/admin/student"
+                    : "/admin/staff";
+            return "redirect:" + redirectUrl;
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/account/update/" + account.getUsername();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật tài khoản: " + e.getMessage());
+            return "redirect:/admin/account/update/" + account.getUsername();
+        }
     }
 
-    @GetMapping("/admin/account")
-    public String listAccount(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            Model model) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Account> accountPage = accountService.getAccountPage(pageable);
-        model.addAttribute("accountPage", accountPage);
-        model.addAttribute("accountList", accountPage.getContent());
-        return "admin/account/show";
+    @GetMapping("/delete/confirm/{username}")
+    public String showDeleteConfirm(@PathVariable String username, Model model) {
+        Optional<Account> account = accountService.getAccountByUsername(username);
+        if (account.isPresent()) {
+            model.addAttribute("username", username);
+            return "admin/account/delete";
+        }
+        return "redirect:/admin";
+    }
+
+    @GetMapping("/delete/{username}")
+    public String deleteAccount(@PathVariable String username, RedirectAttributes redirectAttributes) {
+        Optional<Account> account = accountService.getAccountByUsername(username);
+        if (account.isPresent()) {
+            accountService.deleteAccountByUsername(username);
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa tài khoản " + username + " thành công");
+            // Redirect based on whether the account is for a student or staff
+            String redirectUrl = accountService.isStudentAccount(account.get()) ? "/admin/student" : "/admin/staff";
+            return "redirect:" + redirectUrl;
+        }
+        redirectAttributes.addFlashAttribute("errorMessage", "Tài khoản không tồn tại");
+        return "redirect:/admin";
     }
 }

@@ -46,6 +46,17 @@ public class Student {
     @Size(max = 200, message = "Email không được vượt quá 200 ký tự")
     private String email;
 
+    @OneToOne(mappedBy = "maSV")
+    private Account account;
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
     @ManyToOne
     @JoinColumn(name = "MaLop", nullable = true)
     private Class lop;

@@ -59,6 +59,17 @@
                                         Chưa có avatar
                                     </c:if>
                                 </p>
+                                <p><strong>Tài khoản:</strong>
+                                    <c:choose>
+                                        <c:when test="${not empty student.account}">
+                                            Có tài khoản (<a href="/admin/account/update/${student.maSV}">Cập nhật tài khoản</a> | 
+                                            <a href="/admin/account/delete/confirm/${student.maSV}">Xóa tài khoản</a>)
+                                        </c:when>
+                                        <c:otherwise>
+                                            Chưa có tài khoản (<a href="/admin/account/create/${student.maSV}">Tạo tài khoản</a>)
+                                        </c:otherwise>
+                                    </c:choose>
+                                </p>
                                 <div class="d-flex justify-content-between">
                                     <a href="/admin/student" class="btn btn-primary">Quay lại</a>
                                     <div>

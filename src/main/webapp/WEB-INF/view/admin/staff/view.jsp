@@ -59,7 +59,7 @@
                                         <label class="field-label">SĐT:</label>
                                         <div class="field-value">${staff.sdt}</div>
                                     </div>
-                                <div class="mb-3">
+                                    <div class="mb-3">
                                         <label class="field-label">Email:</label>
                                         <div class="field-value">${staff.email}</div>
                                     </div>
@@ -67,7 +67,6 @@
                                         <label class="field-label">CCCD:</label>
                                         <div class="field-value">${staff.cccd}</div>
                                     </div>
-                                    <div>
                                     <div class="mb-3">
                                         <label class="field-label">Chức vụ:</label>
                                         <div class="field-value">${staff.chucVu}</div>
@@ -92,6 +91,20 @@
                                             <c:if test="${empty staff.avatar}">
                                                 Chưa có avatar
                                             </c:if>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="field-label">Tài khoản:</label>
+                                        <div class="field-value">
+                                            <c:choose>
+                                                <c:when test="${not empty staff.account}">
+                                                    Có tài khoản (<a href="/admin/account/update/${staff.maNV}">Cập nhật tài khoản</a> | 
+                                                    <a href="/admin/account/delete/confirm/${staff.maNV}">Xóa tài khoản</a>)
+                                                </c:when>
+                                                <c:otherwise>
+                                                    Chưa có tài khoản (<a href="/admin/account/create/${staff.maNV}">Tạo tài khoản</a>)
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                     <div class="mt-4">

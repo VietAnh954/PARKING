@@ -1,4 +1,3 @@
-```jsp
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
@@ -20,11 +19,15 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        img.avatar-current {
+        .avatar-current {
             max-width: 100px;
             margin-top: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+        }
+        .text-danger {
+            font-size: 0.875em;
+            color: #dc3545;
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -132,8 +135,8 @@
                                         <img id="avatarPreview" alt="Avatar Preview" />
                                         <form:errors path="avatar" cssClass="text-danger" />
                                     </div>
-                                    <button type="submit" class="btn btn-warning">Update</button>
-                                    <a href="/admin/staff" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-warning">Cập nhật</button>
+                                    <a href="/admin/staff" class="btn btn-secondary">Hủy</a>
                                 </form:form>
                             </div>
                         </div>

@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 import vn.bacon.parking.domain.Staff;
+import vn.bacon.parking.service.AccountService;
 import vn.bacon.parking.service.StaffService;
 import java.util.Optional;
 
@@ -21,9 +22,11 @@ import java.util.Optional;
 @RequestMapping("/admin/staff")
 public class StaffController {
     private final StaffService staffService;
+    private final AccountService accountService;
 
     @Autowired
-    public StaffController(StaffService staffService) {
+    public StaffController(StaffService staffService, AccountService accountService) {
+        this.accountService = accountService;
         this.staffService = staffService;
     }
 
@@ -206,6 +209,10 @@ public class StaffController {
     @GetMapping("/delete/{maNV}")
     public String deleteStaff(@PathVariable String maNV, RedirectAttributes redirectAttributes) {
         if (staffService.getStaffById(maNV).isPresent()) {
+            // Delete associated account if it exists
+            if (accountService.existsByUsername(maNV)) {
+                accountService.deleteAccountByUsername(maNV);
+            }
             staffService.deleteStaffById(maNV);
             redirectAttributes.addFlashAttribute("successMessage", "Xóa nhân viên " + maNV + " thành công");
         }

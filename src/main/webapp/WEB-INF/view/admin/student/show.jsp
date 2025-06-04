@@ -1,5 +1,4 @@
-```jsp
-<%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <!DOCTYPE html>
@@ -24,10 +23,8 @@
 </head>
 <body class="sb-nav-fixed">
     <jsp:include page="../layout/header.jsp"/>
-
     <div id="layoutSidenav">
         <jsp:include page="../layout/sidebar.jsp"/>
-
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
@@ -36,19 +33,16 @@
                         <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
                         <li class="breadcrumb-item active">Students</li>
                     </ol>
-
                     <div class="container mt-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3>Danh sách sinh viên</h3>
                             <a href="/admin/student/create" class="btn btn-primary">+ Thêm sinh viên</a>
                         </div>
-
                         <c:if test="${not empty successMessage}">
                             <div class="alert alert-success" role="alert">
                                 ${successMessage}
                             </div>
                         </c:if>
-
                         <div class="mb-3">
                             <form action="/admin/student" method="get" class="d-flex align-items-center">
                                 <label for="maLop" class="form-label me-2">Lọc theo lớp:</label>
@@ -61,7 +55,6 @@
                                 <button type="submit" class="btn btn-primary">Lọc</button>
                             </form>
                         </div>
-
                         <c:choose>
                             <c:when test="${studentPage.totalElements == 0}">
                                 <div class="alert alert-info">Không có sinh viên nào.</div>
@@ -76,7 +69,7 @@
                                             <th>EMAIL</th>
                                             <th>AVATAR</th>
                                             <th>MÃ LỚP</th>
-                                            <!-- <th>TÊN LỚP</th> -->
+                                            <th>TÀI KHOẢN</th>
                                             <th style="width: 200px;">Action</th>
                                         </tr>
                                     </thead>
@@ -103,14 +96,16 @@
                                                         Chưa có lớp
                                                     </c:if>
                                                 </td>
-                                                <!-- <td>
-                                                    <c:if test="${not empty student.lop}">
-                                                        ${student.lop.tenLop}
-                                                    </c:if>
-                                                    <c:if test="${empty student.lop}">
-                                                        Chưa có lớp
-                                                    </c:if>
-                                                </td> -->
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty student.account}">
+                                                            Có (<a href="/admin/account/update/${student.maSV}">Cập nhật</a>)
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            Chưa có (<a href="/admin/account/create/${student.maSV}">Tạo</a>)
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
                                                 <td>
                                                     <a href="/admin/student/${student.maSV}" class="btn btn-success btn-sm">Xem</a>
                                                     <a href="/admin/student/update/${student.maSV}" class="btn btn-warning btn-sm mx-1">Cập nhật</a>
@@ -120,7 +115,6 @@
                                         </c:forEach>
                                     </tbody>
                                 </table>
-
                                 <nav>
                                     <ul class="pagination justify-content-center">
                                         <c:if test="${!studentPage.first}">
@@ -147,7 +141,6 @@
                 <jsp:include page="../layout/footer.jsp" />
             </div>
         </div>
-
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="/js/scripts.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
@@ -158,4 +151,3 @@
         </script>
 </body>
 </html>
-```
