@@ -81,7 +81,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Avatar hiện tại:</label>
                                         <c:if test="${not empty student.avatar}">
-                                            <img src="/images/avatars/${student.avatar}" alt="Avatar"
+                                            <img src="/images/students/${student.avatar}" alt="Avatar"
                                                 class="avatar-current" />
                                         </c:if>
                                         <c:if test="${empty student.avatar}">

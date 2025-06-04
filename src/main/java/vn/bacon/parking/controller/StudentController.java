@@ -64,7 +64,7 @@ public class StudentController {
 
         // Handle avatar upload
         if (!avatarFile.isEmpty()) {
-            String avatarFileName = studentService.handleAvatarUpload(avatarFile, "avatars");
+            String avatarFileName = studentService.handleAvatarUpload(avatarFile, "students");
             if (avatarFileName.isEmpty()) {
                 result.rejectValue("avatar", "error.student", "Không thể upload avatar!");
                 return "admin/student/create";
@@ -160,7 +160,7 @@ public class StudentController {
 
         // Handle avatar upload chỉ khi người dùng chọn file mới
         if (!avatarFile.isEmpty()) {
-            String avatarFileName = studentService.handleAvatarUpload(avatarFile, "avatars");
+            String avatarFileName = studentService.handleAvatarUpload(avatarFile, "students");
             if (avatarFileName.isEmpty()) {
                 result.rejectValue("avatar", "error.student", "Không thể upload avatar!");
                 return "admin/student/update";
