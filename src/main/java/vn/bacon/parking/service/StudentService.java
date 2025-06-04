@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import vn.bacon.parking.domain.Student;
+import vn.bacon.parking.domain.Class;
+import vn.bacon.parking.repository.ClassRepository;
 import vn.bacon.parking.repository.StudentRepository;
 
 @Service
@@ -18,10 +20,13 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final UploadService uploadService;
+    private final ClassRepository classRepository;
 
-    public StudentService(StudentRepository studentRepository, UploadService uploadService) {
+    public StudentService(StudentRepository studentRepository, UploadService uploadService,
+            ClassRepository classRepository) {
         this.uploadService = uploadService;
         this.studentRepository = studentRepository;
+        this.classRepository = classRepository;
     }
 
     public List<Student> getAllStudents() {
@@ -40,11 +45,17 @@ public class StudentService {
         this.studentRepository.deleteById(maSV);
     }
 
-    public Page<Student> getStudentPage(Pageable pageable) {
-        // Sắp xếp theo maSV giảm dần
+    public Page<Student> getStudentPage(Pageable pageable, String maLop) {
         Pageable sortedByMaSVDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                 Sort.by("maSV").descending());
+        if (maLop != null && !maLop.isEmpty()) {
+            return studentRepository.findByLopMaLop(maLop, sortedByMaSVDesc);
+        }
         return studentRepository.findAll(sortedByMaSVDesc);
+    }
+
+    public List<Class> getAllClasses() {
+        return classRepository.findAll(Sort.by("maLop").descending());
     }
 
     // Check if phone number exists
@@ -70,4 +81,5 @@ public class StudentService {
     public String handleAvatarUpload(MultipartFile file, String targetFolder) {
         return uploadService.handleSaveUploadFile(file, targetFolder);
     }
+
 }

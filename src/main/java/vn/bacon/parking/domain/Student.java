@@ -46,6 +46,18 @@ public class Student {
     @Size(max = 200, message = "Email không được vượt quá 200 ký tự")
     private String email;
 
+    @ManyToOne
+    @JoinColumn(name = "MaLop", nullable = true)
+    private Class lop;
+
+    public Class getLop() {
+        return lop;
+    }
+
+    public void setLop(Class lop) {
+        this.lop = lop;
+    }
+
     @Column(name = "Avatar", length = 255)
     private String avatar;
 

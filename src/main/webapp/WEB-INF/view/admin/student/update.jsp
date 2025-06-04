@@ -1,9 +1,9 @@
+```jsp
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,7 +23,6 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-
         img.avatar-current {
             max-width: 100px;
             margin-top: 10px;
@@ -41,23 +40,18 @@
                 const file = e.target.files[0];
                 if (file && file.type.startsWith('image/')) {
                     const imgURL = URL.createObjectURL(file);
-                    avatarPreview.attr("src", imgURL).css({
-                        "display": "block"
-                    });
+                    avatarPreview.attr("src", imgURL).css({"display": "block"});
                     avatarPreview.on('load', () => {
                         URL.revokeObjectURL(imgURL);
                     });
                 } else {
-                    avatarPreview.css({
-                        "display": "none"
-                    }).attr("src", "");
+                    avatarPreview.css({"display": "none"}).attr("src", "");
                     alert("Vui lòng chọn một file hình ảnh hợp lệ!");
                 }
             });
         });
     </script>
 </head>
-
 <body class="sb-nav-fixed">
     <jsp:include page="../layout/header.jsp" />
     <div id="layoutSidenav">
@@ -76,13 +70,11 @@
                             <div class="col-md-6 col-12 mx-auto">
                                 <h3>Cập nhật sinh viên</h3>
                                 <hr />
-                                <form:form method="post" action="/admin/student/update" modelAttribute="student"
-                                    enctype="multipart/form-data">
+                                <form:form method="post" action="/admin/student/update" modelAttribute="student" enctype="multipart/form-data">
                                     <div class="mb-3">
                                         <label class="form-label">Avatar hiện tại:</label>
                                         <c:if test="${not empty student.avatar}">
-                                            <img src="/images/students/${student.avatar}" alt="Avatar"
-                                                class="avatar-current" />
+                                            <img src="/images/students/${student.avatar}" alt="Avatar" class="avatar-current" />
                                         </c:if>
                                         <c:if test="${empty student.avatar}">
                                             <p>Chưa có avatar</p>
@@ -133,9 +125,27 @@
                                         <form:errors path="email" cssClass="text-danger" />
                                     </div>
                                     <div class="mb-3">
+                                        <label class="form-label">Lớp hiện tại:</label>
+                                        <p>
+                                            <c:if test="${not empty student.lop}">
+                                                ${student.lop.tenLop}
+                                            </c:if>
+                                            <c:if test="${empty student.lop}">
+                                                Chưa có lớp
+                                            </c:if>
+                                        </p>
+                                        <label class="form-label">Lớp mới:</label>
+                                        <form:select path="lop.maLop" class="form-control">
+                                            <form:option value="" label="-- Chọn lớp --" />
+                                            <c:forEach var="classObj" items="${classes}">
+                                                <form:option value="${classObj.maLop}" label="${classObj.tenLop}" />
+                                            </c:forEach>
+                                        </form:select>
+                                        <form:errors path="lop.maLop" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3">
                                         <label class="form-label">Upload Avatar mới:</label>
-                                        <input type="file" class="form-control" id="avatarFile" name="avatarFile"
-                                            accept="image/*" />
+                                        <input type="file" class="form-control" id="avatarFile" name="avatarFile" accept="image/*" />
                                         <img id="avatarPreview" alt="Avatar Preview" />
                                         <form:errors path="avatar" cssClass="text-danger" />
                                     </div>
@@ -150,11 +160,8 @@
             <jsp:include page="../layout/footer.jsp" />
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="/js/scripts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 </body>
-
 </html>

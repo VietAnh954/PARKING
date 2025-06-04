@@ -100,6 +100,16 @@
                                         <form:errors path="email" cssClass="text-danger" />
                                     </div>
                                     <div class="mb-3">
+                                        <label class="form-label">Lớp:</label>
+                                        <form:select path="lop.maLop" class="form-control">
+                                            <form:option value="" label="-- Chọn lớp --" />
+                                            <c:forEach var="classObj" items="${classes}">
+                                                <form:option value="${classObj.maLop}" label="${classObj.tenLop}" />
+                                            </c:forEach>
+                                        </form:select>
+                                        <form:errors path="lop.maLop" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3">
                                         <label class="form-label">Avatar:</label>
                                         <input type="file" class="form-control" id="avatarFile" name="avatarFile" accept="image/*" />
                                         <img id="avatarPreview" alt="Avatar Preview" />

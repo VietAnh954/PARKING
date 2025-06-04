@@ -27,16 +27,20 @@ public class StudentController {
     @GetMapping("/student")
     public String listStudents(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String maLop,
             Model model) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Student> studentPage = studentService.getStudentPage(pageable);
+        Page<Student> studentPage = studentService.getStudentPage(pageable, maLop);
         model.addAttribute("studentPage", studentPage);
+        model.addAttribute("classes", studentService.getAllClasses());
+        model.addAttribute("selectedMaLop", maLop);
         return "admin/student/show";
     }
 
     @GetMapping("/student/create")
     public String showCreateForm(Model model) {
         model.addAttribute("student", new Student());
+        model.addAttribute("classes", studentService.getAllClasses());
         return "admin/student/create";
     }
 
@@ -45,41 +49,39 @@ public class StudentController {
             BindingResult result,
             @RequestParam("avatarFile") MultipartFile avatarFile,
             Model model, RedirectAttributes redirectAttributes) {
-        // Check for validation errors
         if (result.hasErrors()) {
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/create";
         }
 
-        // Check for duplicate SDT
         if (studentService.existsBySdt(student.getSdt())) {
             result.rejectValue("sdt", "error.student", "Số điện thoại đã tồn tại!");
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/create";
         }
 
-        // Check for duplicate Email
         if (studentService.existsByEmail(student.getEmail())) {
             result.rejectValue("email", "error.student", "Email đã tồn tại!");
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/create";
         }
 
-        // Handle avatar upload
         if (!avatarFile.isEmpty()) {
             String avatarFileName = studentService.handleAvatarUpload(avatarFile, "students");
             if (avatarFileName.isEmpty()) {
                 result.rejectValue("avatar", "error.student", "Không thể upload avatar!");
+                model.addAttribute("classes", studentService.getAllClasses());
                 return "admin/student/create";
             }
             student.setAvatar(avatarFileName);
         }
 
         try {
-            // Save student
             studentService.saveStudent(student);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Thêm sinh viên " + student.getMaSV() + " thành công");
             return "redirect:/admin/student";
         } catch (DataIntegrityViolationException e) {
-            // Fallback for unexpected constraint violations
             String message = e.getMostSpecificCause().getMessage();
             if (message.contains("SDT")) {
                 result.rejectValue("sdt", "error.student", "Số điện thoại đã tồn tại!");
@@ -88,6 +90,7 @@ public class StudentController {
             } else {
                 result.rejectValue("maSV", "error.student", "Lỗi cơ sở dữ liệu: " + message);
             }
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/create";
         }
     }
@@ -109,6 +112,7 @@ public class StudentController {
             Student s = student.get();
             System.out.println("Loading student with maSV: " + s.getMaSV() + ", ngaySinh: " + s.getNgaySinh());
             model.addAttribute("student", s);
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/update";
         }
         return "redirect:/admin/student";
@@ -119,12 +123,11 @@ public class StudentController {
             BindingResult result,
             @RequestParam("avatarFile") MultipartFile avatarFile,
             Model model, RedirectAttributes redirectAttributes) {
-        // Check for validation errors
         if (result.hasErrors()) {
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/update";
         }
 
-        // Lấy thông tin sinh viên hiện tại từ database
         Optional<Student> existingStudentOpt = studentService.getStudentById(updatedStudent.getMaSV());
         if (!existingStudentOpt.isPresent()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Sinh viên không tồn tại!");
@@ -132,50 +135,47 @@ public class StudentController {
         }
         Student existingStudent = existingStudentOpt.get();
 
-        // Check for duplicate SDT (excluding current student)
         if (updatedStudent.getSdt() != null && !updatedStudent.getSdt().equals(existingStudent.getSdt()) &&
                 studentService.existsBySdtAndNotMaSV(updatedStudent.getSdt(), updatedStudent.getMaSV())) {
             result.rejectValue("sdt", "error.student", "Số điện thoại đã tồn tại!");
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/update";
         }
 
-        // Check for duplicate Email (excluding current student)
         if (updatedStudent.getEmail() != null && !updatedStudent.getEmail().equals(existingStudent.getEmail()) &&
                 studentService.existsByEmailAndNotMaSV(updatedStudent.getEmail(), updatedStudent.getMaSV())) {
             result.rejectValue("email", "error.student", "Email đã tồn tại!");
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/update";
         }
 
-        // Cập nhật các trường bắt buộc
         existingStudent.setHoTen(updatedStudent.getHoTen());
         existingStudent.setDiaChi(updatedStudent.getDiaChi());
         existingStudent.setSdt(updatedStudent.getSdt());
         existingStudent.setEmail(updatedStudent.getEmail());
         existingStudent.setQueQuan(updatedStudent.getQueQuan());
+        existingStudent.setLop(updatedStudent.getLop());
 
-        // Cập nhật ngày sinh chỉ khi người dùng nhập giá trị mới
         if (updatedStudent.getNgaySinh() != null) {
             existingStudent.setNgaySinh(updatedStudent.getNgaySinh());
         }
 
-        // Handle avatar upload chỉ khi người dùng chọn file mới
         if (!avatarFile.isEmpty()) {
             String avatarFileName = studentService.handleAvatarUpload(avatarFile, "students");
             if (avatarFileName.isEmpty()) {
                 result.rejectValue("avatar", "error.student", "Không thể upload avatar!");
+                model.addAttribute("classes", studentService.getAllClasses());
                 return "admin/student/update";
             }
             existingStudent.setAvatar(avatarFileName);
         }
 
         try {
-            // Save updated student
             studentService.saveStudent(existingStudent);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Cập nhật sinh viên " + existingStudent.getMaSV() + " thành công");
             return "redirect:/admin/student";
         } catch (DataIntegrityViolationException e) {
-            // Fallback for unexpected constraint violations
             String message = e.getMostSpecificCause().getMessage();
             if (message.contains("SDT")) {
                 result.rejectValue("sdt", "error.student", "Số điện thoại đã tồn tại!");
@@ -184,6 +184,7 @@ public class StudentController {
             } else {
                 result.rejectValue("maSV", "error.student", "Lỗi cơ sở dữ liệu: " + message);
             }
+            model.addAttribute("classes", studentService.getAllClasses());
             return "admin/student/update";
         }
     }
