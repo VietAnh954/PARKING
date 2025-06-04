@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import vn.bacon.parking.domain.Student;
 import vn.bacon.parking.repository.StudentRepository;
@@ -14,8 +17,10 @@ import vn.bacon.parking.repository.StudentRepository;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final UploadService uploadService;
 
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, UploadService uploadService) {
+        this.uploadService = uploadService;
         this.studentRepository = studentRepository;
     }
 
@@ -36,7 +41,10 @@ public class StudentService {
     }
 
     public Page<Student> getStudentPage(Pageable pageable) {
-        return studentRepository.findAll(pageable);
+        // Sắp xếp theo maSV giảm dần
+        Pageable sortedByMaSVDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by("maSV").descending());
+        return studentRepository.findAll(sortedByMaSVDesc);
     }
 
     // Check if phone number exists
@@ -57,5 +65,9 @@ public class StudentService {
     // Check if email exists for another student (used in update)
     public boolean existsByEmailAndNotMaSV(String email, String maSV) {
         return email != null && !email.isEmpty() && studentRepository.existsByEmailAndMaSVNot(email, maSV);
+    }
+
+    public String handleAvatarUpload(MultipartFile file, String targetFolder) {
+        return uploadService.handleSaveUploadFile(file, targetFolder);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
@@ -41,7 +42,9 @@ public class StudentController {
 
     @PostMapping("/student/create")
     public String createStudent(@Valid @ModelAttribute("student") Student student,
-            BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+            BindingResult result,
+            @RequestParam("avatarFile") MultipartFile avatarFile,
+            Model model, RedirectAttributes redirectAttributes) {
         // Check for validation errors
         if (result.hasErrors()) {
             return "admin/student/create";
@@ -57,6 +60,16 @@ public class StudentController {
         if (studentService.existsByEmail(student.getEmail())) {
             result.rejectValue("email", "error.student", "Email đã tồn tại!");
             return "admin/student/create";
+        }
+
+        // Handle avatar upload
+        if (!avatarFile.isEmpty()) {
+            String avatarFileName = studentService.handleAvatarUpload(avatarFile, "avatars");
+            if (avatarFileName.isEmpty()) {
+                result.rejectValue("avatar", "error.student", "Không thể upload avatar!");
+                return "admin/student/create";
+            }
+            student.setAvatar(avatarFileName);
         }
 
         try {
@@ -102,30 +115,64 @@ public class StudentController {
     }
 
     @PostMapping("/student/update")
-    public String updateStudent(@Valid @ModelAttribute("student") Student student,
-            BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+    public String updateStudent(@Valid @ModelAttribute("student") Student updatedStudent,
+            BindingResult result,
+            @RequestParam("avatarFile") MultipartFile avatarFile,
+            Model model, RedirectAttributes redirectAttributes) {
         // Check for validation errors
         if (result.hasErrors()) {
             return "admin/student/update";
         }
 
+        // Lấy thông tin sinh viên hiện tại từ database
+        Optional<Student> existingStudentOpt = studentService.getStudentById(updatedStudent.getMaSV());
+        if (!existingStudentOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Sinh viên không tồn tại!");
+            return "redirect:/admin/student";
+        }
+        Student existingStudent = existingStudentOpt.get();
+
         // Check for duplicate SDT (excluding current student)
-        if (studentService.existsBySdtAndNotMaSV(student.getSdt(), student.getMaSV())) {
+        if (updatedStudent.getSdt() != null && !updatedStudent.getSdt().equals(existingStudent.getSdt()) &&
+                studentService.existsBySdtAndNotMaSV(updatedStudent.getSdt(), updatedStudent.getMaSV())) {
             result.rejectValue("sdt", "error.student", "Số điện thoại đã tồn tại!");
             return "admin/student/update";
         }
 
         // Check for duplicate Email (excluding current student)
-        if (studentService.existsByEmailAndNotMaSV(student.getEmail(), student.getMaSV())) {
+        if (updatedStudent.getEmail() != null && !updatedStudent.getEmail().equals(existingStudent.getEmail()) &&
+                studentService.existsByEmailAndNotMaSV(updatedStudent.getEmail(), updatedStudent.getMaSV())) {
             result.rejectValue("email", "error.student", "Email đã tồn tại!");
             return "admin/student/update";
         }
 
+        // Cập nhật các trường bắt buộc
+        existingStudent.setHoTen(updatedStudent.getHoTen());
+        existingStudent.setDiaChi(updatedStudent.getDiaChi());
+        existingStudent.setSdt(updatedStudent.getSdt());
+        existingStudent.setEmail(updatedStudent.getEmail());
+        existingStudent.setQueQuan(updatedStudent.getQueQuan());
+
+        // Cập nhật ngày sinh chỉ khi người dùng nhập giá trị mới
+        if (updatedStudent.getNgaySinh() != null) {
+            existingStudent.setNgaySinh(updatedStudent.getNgaySinh());
+        }
+
+        // Handle avatar upload chỉ khi người dùng chọn file mới
+        if (!avatarFile.isEmpty()) {
+            String avatarFileName = studentService.handleAvatarUpload(avatarFile, "avatars");
+            if (avatarFileName.isEmpty()) {
+                result.rejectValue("avatar", "error.student", "Không thể upload avatar!");
+                return "admin/student/update";
+            }
+            existingStudent.setAvatar(avatarFileName);
+        }
+
         try {
             // Save updated student
-            studentService.saveStudent(student);
+            studentService.saveStudent(existingStudent);
             redirectAttributes.addFlashAttribute("successMessage",
-                    "Cập nhật sinh viên " + student.getMaSV() + " thành công");
+                    "Cập nhật sinh viên " + existingStudent.getMaSV() + " thành công");
             return "redirect:/admin/student";
         } catch (DataIntegrityViolationException e) {
             // Fallback for unexpected constraint violations

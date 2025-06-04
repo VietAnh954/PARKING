@@ -46,6 +46,17 @@ public class Student {
     @Size(max = 200, message = "Email không được vượt quá 200 ký tự")
     private String email;
 
+    @Column(name = "Avatar", length = 255)
+    private String avatar;
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     public String getMaSV() {
         return maSV;
     }
