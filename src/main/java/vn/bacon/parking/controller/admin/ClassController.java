@@ -1,4 +1,4 @@
-package vn.bacon.parking.controller;
+package vn.bacon.parking.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -1,4 +1,4 @@
-package vn.bacon.parking.controller;
+package vn.bacon.parking.controller.admin;
 
 import java.util.List;
 import java.util.Optional;
