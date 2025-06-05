@@ -56,7 +56,7 @@ public class Staff {
     @Column(name = "Avatar", length = 255)
     private String avatar;
 
-    @OneToOne(mappedBy = "maNV")
+    @OneToOne(mappedBy = "maNV", fetch = FetchType.LAZY)
     private Account account;
 
     public Account getAccount() {

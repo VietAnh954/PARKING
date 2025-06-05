@@ -46,7 +46,7 @@ public class Student {
     @Size(max = 200, message = "Email không được vượt quá 200 ký tự")
     private String email;
 
-    @OneToOne(mappedBy = "maSV")
+    @OneToOne(mappedBy = "maSV", fetch = FetchType.LAZY)
     private Account account;
 
     public Account getAccount() {

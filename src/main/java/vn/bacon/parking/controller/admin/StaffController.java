@@ -24,7 +24,6 @@ public class StaffController {
     private final StaffService staffService;
     private final AccountService accountService;
 
-    @Autowired
     public StaffController(StaffService staffService, AccountService accountService) {
         this.accountService = accountService;
         this.staffService = staffService;
@@ -201,6 +200,8 @@ public class StaffController {
         Optional<Staff> staff = staffService.getStaffById(maNV);
         if (staff.isPresent()) {
             model.addAttribute("maNV", maNV);
+            boolean hasAccount = accountService.existsByUsername(maNV);
+            model.addAttribute("hasAccount", hasAccount);
             return "admin/staff/delete";
         }
         return "redirect:/admin/staff";
@@ -208,13 +209,20 @@ public class StaffController {
 
     @GetMapping("/delete/{maNV}")
     public String deleteStaff(@PathVariable String maNV, RedirectAttributes redirectAttributes) {
-        if (staffService.getStaffById(maNV).isPresent()) {
-            // Delete associated account if it exists
-            if (accountService.existsByUsername(maNV)) {
-                accountService.deleteAccountByUsername(maNV);
+        try {
+            Optional<Staff> staffOpt = staffService.getStaffById(maNV);
+            if (staffOpt.isPresent()) {
+                staffService.deleteStaffById(maNV);
+                redirectAttributes.addFlashAttribute("successMessage", "Xóa nhân viên " + maNV + " thành công");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Nhân viên với mã " + maNV + " không tồn tại!");
             }
-            staffService.deleteStaffById(maNV);
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa nhân viên " + maNV + " thành công");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/staff/delete/confirm/" + maNV;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa nhân viên: " + e.getMessage());
+            return "redirect:/admin/staff/delete/confirm/" + maNV;
         }
         return "redirect:/admin/staff";
     }

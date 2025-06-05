@@ -3,6 +3,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,6 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
+
 <body class="sb-nav-fixed">
     <jsp:include page="../layout/header.jsp" />
     <div id="layoutSidenav">
@@ -27,9 +29,11 @@
                     <div class="container mt-4">
                         <div class="row">
                             <div class="col-md-6 col-12 mx-auto">
-                                <h3>Tạo tài khoản cho ${userType == 'student' ? 'sinh viên' : 'nhân viên'} ${userId}</h3>
+                                <h3>Tạo tài khoản cho ${userType == 'student' ? 'sinh viên' : 'nhân viên'} ${userId}
+                                </h3>
                                 <hr />
                                 <form method="post" action="/admin/account/create" id="createAccountForm">
+                                    <input type="hidden" name="_csrf" value="${_csrf.token}" />
                                     <input type="hidden" name="userType" value="${userType}" />
                                     <input type="hidden" name="userId" value="${userId}" />
                                     <div class="mb-3">
@@ -43,9 +47,11 @@
                                     <div class="mb-3">
                                         <label class="form-label">Vai trò:</label>
                                         <select name="roleId" class="form-select" required>
-                                            <option value="" disabled ${selectedRole == null ? 'selected' : ''}>Chọn vai trò</option>
+                                            <option value="" disabled ${selectedRole==null ? 'selected' : '' }>Chọn vai
+                                                trò</option>
                                             <c:forEach var="role" items="${roles}">
-                                                <option value="${role.roleID}" ${role.roleID == selectedRole ? 'selected' : ''}>
+                                                <option value="${role.roleID}" ${role.roleID==selectedRole ? 'selected'
+                                                    : '' }>
                                                     ${role.roleName}
                                                 </option>
                                             </c:forEach>
@@ -55,7 +61,9 @@
                                         </c:if>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
-                                    <c:url value="${userType == 'student' ? '/admin/student/' : '/admin/staff/'}${userId}" var="cancelUrl" />
+                                    <c:url
+                                        value="${userType == 'student' ? '/admin/student/' : '/admin/staff/'}${userId}"
+                                        var="cancelUrl" />
                                     <a href="${cancelUrl}" class="btn btn-secondary">Hủy</a>
                                 </form>
                             </div>
@@ -66,12 +74,14 @@
             <jsp:include page="../layout/footer.jsp" />
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
     <script src="/js/scripts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+        crossorigin="anonymous"></script>
     <script>
         // Client-side validation to ensure roleId is selected
-        document.getElementById('createAccountForm').addEventListener('submit', function(event) {
+        document.getElementById('createAccountForm').addEventListener('submit', function (event) {
             const roleSelect = document.querySelector('select[name="roleId"]');
             if (!roleSelect.value) {
                 event.preventDefault();
@@ -80,4 +90,5 @@
         });
     </script>
 </body>
+
 </html>

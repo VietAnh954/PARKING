@@ -31,8 +31,14 @@
                                 <hr />
                                 <div class="alert alert-danger" role="alert">
                                     Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác.
+                                    <c:if test="${hasAccount}">
+                                        <br><strong>Cảnh báo:</strong> Nhân viên này có tài khoản liên quan. Vui lòng xóa tài khoản trước.
+                                        <br><a href="/admin/account/delete/confirm/${maNV}" class="btn btn-warning mt-2">Xóa tài khoản</a>
+                                    </c:if>
                                 </div>
-                                <a href="/admin/staff/delete/${maNV}" class="btn btn-danger">Confirm</a>
+                                <c:if test="${!hasAccount}">
+                                    <a href="/admin/staff/delete/${maNV}" class="btn btn-danger">Confirm</a>
+                                </c:if>
                                 <a href="/admin/staff" class="btn btn-secondary">Cancel</a>
                             </div>
                         </div>
