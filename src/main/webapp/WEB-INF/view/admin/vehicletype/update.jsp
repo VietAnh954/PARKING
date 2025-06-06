@@ -7,39 +7,54 @@
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Update VehicleType</title>
+                <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+                <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+                <link href="/css/styles.css" rel="stylesheet" />
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-                <!-- Latest compiled JavaScript -->
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+                <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
             </head>
 
-            <body>
-                <div class=" container mt-5">
-                    <div class="row">
-                        <div class="col-md-6 col-12 mx-auto">
-                            <h3>Update VehicleType</h3>
-                            <hr />
-                            <form:form method="post" action="/admin/vehicletype/update" modelAttribute="newVehicleType">
-                                <div class="mb-3 ">
-                                    <label class="form-label">MÃ LOẠI XE:</label>
-                                    <form:input type="text" class="form-control" path="maLoaiXe" disabled="true" />
+            <body class="sb-nav-fixed">
+                <jsp:include page="../layout/header.jsp" />
+                <div id="layoutSidenav">
+                    <jsp:include page="../layout/sidebar.jsp" />
+                    <div id="layoutSidenav_content">
+                        <main>
+                            <div class="container-fluid px-4">
+                                <div class=" container mt-5">
+                                    <div class="row">
+                                        <div class="col-md-6 col-12 mx-auto">
+                                            <h3>Cập nhật loại xe </h3>
+                                            <hr />
+                                            <form:form method="post" action="/admin/vehicleType/update"
+                                                modelAttribute="newVehicleType">
+                                                <div class="mb-3 ">
+                                                    <label class="form-label">MÃ LOẠI XE:</label>
+                                                    <form:input type="text" class="form-control" path="maLoaiXe"
+                                                        disabled="true" />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">TÊN LOẠI XE:</label>
+                                                    <form:input type="text" class="form-control" path="tenLoaiXe" />
+                                                </div>
+
+
+                                                <button type="submit" class="btn btn-warning">Cập nhật</button>
+                                            </form:form>
+                                        </div>
+
+                                    </div>
+
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">TÊN LOẠI XE:</label>
-                                    <form:input type="text" class="form-control" path="tenLoaiXe" />
-                                </div>
-
-
-                                <button type="submit" class="btn btn-warning">Update</button>
-                            </form:form>
-                        </div>
-
+                            </div>
+                        </main>
+                        <jsp:include page="../layout/footer.jsp" />
                     </div>
-
                 </div>
+
+                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
             </body>
 
             </html>
