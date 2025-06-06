@@ -75,7 +75,7 @@
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-end mb-4">
                                 <a href="/student/vehicle/create" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>Đăng ký xe mới
+                                    <i class="fas fa-plus me-2"></i>Đăng ký xe 
                 </a>
                             </div>
                             
