@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 @Controller
 public class HomePageController {
 
+
     @GetMapping("/login")
     public String getLoginPage(Model model) {
 

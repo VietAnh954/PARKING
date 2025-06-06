@@ -14,6 +14,12 @@ public class Vehicle {
     @Column(name = "BienSoXe", length = 10, columnDefinition = "nchar(10)")
     private String bienSoXe;
 
+    @Column(name = "MaChuXe", nullable = false, columnDefinition = "nchar(20)")
+    private String maChuXe;
+
+    @Column(name = "TenXe", length = 100)
+    private String tenXe;
+
     // nhiều xe có thể thuộc về một loại xe
     @ManyToOne
     @JoinColumn(name = "MaLoaiXe", nullable = false)
@@ -35,6 +41,22 @@ public class Vehicle {
 
     public void setBienSoXe(String bienSoXe) {
         this.bienSoXe = bienSoXe;
+    }
+
+    public String getMaChuXe() {
+        return maChuXe;
+    }
+
+    public void setMaChuXe(String maChuXe) {
+        this.maChuXe = maChuXe;
+    }
+
+    public String getTenXe() {
+        return tenXe;
+    }
+
+    public void setTenXe(String tenXe) {
+        this.tenXe = tenXe;
     }
 
     public VehicleType getMaLoaiXe() {
