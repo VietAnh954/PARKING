@@ -28,7 +28,6 @@ public class AccountController {
     private final StaffService staffService;
     private final RoleRepository roleRepository;
 
-    @Autowired
     public AccountController(AccountService accountService, StudentService studentService, StaffService staffService,
             RoleRepository roleRepository) {
         this.accountService = accountService;

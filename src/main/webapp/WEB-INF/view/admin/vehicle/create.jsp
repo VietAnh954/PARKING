@@ -7,51 +7,66 @@
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Create new vehicle</title>
+                <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+                <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+                <link href="/css/styles.css" rel="stylesheet" />
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-                <!-- Latest compiled JavaScript -->
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+                <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
             </head>
 
-            <body>
-                <div class="container mt-5">
-                    <div class="row">
-                        <div class="col-md-6 col-12 mx-auto">
-                            <h3>Create new vehicle</h3>
-                            <hr />
+            <body class="sb-nav-fixed">
+                <jsp:include page="../layout/header.jsp" />
+                <div id="layoutSidenav">
+                    <jsp:include page="../layout/sidebar.jsp" />
+                    <div id="layoutSidenav_content">
+                        <main>
+                            <div class="container-fluid px-4">
 
-                            <form:form method="post" action="/admin/vehicle/create" modelAttribute="newVehicle">
-                                <div class="mb-3 ">
-                                    <label class="form-label">BIỂN SỐ XE:</label>
-                                    <form:input type="text" class="form-control" path="bienSoXe" />
-                                </div>
-                                <div class="mb-3 ">
-                                    <label class="form-label">MÃ LOẠI XE:</label>
-                                    <!-- <form:input type="text" class="form-control" path="maLoaiXe" /> -->
-                                    <form:select class="form-select" path="maLoaiXe">
-                                        <form:option value="LX001" label="LX001 - Xe máy" />
-                                        <form:option value="LX002" label="LX002 - Ô tô" />
+                                <h2 class="mt-4">Thêm xe mới</h2>
+                                <div class="container mt-5">
+                                    <div class="row">
+                                        <div class="col-md-6 col-12 mx-auto">
+                                            <h3>Create new vehicle</h3>
+                                            <hr />
 
-                                    </form:select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">MÃ NV:</label>
-                                    <form:input type="text" class="form-control" path="maNV" />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Mã SV:</label>
-                                    <form:input type="text" class="form-control" path="maSV" />
-                                </div>
-                                <button type="submit" class="btn btn-primary">Create</button>
-                            </form:form>
-                        </div>
+                                            <form:form method="post" action="/admin/vehicle/create"
+                                                modelAttribute="newVehicle">
+                                                <div class="mb-3 ">
+                                                    <label class="form-label">BIỂN SỐ XE:</label>
+                                                    <form:input type="text" class="form-control" path="bienSoXe" />
+                                                </div>
+                                                <div class="mb-3 ">
+                                                    <label class="form-label">MÃ LOẠI XE:</label>
+                                                    <!-- <form:input type="text" class="form-control" path="maLoaiXe" /> -->
+                                                    <form:select class="form-select" path="maLoaiXe">
+                                                        <form:option value="LX001" label="LX001 - Xe máy" />
+                                                        <form:option value="LX002" label="LX002 - Ô tô" />
 
+                                                    </form:select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">MÃ NV:</label>
+                                                    <form:input type="text" class="form-control" path="maNV" />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Mã SV:</label>
+                                                    <form:input type="text" class="form-control" path="maSV" />
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Create</button>
+                                            </form:form>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </main>
+                        <jsp:include page="../layout/footer.jsp" />
                     </div>
-
                 </div>
+                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
             </body>
 
             </html>
