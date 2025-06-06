@@ -9,6 +9,9 @@ import vn.bacon.parking.domain.Student;
 import vn.bacon.parking.domain.Staff;
 import vn.bacon.parking.repository.AccountRepository;
 import vn.bacon.parking.repository.RoleRepository;
+import vn.bacon.parking.repository.StaffRepository;
+import vn.bacon.parking.repository.StudentRepository;
+
 import java.util.Optional;
 
 @Service
@@ -17,10 +20,14 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final StudentRepository studentRepository;
+    private final StaffRepository staffRepository;
 
     @Autowired
     public AccountService(AccountRepository accountRepository, RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder, StudentRepository studentRepository, StaffRepository staffRepository) {
+        this.studentRepository = studentRepository;
+        this.staffRepository = staffRepository;
         this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -38,7 +45,28 @@ public class AccountService {
     }
 
     public void deleteAccountByUsername(String username) {
-        accountRepository.deleteById(username);
+        Optional<Account> accountOpt = accountRepository.findById(username);
+        if (accountOpt.isPresent()) {
+            Account account = accountOpt.get();
+            // Ngắt tham chiếu từ Student hoặc Staff
+            if (account.getMaSV() != null) {
+                Optional<Student> studentOpt = studentRepository.findById(account.getMaSV().getMaSV());
+                if (studentOpt.isPresent()) {
+                    Student student = studentOpt.get();
+                    student.setAccount(null);
+                    studentRepository.save(student);
+                }
+            } else if (account.getMaNV() != null) {
+                Optional<Staff> staffOpt = staffRepository.findById(account.getMaNV().getMaNV());
+                if (staffOpt.isPresent()) {
+                    Staff staff = staffOpt.get();
+                    staff.setAccount(null);
+                    staffRepository.save(staff);
+                }
+            }
+            // Xóa Account
+            accountRepository.deleteById(username);
+        }
     }
 
     public boolean existsByUsername(String username) {

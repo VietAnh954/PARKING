@@ -72,7 +72,8 @@ public class AccountController {
     }
 
     @PostMapping("/create")
-    public String createAccount(@RequestParam String userType,
+    public String createAccount(@ModelAttribute("account") Account accountForm,
+            @RequestParam String userType,
             @RequestParam String userId,
             @RequestParam(required = false) Integer roleId,
             RedirectAttributes redirectAttributes) {
@@ -168,6 +169,10 @@ public class AccountController {
         Optional<Account> account = accountService.getAccountByUsername(username);
         if (account.isPresent()) {
             model.addAttribute("username", username);
+            String redirectAfterDelete = accountService.isStudentAccount(account.get())
+                    ? "/admin/student/delete/confirm/" + username
+                    : "/admin/staff/delete/confirm/" + username;
+            model.addAttribute("redirectAfterDelete", redirectAfterDelete);
             return "admin/account/delete";
         }
         return "redirect:/admin";
@@ -177,11 +182,17 @@ public class AccountController {
     public String deleteAccount(@PathVariable String username, RedirectAttributes redirectAttributes) {
         Optional<Account> account = accountService.getAccountByUsername(username);
         if (account.isPresent()) {
-            accountService.deleteAccountByUsername(username);
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa tài khoản " + username + " thành công");
-            // Redirect based on whether the account is for a student or staff
-            String redirectUrl = accountService.isStudentAccount(account.get()) ? "/admin/student" : "/admin/staff";
-            return "redirect:" + redirectUrl;
+            try {
+                accountService.deleteAccountByUsername(username);
+                redirectAttributes.addFlashAttribute("successMessage", "Xóa tài khoản " + username + " thành công");
+                String redirectUrl = accountService.isStudentAccount(account.get())
+                        ? "/admin/student/delete/confirm/" + username
+                        : "/admin/staff/delete/confirm/" + username;
+                return "redirect:" + redirectUrl;
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa tài khoản: " + e.getMessage());
+                return "redirect:/admin/account/delete/confirm/" + username;
+            }
         }
         redirectAttributes.addFlashAttribute("errorMessage", "Tài khoản không tồn tại");
         return "redirect:/admin";

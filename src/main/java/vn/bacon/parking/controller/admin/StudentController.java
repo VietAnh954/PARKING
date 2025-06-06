@@ -15,14 +15,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 import vn.bacon.parking.domain.Student;
+import vn.bacon.parking.service.AccountService;
 import vn.bacon.parking.service.StudentService;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
 public class StudentController {
-    @Autowired
-    private StudentService studentService;
+
+    private final StudentService studentService;
+    private final AccountService accountService;
+
+    public StudentController(StudentService studentService, AccountService accountService) {
+        this.accountService = accountService;
+        this.studentService = studentService;
+    }
 
     @GetMapping("/student")
     public String listStudents(@RequestParam(defaultValue = "0") int page,
@@ -81,6 +88,10 @@ public class StudentController {
             redirectAttributes.addFlashAttribute("successMessage",
                     "Thêm sinh viên " + student.getMaSV() + " thành công");
             return "redirect:/admin/student";
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("maSV", "error.student", e.getMessage());
+            model.addAttribute("classes", studentService.getAllClasses());
+            return "admin/student/create";
         } catch (DataIntegrityViolationException e) {
             String message = e.getMostSpecificCause().getMessage();
             if (message.contains("SDT")) {
@@ -175,6 +186,10 @@ public class StudentController {
             redirectAttributes.addFlashAttribute("successMessage",
                     "Cập nhật sinh viên " + existingStudent.getMaSV() + " thành công");
             return "redirect:/admin/student";
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("maSV", "error.student", e.getMessage());
+            model.addAttribute("classes", studentService.getAllClasses());
+            return "admin/student/update";
         } catch (DataIntegrityViolationException e) {
             String message = e.getMostSpecificCause().getMessage();
             if (message.contains("SDT")) {
@@ -194,6 +209,8 @@ public class StudentController {
         Optional<Student> student = studentService.getStudentById(maSV);
         if (student.isPresent()) {
             model.addAttribute("maSV", maSV);
+            boolean hasAccount = accountService.existsByUsername(maSV);
+            model.addAttribute("hasAccount", hasAccount);
             return "admin/student/delete";
         }
         return "redirect:/admin/student";
@@ -201,9 +218,20 @@ public class StudentController {
 
     @GetMapping("/student/delete/{maSV}")
     public String deleteStudent(@PathVariable String maSV, RedirectAttributes redirectAttributes) {
-        if (studentService.getStudentById(maSV).isPresent()) {
-            studentService.deleteStudentById(maSV);
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa sinh viên " + maSV + " thành công");
+        try {
+            Optional<Student> studentOpt = studentService.getStudentById(maSV);
+            if (studentOpt.isPresent()) {
+                studentService.deleteStudentById(maSV);
+                redirectAttributes.addFlashAttribute("successMessage", "Xóa sinh viên " + maSV + " thành công");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Sinh viên với mã " + maSV + " không tồn tại!");
+            }
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/student/delete/confirm/" + maSV;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa sinh viên: " + e.getMessage());
+            return "redirect:/admin/student/delete/confirm/" + maSV;
         }
         return "redirect:/admin/student";
     }

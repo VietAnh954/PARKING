@@ -10,17 +10,24 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import vn.bacon.parking.domain.Staff;
 import vn.bacon.parking.repository.StaffRepository;
 
 @Service
 public class StaffService {
+    private static final Logger logger = LoggerFactory.getLogger(StaffService.class);
+
     private final StaffRepository staffRepository;
     private final UploadService uploadService;
+    private final AccountService accountService;
 
-    public StaffService(StaffRepository staffRepository, UploadService uploadService) {
+    public StaffService(StaffRepository staffRepository, UploadService uploadService, AccountService accountService) {
         this.uploadService = uploadService;
         this.staffRepository = staffRepository;
+        this.accountService = accountService;
     }
 
     public List<Staff> getAllStaffs() {
@@ -32,7 +39,18 @@ public class StaffService {
     }
 
     public void deleteStaffById(String maNV) {
-        this.staffRepository.deleteById(maNV);
+        logger.info("Đang cố gắng xóa nhân viên với maNV: {}", maNV);
+        Optional<Staff> staffOpt = staffRepository.findById(maNV);
+        if (staffOpt.isPresent()) {
+            // Kiểm tra tài khoản liên quan
+            if (accountService.existsByUsername(maNV)) {
+                logger.warn("Nhân viên với maNV {} vẫn có tài khoản liên quan", maNV);
+                throw new IllegalStateException("Vui lòng xóa tài khoản liên quan trước khi xóa nhân viên");
+            }
+            staffRepository.deleteById(maNV);
+        } else {
+            logger.warn("Nhân viên với maNV {} không tồn tại", maNV);
+        }
     }
 
     public Page<Staff> getStaffPage(Pageable pageable) {

@@ -3,6 +3,9 @@ package vn.bacon.parking.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,16 +20,19 @@ import vn.bacon.parking.repository.StudentRepository;
 
 @Service
 public class StudentService {
+    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     private final StudentRepository studentRepository;
     private final UploadService uploadService;
     private final ClassRepository classRepository;
+    private final AccountService accountService;
 
     public StudentService(StudentRepository studentRepository, UploadService uploadService,
-            ClassRepository classRepository) {
+            ClassRepository classRepository, AccountService accountService) {
         this.uploadService = uploadService;
         this.studentRepository = studentRepository;
         this.classRepository = classRepository;
+        this.accountService = accountService;
     }
 
     public List<Student> getAllStudents() {
@@ -34,7 +40,23 @@ public class StudentService {
     }
 
     public Student saveStudent(Student student) {
-        return this.studentRepository.save(student);
+
+        // Kiểm tra xem sinh viên đã tồn tại trong cơ sở dữ liệu chưa
+        Optional<Student> existingStudent = studentRepository.findById(student.getMaSV());
+
+        // Nếu đây là cập nhật (sinh viên đã tồn tại) và maSV không thay đổi, bỏ qua
+        // kiểm tra trùng lặp
+        if (existingStudent.isPresent() && existingStudent.get().getMaSV().equals(student.getMaSV())) {
+
+            return studentRepository.save(student);
+        }
+
+        // Nếu đây là tạo mới hoặc maSV thay đổi, kiểm tra trùng lặp
+        if (existsByMaSV(student.getMaSV())) {
+            throw new IllegalArgumentException("Mã sinh viên " + student.getMaSV() + " đã tồn tại!");
+        }
+
+        return studentRepository.save(student);
     }
 
     public Optional<Student> getStudentById(String maSV) {
@@ -42,7 +64,28 @@ public class StudentService {
     }
 
     public void deleteStudentById(String maSV) {
-        this.studentRepository.deleteById(maSV);
+        logger.info("Đang cố gắng xóa sinh viên với maSV: {}", maSV);
+        Optional<Student> studentOpt = studentRepository.findById(maSV);
+        if (studentOpt.isPresent()) {
+            Student student = studentOpt.get();
+            // Kiểm tra tài khoản liên quan
+            if (accountService.existsByUsername(maSV)) {
+                logger.warn("Sinh viên với maSV {} vẫn có tài khoản liên quan", maSV);
+                throw new IllegalStateException("Vui lòng xóa tài khoản liên quan trước khi xóa sinh viên");
+            }
+            // Ngắt tham chiếu với Class nếu không hợp lệ
+            if (student.getLop() != null) {
+                Optional<Class> classOpt = classRepository.findById(student.getLop().getMaLop());
+                if (!classOpt.isPresent()) {
+                    logger.warn("Lớp với maLop {} không tồn tại cho sinh viên {}", student.getLop().getMaLop(), maSV);
+                    student.setLop(null);
+                    studentRepository.save(student);
+                }
+            }
+            studentRepository.deleteById(maSV);
+        } else {
+            logger.warn("Sinh viên với maSV {} không tồn tại", maSV);
+        }
     }
 
     public Page<Student> getStudentPage(Pageable pageable, String maLop) {
@@ -82,4 +125,7 @@ public class StudentService {
         return uploadService.handleSaveUploadFile(file, targetFolder);
     }
 
+    public boolean existsByMaSV(String maSV) {
+        return studentRepository.existsById(maSV);
+    }
 }

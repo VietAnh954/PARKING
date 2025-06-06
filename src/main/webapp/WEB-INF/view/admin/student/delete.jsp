@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -16,11 +15,9 @@
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body class="sb-nav-fixed">
-    <!-- Header -->
     <jsp:include page="../layout/header.jsp"/>
 
     <div id="layoutSidenav">
-        <!-- Sidebar -->
         <jsp:include page="../layout/sidebar.jsp"/>
 
         <div id="layoutSidenav_content">
@@ -39,8 +36,14 @@
                             <div class="card-body">
                                 <div class="alert alert-danger" role="alert">
                                     Bạn có chắc chắn muốn xóa sinh viên này? Hành động này không thể hoàn tác.
+                                    <c:if test="${hasAccount}">
+                                        <br><strong>Cảnh báo:</strong> Sinh viên này có tài khoản liên quan. Vui lòng xóa tài khoản trước.
+                                        <br><a href="/admin/account/delete/confirm/${maSV}" class="btn btn-warning mt-2">Xóa tài khoản</a>
+                                    </c:if>
                                 </div>
-                                <a href="/admin/student/delete/${maSV}" class="btn btn-danger">Xác nhận xóa</a>
+                                <c:if test="${!hasAccount}">
+                                    <a href="/admin/student/delete/${maSV}" class="btn btn-danger">Xác nhận xóa</a>
+                                </c:if>
                                 <a href="/admin/student" class="btn btn-secondary">Hủy</a>
                             </div>
                         </div>
@@ -55,5 +58,5 @@
         <script src="/js/scripts.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-</body>
+    </body>
 </html>
