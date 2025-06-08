@@ -24,8 +24,11 @@
                         <p class="text-muted mb-1">Sinh viên</p>
                         <p class="text-muted mb-4"><c:out value="${student.lop.tenLop}"/></p>
                         <div class="d-flex justify-content-center mb-2">
-                            <a href="/student/profile/edit" class="btn btn-primary">
+                            <a href="/student/profile/edit" class="btn btn-primary me-2">
                                 <i class="fas fa-edit me-2"></i> Chỉnh sửa thông tin
+                            </a>
+                            <a href="/student/profile/change-password" class="btn btn-warning">
+                                <i class="fas fa-key me-2"></i> Đổi mật khẩu
                             </a>
                         </div>
                     </div>

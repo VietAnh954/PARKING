@@ -4,6 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,24 +25,27 @@ public class UploadService {
         if (file.isEmpty()) {
             return "";
         }
-        String rootPath = this.servletContext.getRealPath("/resources/images");
+        
         String fileName = "";
         try {
-            byte[] bytes;
-            bytes = file.getBytes();
-            // String rootPath = this.servletContext.getRealPath("/resources/images");
-            File dir = new File(rootPath + File.separator + targetFolder);
-            if (!dir.exists())
+            // Create base directory if it doesn't exist
+            Path uploadPath = Paths.get("src/main/webapp/images", targetFolder);
+            File dir = uploadPath.toFile();
+            if (!dir.exists()) {
                 dir.mkdirs();
-            // Create the file on server
+            }
+
+            // Create unique filename
             fileName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+            
+            // Create the file on server
             File serverFile = new File(dir.getAbsolutePath() + File.separator + fileName);
-            BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
-            stream.write(bytes);
-            stream.close();
+            try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile))) {
+                stream.write(file.getBytes());
+            }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            return "";
         }
         return fileName;
     }

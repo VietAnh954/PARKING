@@ -2,6 +2,12 @@ package vn.bacon.parking.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,5 +133,13 @@ public class StudentService {
 
     public boolean existsByMaSV(String maSV) {
         return studentRepository.existsById(maSV);
+    }
+
+    public String saveAvatar(MultipartFile file, String studentId) throws IOException {
+        if (file.isEmpty()) {
+            return "";
+        }
+        String fileName = studentId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        return uploadService.handleSaveUploadFile(file, "students");
     }
 }

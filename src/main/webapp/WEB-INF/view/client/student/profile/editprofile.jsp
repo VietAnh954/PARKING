@@ -91,62 +91,58 @@
                                 <div class="mb-3">
                                     <label class="form-label">Mã sinh viên</label>
                                     <input type="text" class="form-control" value="${student.maSV}" disabled>
+                                    <form:hidden path="maSV"/>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Họ và tên</label>
-                                    <input type="text" class="form-control" value="${student.hoTen}" readonly />
-                                    <form:hidden path="hoTen" />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Ngày sinh</label>
-                                    <input type="date" class="form-control" value="${student.ngaySinh}" readonly />
-                                    <form:hidden path="ngaySinh" />
+                                    <label class="form-label">Email</label>
+                                    <input type="text" class="form-control" value="${student.email}" disabled>
+                                    <form:hidden path="email"/>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">Lớp</label>
-                                    <form:select path="lop.maLop" class="form-select">
-                                        <form:option value="" label="-- Chọn lớp --"/>
-                                        <c:forEach var="classObj" items="${classes}">
-                                            <form:option value="${classObj.maLop}" label="${classObj.maLop}"/>
-                                        </c:forEach>
-                                    </form:select>
-                                    <form:errors path="lop" cssClass="error-message"/>
+                                    <input type="text" class="form-control" value="${student.lop.maLop}" disabled>
+                                    <form:hidden path="lop"/>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="diaChi" class="form-label">Địa chỉ</label>
-                                    <form:input path="diaChi" class="form-control"/>
+                                    <label class="form-label">Họ và tên</label>
+                                    <input type="text" class="form-control" value="${student.hoTen}" disabled>
+                                    <form:hidden path="hoTen"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Ngày sinh</label>
+                                    <input type="date" class="form-control" value="${student.ngaySinh}" disabled>
+                                    <form:hidden path="ngaySinh"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Địa chỉ</label>
+                                    <form:input path="diaChi" class="form-control" required="required"/>
                                     <form:errors path="diaChi" cssClass="error-message"/>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="queQuan" class="form-label">Quê quán</label>
-                                    <form:textarea path="queQuan" class="form-control" rows="3"/>
+                                    <label class="form-label">Quê quán</label>
+                                    <form:input path="queQuan" class="form-control" required="required"/>
                                     <form:errors path="queQuan" cssClass="error-message"/>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="sdt" class="form-label">Số điện thoại</label>
-                                    <form:input path="sdt" class="form-control"/>
+                                    <label class="form-label">Số điện thoại</label>
+                                    <form:input path="sdt" class="form-control" required="required"/>
                                     <form:errors path="sdt" cssClass="error-message"/>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" value="${student.email}" readonly />
-                                    <form:hidden path="email" />
-                                </div>
-
-                                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                                    <button type="submit" class="btn btn-primary px-4 py-2">
-                                        <i class="fas fa-save me-2"></i> Lưu thay đổi
-                                    </button>
-                                    <a href="<c:url value='/student/profile'/>" class="btn btn-secondary px-4 py-2">
-                                        <i class="fas fa-times me-2"></i> Hủy
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                    <a href="/student/profile" class="btn btn-secondary me-2">
+                                        <i class="fas fa-times me-2"></i>Hủy
                                     </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                                    </button>
                                 </div>
                             </form:form>
                         </div>

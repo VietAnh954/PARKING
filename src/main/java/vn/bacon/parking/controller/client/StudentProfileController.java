@@ -74,7 +74,6 @@ public class StudentProfileController {
         
         if (result.hasErrors()) {
             model.addAttribute("formattedNgaySinh", formatDate(updatedStudent.getNgaySinh()));
-            model.addAttribute("classes", studentService.getAllClasses());
             return "client/student/profile/editprofile";
         }
 
@@ -89,49 +88,71 @@ public class StudentProfileController {
 
         Student existingStudent = existingStudentOpt.get();
 
+        // Kiểm tra số điện thoại
         if (updatedStudent.getSdt() != null && !updatedStudent.getSdt().equals(existingStudent.getSdt()) &&
                 studentService.existsBySdtAndNotMaSV(updatedStudent.getSdt(), username)) {
             result.rejectValue("sdt", "error.student", "Số điện thoại đã tồn tại!");
             model.addAttribute("formattedNgaySinh", formatDate(updatedStudent.getNgaySinh()));
-            model.addAttribute("classes", studentService.getAllClasses());
             return "client/student/profile/editprofile";
         }
 
-        if (updatedStudent.getEmail() != null && !updatedStudent.getEmail().equals(existingStudent.getEmail()) &&
-                studentService.existsByEmailAndNotMaSV(updatedStudent.getEmail(), username)) {
-            result.rejectValue("email", "error.student", "Email đã tồn tại!");
-            model.addAttribute("formattedNgaySinh", formatDate(updatedStudent.getNgaySinh()));
-            model.addAttribute("classes", studentService.getAllClasses());
-            return "client/student/profile/editprofile";
-        }
-
-        // Cập nhật tất cả các trường thông tin
-        existingStudent.setHoTen(updatedStudent.getHoTen());
-        existingStudent.setNgaySinh(updatedStudent.getNgaySinh());
+        // Giữ nguyên các trường không được phép thay đổi
+        updatedStudent.setMaSV(existingStudent.getMaSV());
+        updatedStudent.setEmail(existingStudent.getEmail());
+        updatedStudent.setLop(existingStudent.getLop());
+        updatedStudent.setHoTen(existingStudent.getHoTen());
+        updatedStudent.setNgaySinh(existingStudent.getNgaySinh());
+        
+        // Cập nhật các trường được phép thay đổi
         existingStudent.setDiaChi(updatedStudent.getDiaChi());
-        existingStudent.setSdt(updatedStudent.getSdt());
-        existingStudent.setEmail(updatedStudent.getEmail());
         existingStudent.setQueQuan(updatedStudent.getQueQuan());
-        existingStudent.setLop(updatedStudent.getLop());
+        existingStudent.setSdt(updatedStudent.getSdt());
 
+        // Xử lý avatar nếu có
         if (!avatarFile.isEmpty()) {
-            String avatarFileName = studentService.handleAvatarUpload(avatarFile, "students");
-            if (avatarFileName.isEmpty()) {
-                result.rejectValue("avatar", "error.student", "Không thể upload avatar!");
-                model.addAttribute("formattedNgaySinh", formatDate(updatedStudent.getNgaySinh()));
-                model.addAttribute("classes", studentService.getAllClasses());
-                return "client/student/profile/editprofile";
+            try {
+                String avatarFileName = studentService.saveAvatar(avatarFile, username);
+                existingStudent.setAvatar(avatarFileName);
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không thể lưu ảnh đại diện: " + e.getMessage());
+                return "redirect:/student/profile";
             }
-            existingStudent.setAvatar(avatarFileName);
         }
 
-        try {
-            studentService.saveStudent(existingStudent);
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công!");
+        studentService.saveStudent(existingStudent);
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công!");
+        return "redirect:/student/profile";
+    }
+
+    @GetMapping("/profile/change-password")
+    public String showChangePasswordForm() {
+        return "client/student/profile/changepassword";
+    }
+
+    @PostMapping("/profile/change-password")
+    public String changePassword(@RequestParam("oldPassword") String oldPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Optional<Student> studentOpt = studentService.getStudentById(username);
+        if (!studentOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thông tin sinh viên!");
             return "redirect:/student/profile";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật thông tin: " + e.getMessage());
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới và xác nhận không khớp!");
+            return "redirect:/student/profile/change-password";
+        }
+        boolean changed = accountService.changePassword(username, oldPassword, newPassword);
+        if (changed) {
+            redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công!");
             return "redirect:/student/profile";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu cũ không đúng!");
+            return "redirect:/student/profile/change-password";
         }
     }
+
 } 
