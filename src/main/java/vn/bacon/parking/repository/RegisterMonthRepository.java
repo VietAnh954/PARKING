@@ -23,4 +23,8 @@ public interface RegisterMonthRepository extends JpaRepository<RegisterMonth, St
     // Lọc đăng ký đã hết hạn (ngày hết hạn < ngày hiện tại)
     @Query("SELECT d FROM RegisterMonth d WHERE d.tGianHetHan < :ngayHienTai")
     List<RegisterMonth> timDangKyDaHetHan(@Param("ngayHienTai") LocalDate ngayHienTai);
+
+    // Lấy giá trị lớn nhất của MaDangKy
+    @Query("SELECT COALESCE(MAX(CAST(maDangKy AS integer)), 0) FROM RegisterMonth")
+    Long findMaxMaDangKy();
 }

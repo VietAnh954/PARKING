@@ -157,4 +157,9 @@ public class RegisterMonthService {
     public Page<RegisterMonth> getRegisterMonthPage(Pageable pageable) {
         return registerMonthRepository.findAll(pageable);
     }
+
+    public String getNextMaDangKy() {
+        Long maxId = registerMonthRepository.findMaxMaDangKy();
+        return String.valueOf(maxId != null ? maxId + 1 : 1);
+    }
 }

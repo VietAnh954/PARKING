@@ -37,4 +37,13 @@ public class VehicleService {
     public Page<Vehicle> getVehiclePage(Pageable pageable) {
         return vehicleRepository.findAll(pageable);
     }
+
+    public List<Vehicle> getVehiclesByStudentId(String maSV) {
+        return vehicleRepository.findByMaSV_MaSV(maSV);
+    }
+
+    public boolean existsByBienSoXe(String bienSoXe) {
+        return vehicleRepository.existsById(bienSoXe);
+    }
+
 }

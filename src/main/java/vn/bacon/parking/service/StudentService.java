@@ -1,5 +1,6 @@
 package vn.bacon.parking.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -128,4 +129,17 @@ public class StudentService {
     public boolean existsByMaSV(String maSV) {
         return studentRepository.existsById(maSV);
     }
+
+    public Optional<Student> findByMaSV(String maSV) {
+        return studentRepository.findById(maSV);
+    }
+
+    public String saveAvatar(MultipartFile file, String studentId) throws IOException {
+        if (file.isEmpty()) {
+            return "";
+        }
+        String fileName = studentId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        return uploadService.handleSaveUploadFile(file, "students");
+    }
+
 }

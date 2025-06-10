@@ -86,4 +86,5 @@ public class VehicleController {
         model.addAttribute("vehicleList", vehiclePage.getContent());
         return "admin/vehicle/show";
     }
+
 }
