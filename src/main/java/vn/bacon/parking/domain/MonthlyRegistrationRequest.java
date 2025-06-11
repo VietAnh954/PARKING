@@ -1,20 +1,16 @@
 package vn.bacon.parking.domain;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Entity
 @Table(name = "YeuCauDangKyThang")
 public class MonthlyRegistrationRequest {
     @Id
     @Column(name = "MaYeuCau", length = 10, columnDefinition = "nchar(10)")
-    private String requestId;
+    private String maYeuCau;
 
     @ManyToOne
     @JoinColumn(name = "MaSV", nullable = false)
@@ -25,31 +21,35 @@ public class MonthlyRegistrationRequest {
     private Vehicle vehicle;
 
     @Column(name = "NgayGuiYeuCau", nullable = false)
-    private LocalDate requestDate;
+    private LocalDate ngayGuiYeuCau;
 
     @Column(name = "NgayBatDau", nullable = false)
-    private LocalDate startDate;
+    private LocalDate ngayBatDau;
 
     @Column(name = "NgayHetHan", nullable = false)
-    private LocalDate endDate;
+    private LocalDate ngayHetHan;
 
     @Column(name = "TrangThai", nullable = false, length = 20)
-    private String status;
+    private String trangThai;
 
     @ManyToOne
     @JoinColumn(name = "NVXuLy", nullable = true)
-    private Staff processedBy;
+    private Staff nhanVienXuLy;
 
     @Column(name = "GhiChu", nullable = true, length = 255)
-    private String note;
+    private String ghiChu;
+
+    @ManyToOne
+    @JoinColumn(name = "MaBangGia", nullable = true)
+    private Price bangGia;
 
     // Getters and Setters
-    public String getRequestId() {
-        return requestId;
+    public String getMaYeuCau() {
+        return maYeuCau;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setMaYeuCau(String maYeuCau) {
+        this.maYeuCau = maYeuCau;
     }
 
     public Student getStudent() {
@@ -68,51 +68,76 @@ public class MonthlyRegistrationRequest {
         this.vehicle = vehicle;
     }
 
-    public LocalDate getRequestDate() {
-        return requestDate;
+    public LocalDate getNgayGuiYeuCau() {
+        return ngayGuiYeuCau;
     }
 
-    public void setRequestDate(LocalDate requestDate) {
-        this.requestDate = requestDate;
+    public void setNgayGuiYeuCau(LocalDate ngayGuiYeuCau) {
+        this.ngayGuiYeuCau = ngayGuiYeuCau;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
+    public LocalDate getNgayBatDau() {
+        return ngayBatDau;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
+    public void setNgayBatDau(LocalDate ngayBatDau) {
+        this.ngayBatDau = ngayBatDau;
     }
 
-    public LocalDate getEndDate() {
-        return endDate;
+    public LocalDate getNgayHetHan() {
+        return ngayHetHan;
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
+    public void setNgayHetHan(LocalDate ngayHetHan) {
+        this.ngayHetHan = ngayHetHan;
     }
 
-    public String getStatus() {
-        return status;
+    public String getTrangThai() {
+        return trangThai;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
     }
 
-    public Staff getProcessedBy() {
-        return processedBy;
+    public Staff getNhanVienXuLy() {
+        return nhanVienXuLy;
     }
 
-    public void setProcessedBy(Staff processedBy) {
-        this.processedBy = processedBy;
+    public void setNhanVienXuLy(Staff nhanVienXuLy) {
+        this.nhanVienXuLy = nhanVienXuLy;
     }
 
-    public String getNote() {
-        return note;
+    public String getGhiChu() {
+        return ghiChu;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
+    }
+
+    public Price getBangGia() {
+        return bangGia;
+    }
+
+    public void setBangGia(Price bangGia) {
+        this.bangGia = bangGia;
+    }
+
+    public Integer getGia() {
+        return bangGia != null ? bangGia.getGia() : null;
+    }
+
+    // Date conversion methods for JSP
+    public Date getNgayGuiYeuCauAsDate() {
+        return ngayGuiYeuCau != null ? Date.from(ngayGuiYeuCau.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+    }
+
+    public Date getNgayBatDauAsDate() {
+        return ngayBatDau != null ? Date.from(ngayBatDau.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+    }
+
+    public Date getNgayHetHanAsDate() {
+        return ngayHetHan != null ? Date.from(ngayHetHan.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
     }
 }

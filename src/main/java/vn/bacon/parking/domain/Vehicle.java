@@ -14,6 +14,9 @@ public class Vehicle {
     @Column(name = "BienSoXe", length = 10, columnDefinition = "nchar(10)")
     private String bienSoXe;
 
+    @Column(name = "TenXe", length = 100)
+    private String tenXe;
+
     // nhiều xe có thể thuộc về một loại xe
     @ManyToOne
     @JoinColumn(name = "MaLoaiXe", nullable = false)
@@ -59,6 +62,14 @@ public class Vehicle {
 
     public void setMaSV(Student maSV) {
         this.maSV = maSV;
+    }
+
+    public String getTenXe() {
+        return tenXe;
+    }
+
+    public void setTenXe(String tenXe) {
+        this.tenXe = tenXe;
     }
 
     @Override

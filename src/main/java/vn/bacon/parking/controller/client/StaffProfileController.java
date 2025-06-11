@@ -65,20 +65,6 @@ public class StaffProfileController {
         return "redirect:/staff/profile";
     }
 
-    @GetMapping("/profile/edit")
-    public String showEditForm(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-
-        Optional<Staff> staff = staffService.getStaffById(username);
-        if (staff.isPresent() && "Giảng viên".equals(staff.get().getChucVu())) {
-            model.addAttribute("staff", staff.get());
-            model.addAttribute("formattedNgayVaoLam", formatDate(staff.get().getNgayVaoLam()));
-            return "client/staff/profile/editprofile";
-        }
-        return "redirect:/staff/profile";
-    }
-
     @PostMapping("/profile/edit")
     public String updateProfile(
             @Valid @ModelAttribute("staff") Staff updatedStaff,

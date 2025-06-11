@@ -1,12 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request History</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Lịch Sử Yêu Cầu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -54,7 +55,7 @@
         .card-body {
             padding: 2.5rem;
             overflow-y: auto;
-            max-height: calc(800px - 150px); /* Adjust for header and padding */
+            max-height: calc(800px - 150px);
         }
         h1 {
             font-weight: 700;
@@ -119,7 +120,7 @@
     <div class="main-content">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                <h1 class="mb-0"><i class="fas fa-history me-2"></i>Request History</h1>
+                <h1 class="mb-0"><i class="fas fa-history me-2"></i>Lịch Sử Yêu Cầu</h1>
             </div>
             <div class="card-body">
                 <c:if test="${not empty successMessage}">
@@ -139,32 +140,34 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Request ID</th>
-                            <th>Vehicle License Plate</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th>Mã Yêu Cầu</th>
+                            <th>Biển Số Xe</th>
+                            <th>Ngày Bắt Đầu</th>
+                            <th>Ngày Hết Hạn</th>
+                            <th>Giá (VNĐ)</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:forEach var="request" items="${requests}">
                             <tr>
-                                <td><c:out value="${request.requestId.trim()}"/></td>
+                                <td><c:out value="${request.maYeuCau.trim()}"/></td>
                                 <td><c:out value="${request.vehicle.bienSoXe}"/></td>
-                                <td><c:out value="${request.startDate}"/></td>
-                                <td><c:out value="${request.endDate}"/></td>
-                                <td><c:out value="${request.status}"/></td>
+                                <td><fmt:formatDate value="${request.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
+                                <td><fmt:formatDate value="${request.ngayHetHanAsDate}" pattern="dd/MM/yyyy"/></td>
+                                <td><fmt:formatNumber value="${request.gia != null ? request.gia : 0}" pattern="#,###"/></td>
+                                <td><c:out value="${request.trangThai}"/></td>
                                 <td>
-                                    <c:if test="${request.status == 'Chờ duyệt'}">
-                                        <a href="${pageContext.request.contextPath}/student/request-monthly-registration/edit?requestId=${request.requestId.trim()}" class="btn-edit">Edit</a>
+                                    <c:if test="${request.trangThai == 'Chờ duyệt'}">
+                                        <a href="${pageContext.request.contextPath}/student/request-monthly-registration/edit?maYeuCau=${request.maYeuCau.trim()}" class="btn-edit">Chỉnh Sửa</a>
                                     </c:if>
                                 </td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty requests}">
                             <tr>
-                                <td colspan="6" class="text-center">No requests found.</td>
+                                <td colspan="7" class="text-center">Không tìm thấy yêu cầu nào.</td>
                             </tr>
                         </c:if>
                     </tbody>
@@ -173,7 +176,6 @@
         </div>
     </div>
     <jsp:include page="../../layout/footer.jsp"/>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

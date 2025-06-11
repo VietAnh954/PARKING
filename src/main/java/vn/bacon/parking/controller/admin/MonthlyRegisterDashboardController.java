@@ -1,7 +1,6 @@
 package vn.bacon.parking.controller.admin;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -54,9 +53,9 @@ public class MonthlyRegisterDashboardController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String sortByStatus,
             Model model) {
-        Sort sort = Sort.by("status").ascending();
+        Sort sort = Sort.by("trangThai").ascending();
         if ("desc".equalsIgnoreCase(sortByStatus)) {
-            sort = Sort.by("status").descending();
+            sort = Sort.by("trangThai").descending();
         }
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<MonthlyRegistrationRequest> requestPage = requestService.getAllRequests(pageable);
@@ -65,21 +64,22 @@ public class MonthlyRegisterDashboardController {
         return "admin/request-register/show";
     }
 
-    @GetMapping("/approve/{requestId}")
-    public String showApproveForm(@PathVariable String requestId, Model model, RedirectAttributes redirectAttributes) {
-        String trimmedRequestId = requestId.trim();
-        logger.info("Attempting to approve request with ID: '{}', trimmed to: '{}'", requestId, trimmedRequestId);
+    @GetMapping("/approve/{maYeuCau}")
+    public String showApproveForm(@PathVariable String maYeuCau, Model model, RedirectAttributes redirectAttributes) {
+        String trimmedMaYeuCau = maYeuCau.trim();
+        logger.info("Đang cố gắng duyệt yêu cầu với Mã: '{}', đã trim: '{}'", maYeuCau, trimmedMaYeuCau);
 
-        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedRequestId);
+        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedMaYeuCau);
         if (!requestOpt.isPresent()) {
-            logger.warn("Request not found for ID: '{}'", trimmedRequestId);
+            logger.warn("Không tìm thấy yêu cầu với Mã: '{}'", trimmedMaYeuCau);
             redirectAttributes.addFlashAttribute("errorMessage", "Yêu cầu không tồn tại!");
             return "redirect:/admin/request";
         }
 
         MonthlyRegistrationRequest request = requestOpt.get();
-        if (!"Chờ duyệt".equals(request.getStatus())) {
-            logger.warn("Request {} has status '{}', not 'Chờ duyệt'", trimmedRequestId, request.getStatus());
+        if (!"Chờ duyệt".equals(request.getTrangThai())) {
+            logger.warn("Yêu cầu {} có trạng thái '{}', không phải 'Chờ duyệt'", trimmedMaYeuCau,
+                    request.getTrangThai());
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Chỉ có thể duyệt yêu cầu đang ở trạng thái 'Chờ duyệt'!");
             return "redirect:/admin/request";
@@ -90,82 +90,85 @@ public class MonthlyRegisterDashboardController {
     }
 
     @PostMapping("/approve")
-    public String approveRequest(@RequestParam String requestId,
-            @RequestParam(required = false) String note,
+    public String approveRequest(@RequestParam String maYeuCau,
+            @RequestParam(required = false) String ghiChu,
             RedirectAttributes redirectAttributes) {
-        String trimmedRequestId = requestId.trim();
-        logger.info("Processing approve request with ID: '{}', trimmed to: '{}'", requestId, trimmedRequestId);
+        String trimmedMaYeuCau = maYeuCau.trim();
+        logger.info("Đang xử lý duyệt yêu cầu với Mã: '{}', đã trim: '{}'", maYeuCau, trimmedMaYeuCau);
 
-        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedRequestId);
+        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedMaYeuCau);
         if (!requestOpt.isPresent()) {
-            logger.warn("Request not found for ID: '{}'", trimmedRequestId);
+            logger.warn("Không tìm thấy yêu cầu với Mã: '{}'", trimmedMaYeuCau);
             redirectAttributes.addFlashAttribute("errorMessage", "Yêu cầu không tồn tại!");
             return "redirect:/admin/request";
         }
 
         MonthlyRegistrationRequest request = requestOpt.get();
-        if (!"Chờ duyệt".equals(request.getStatus())) {
-            logger.warn("Request {} has status '{}', not 'Chờ duyệt'", trimmedRequestId, request.getStatus());
+        if (!"Chờ duyệt".equals(request.getTrangThai())) {
+            logger.warn("Yêu cầu {} có trạng thái '{}', không phải 'Chờ duyệt'", trimmedMaYeuCau,
+                    request.getTrangThai());
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Chỉ có thể duyệt yêu cầu đang ở trạng thái 'Chờ duyệt'!");
             return "redirect:/admin/request";
         }
 
-        request.setProcessedBy(staffService.getCurrentStaff());
-        request.setNote(note);
-        request.setStatus("Đã duyệt");
+        request.setNhanVienXuLy(staffService.getCurrentStaff());
+        request.setGhiChu(ghiChu);
+        request.setTrangThai("Đã duyệt");
 
         RegisterMonth registerMonth = new RegisterMonth();
         registerMonth.setMaDangKy(registerMonthService.getNextMaDangKy());
         registerMonth.setBienSoXe(request.getVehicle());
-        registerMonth.settGianDangKy(LocalDate.now()); // Current date: 2025-06-07
-        registerMonth.settGianHetHan(request.getEndDate());
+        registerMonth.settGianDangKy(LocalDate.now());
+        registerMonth.settGianHetHan(request.getNgayHetHan());
         registerMonth.setNvGhiNhan(staffService.getCurrentStaff());
-        registerMonthService.saveRegisterMonth(registerMonth);
+        // registerMonth.setBangGia(request.getBangGia()); 
 
+        registerMonthService.saveRegisterMonth(registerMonth);
         requestService.updateRequest(request);
-        redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu " + trimmedRequestId + " đã được duyệt!");
+        redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu " + trimmedMaYeuCau + " đã được duyệt!");
         return "redirect:/admin/request";
     }
 
     @PostMapping("/reject")
-    public String rejectRequest(@RequestParam String requestId,
-            @RequestParam String note,
+    public String rejectRequest(@RequestParam String maYeuCau,
+            @RequestParam String ghiChu,
             RedirectAttributes redirectAttributes) {
-        String trimmedRequestId = requestId.trim();
-        logger.info("Processing reject request with ID: '{}', trimmed to: '{}'", requestId, trimmedRequestId);
+        String trimmedMaYeuCau = maYeuCau.trim();
+        logger.info("Đang xử lý từ chối yêu cầu với Mã: '{}', đã trim: '{}'", maYeuCau, trimmedMaYeuCau);
 
-        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedRequestId);
+        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedMaYeuCau);
         if (!requestOpt.isPresent()) {
-            logger.warn("Request not found for ID: '{}'", trimmedRequestId);
+            logger.warn("Không tìm thấy yêu cầu với Mã: '{}'", trimmedMaYeuCau);
             redirectAttributes.addFlashAttribute("errorMessage", "Yêu cầu không tồn tại!");
             return "redirect:/admin/request";
         }
 
         MonthlyRegistrationRequest request = requestOpt.get();
-        if (!"Chờ duyệt".equals(request.getStatus())) {
-            logger.warn("Request {} has status '{}', not 'Chờ duyệt'", trimmedRequestId, request.getStatus());
+        if (!"Chờ duyệt".equals(request.getTrangThai())) {
+            logger.warn("Yêu cầu {} có trạng thái '{}', không phải 'Chờ duyệt'", trimmedMaYeuCau,
+                    request.getTrangThai());
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Chỉ có thể từ chối yêu cầu đang ở trạng thái 'Chờ duyệt'!");
             return "redirect:/admin/request";
         }
 
-        request.setProcessedBy(staffService.getCurrentStaff());
-        request.setNote(note);
-        request.setStatus("Từ chối");
+        request.setNhanVienXuLy(staffService.getCurrentStaff());
+        request.setGhiChu(ghiChu);
+        request.setTrangThai("Từ chối");
         requestService.updateRequest(request);
-        redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu " + trimmedRequestId + " đã bị từ chối!");
+        redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu " + trimmedMaYeuCau + " đã bị từ chối!");
         return "redirect:/admin/request";
     }
 
-    @GetMapping("/view/{requestId}")
-    public String viewRequest(@PathVariable String requestId, Model model, RedirectAttributes redirectAttributes) {
-        String trimmedRequestId = requestId.trim();
-        logger.info("Viewing request with ID: '{}', trimmed to: '{}'", requestId, trimmedRequestId);
+    @GetMapping("/view/{maYeuCau}")
+    public String viewRequest(@PathVariable String maYeuCau, Model model, RedirectAttributes redirectAttributes) {
+        String trimmedMaYeuCau = maYeuCau.trim();
+        logger.info("Đang xem yêu cầu với Mã: '{}', đã trim: '{}'", maYeuCau, trimmedMaYeuCau);
 
-        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedRequestId);
+        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedMaYeuCau);
         if (!requestOpt.isPresent()) {
-            logger.warn("Request not found for ID: '{}'", trimmedRequestId);
+            logger.warn("Không tìm thấy yêu cầu với Mã: '{}'", trimmedMaYeuCau);
             redirectAttributes.addFlashAttribute("errorMessage", "Yêu cầu không tồn tại!");
             return "redirect:/admin/request";
         }

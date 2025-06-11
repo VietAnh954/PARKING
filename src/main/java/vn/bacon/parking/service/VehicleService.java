@@ -46,4 +46,7 @@ public class VehicleService {
         return vehicleRepository.existsById(bienSoXe);
     }
 
+    public List<Vehicle> getVehiclesByStaffId(String maNV) {
+        return vehicleRepository.findByMaNV_MaNV(maNV);
+    }
 }

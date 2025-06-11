@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import vn.bacon.parking.domain.RegisterMonth;
+import vn.bacon.parking.domain.Vehicle;
 
 @Repository
 public interface RegisterMonthRepository extends JpaRepository<RegisterMonth, String> {
@@ -27,4 +28,6 @@ public interface RegisterMonthRepository extends JpaRepository<RegisterMonth, St
     // Lấy giá trị lớn nhất của MaDangKy
     @Query("SELECT COALESCE(MAX(CAST(maDangKy AS integer)), 0) FROM RegisterMonth")
     Long findMaxMaDangKy();
+
+    RegisterMonth findByBienSoXeAndTGianHetHanAfter(Vehicle bienSoXe, LocalDate currentDate);
 }

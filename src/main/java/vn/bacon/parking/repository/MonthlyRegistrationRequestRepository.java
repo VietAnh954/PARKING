@@ -1,5 +1,6 @@
 package vn.bacon.parking.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,21 +13,27 @@ import vn.bacon.parking.domain.MonthlyRegistrationRequest;
 @Repository
 public interface MonthlyRegistrationRequestRepository extends JpaRepository<MonthlyRegistrationRequest, String> {
 
-    boolean existsByVehicleBienSoXeAndStatusNot(String bienSoXe, String status);
+        boolean existsByVehicleBienSoXeAndTrangThaiNot(String bienSoXe, String trangThai);
 
-    boolean existsByVehicleBienSoXeAndRequestIdNotAndStatusIn(
-            @Param("bienSoXe") String bienSoXe,
-            @Param("requestId") String requestId,
-            @Param("statuses") List<String> statuses);
+        boolean existsByVehicleBienSoXeAndMaYeuCauNotAndTrangThaiIn(
+                        @Param("bienSoXe") String bienSoXe,
+                        @Param("maYeuCau") String maYeuCau,
+                        @Param("trangThaiList") List<String> trangThaiList);
 
-    List<MonthlyRegistrationRequest> findByStudentMaSV(String maSV);
+        List<MonthlyRegistrationRequest> findByStudentMaSV(String maSV);
 
-    @Query("SELECT MAX(CAST(m.requestId AS integer)) FROM MonthlyRegistrationRequest m")
-    Long findMaxRequestId();
+        @Query("SELECT MAX(CAST(m.maYeuCau AS integer)) FROM MonthlyRegistrationRequest m")
+        Long findMaxMaYeuCau();
 
-    @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END " +
-            "FROM MonthlyRegistrationRequest m " +
-            "WHERE m.vehicle.bienSoXe = :bienSoXe " +
-            "AND m.status NOT IN ('Từ chối', 'Đã hủy')")
-    boolean existsActiveRequestForVehicle(@Param("bienSoXe") String bienSoXe);
+        @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END " +
+                        "FROM MonthlyRegistrationRequest m " +
+                        "WHERE m.vehicle.bienSoXe = :bienSoXe " +
+                        "AND m.trangThai NOT IN ('Từ chối', 'Đã hủy')")
+        boolean existsActiveRequestForVehicle(@Param("bienSoXe") String bienSoXe);
+
+        boolean existsByVehicleBienSoXeAndTrangThaiInAndNgayHetHanGreaterThanEqual(
+                        String bienSoXe, List<String> trangThai, LocalDate ngayHetHan);
+
+        boolean existsByVehicleBienSoXeAndMaYeuCauNotAndTrangThaiInAndNgayHetHanGreaterThanEqual(
+                        String bienSoXe, String maYeuCau, List<String> trangThai, LocalDate ngayHetHan);
 }

@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Monthly Registration Request</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Chỉnh Sửa Yêu Cầu Đăng Ký Tháng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -54,7 +54,7 @@
         .card-body {
             padding: 2.5rem;
             overflow-y: auto;
-            max-height: calc(800px - 150px); /* Adjust for header and padding */
+            max-height: calc(800px - 150px);
         }
         h1 {
             font-weight: 700;
@@ -123,7 +123,7 @@
     <div class="main-content">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                <h1 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Monthly Registration Request</h1>
+                <h1 class="mb-0"><i class="fas fa-edit me-2"></i>Chỉnh Sửa Yêu Cầu Đăng Ký Tháng</h1>
             </div>
             <div class="card-body">
                 <c:if test="${not empty error}">
@@ -136,43 +136,49 @@
                 <form action="${pageContext.request.contextPath}/student/request-monthly-registration/edit" 
                       method="post" class="needs-validation" novalidate>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                    <input type="hidden" name="requestId" value="${request.requestId.trim()}"/>
+                    <input type="hidden" name="maYeuCau" value="${request.maYeuCau.trim()}"/>
                     <div class="mb-4">
-                        <label for="studentId" class="form-label">
-                            <i class="fas fa-id-card me-2"></i>Student ID
+                        <label for="maSV" class="form-label">
+                            <i class="fas fa-id-card me-2"></i>Mã Sinh Viên
                         </label>
-                        <input type="text" id="studentId" value="${studentId}" class="form-control" readonly>
+                        <input type="text" id="maSV" value="${maSV}" class="form-control" readonly>
                     </div>
                     <div class="mb-4">
-                        <label for="vehicleId" class="form-label">
-                            <i class="fas fa-motorcycle me-2"></i>Vehicle License Plate
+                        <label for="bienSoXe" class="form-label">
+                            <i class="fas fa-motorcycle me-2"></i>Biển Số Xe
                         </label>
-                        <select id="vehicleId" name="vehicleId" class="form-select" required>
-                            <option value="" disabled>Select a vehicle</option>
+                        <select id="bienSoXe" name="bienSoXe" class="form-select" required onchange="updatePrice()">
+                            <option value="" disabled>Chọn xe</option>
                             <c:forEach var="vehicle" items="${vehicles}">
-                                <option value="${vehicle.bienSoXe}" ${vehicle.bienSoXe == request.vehicle.bienSoXe ? 'selected' : ''}>
+                                <option value="${vehicle.bienSoXe}" ${vehicle.bienSoXe == request.vehicle.bienSoXe ? 'selected' : ''} data-maLoaiXe="${vehicle.maLoaiXe.maLoaiXe}">
                                     <c:out value="${vehicle.bienSoXe}"/>
                                 </option>
                             </c:forEach>
                         </select>
-                        <div class="invalid-feedback">Please select a vehicle.</div>
+                        <div class="invalid-feedback">Vui lòng chọn xe.</div>
                         <c:if test="${empty vehicles}">
                             <div class="mt-2 text-danger">
-                                <i class="fas fa-info-circle me-2"></i>No vehicles registered. Please add a vehicle first.
+                                <i class="fas fa-info-circle me-2"></i>Chưa có xe nào được đăng ký. Vui lòng thêm xe trước.
                             </div>
                         </c:if>
                     </div>
                     <div class="mb-4">
-                        <label for="startDate" class="form-label">
-                            <i class="far fa-calendar-alt me-2"></i>Start Date
+                        <label for="gia" class="form-label">
+                            <i class="fas fa-money-bill me-2"></i>Giá Tiền (VNĐ)
                         </label>
-                        <input type="date" id="startDate" name="startDate" class="form-control" required
-                               value="${request.startDate}" min="<%= java.time.LocalDate.now().plusDays(1) %>">
-                        <div class="invalid-feedback">Please select a future date.</div>
+                        <input type="text" id="gia" value="${request.gia != null ? request.gia.toString().replaceAll('(\\d)(?=(\\d{3})+(?!\\d))', '$1,') : 'Đang tính...'}" class="form-control" readonly>
+                    </div>
+                    <div class="mb-4">
+                        <label for="ngayBatDau" class="form-label">
+                            <i class="far fa-calendar-alt me-2"></i>Ngày Bắt Đầu
+                        </label>
+                        <input type="date" id="ngayBatDau" name="ngayBatDau" class="form-control" required
+                               value="${request.ngayBatDau}" min="<%= java.time.LocalDate.now().plusDays(1) %>">
+                        <div class="invalid-feedback">Vui lòng chọn ngày trong tương lai.</div>
                     </div>
                     <div class="d-grid mt-4">
                         <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-save me-2"></i>Update Request
+                            <i class="fas fa-save me-2"></i>Cập Nhật Yêu Cầu
                         </button>
                     </div>
                 </form>
@@ -180,10 +186,36 @@
         </div>
     </div>
     <jsp:include page="../../layout/footer.jsp"/>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Bootstrap form validation
+        const priceMap = {
+            'LX001': 120000, // Xe Máy, HT002
+            'LX002': 400000  // Ô tô, HT002
+        };
+
+        function updatePrice() {
+            const select = document.getElementById('bienSoXe');
+            const giaInput = document.getElementById('gia');
+            const selectedOption = select.options[select.selectedIndex];
+            if (!selectedOption || !selectedOption.getAttribute('data-maLoaiXe')) {
+                console.log('No vehicle selected or maLoaiXe is missing');
+                giaInput.value = 'Đang tính...';
+                return;
+            }
+            const maLoaiXe = selectedOption.getAttribute('data-maLoaiXe').trim();
+            console.log('Selected maLoaiXe:', maLoaiXe);
+            const price = priceMap[maLoaiXe] || 0;
+            if (price === 0) {
+                console.log('No price found for maLoaiXe:', maLoaiXe);
+                giaInput.value = 'Đang tính...';
+            } else {
+                giaInput.value = price.toLocaleString('vi-VN');
+            }
+        }
+
+        // Initialize price on page load
+        document.addEventListener('DOMContentLoaded', updatePrice);
+
         (function () {
             'use strict';
             const forms = document.querySelectorAll('.needs-validation');
@@ -198,13 +230,12 @@
             });
         })();
 
-        // Client-side date validation
-        document.getElementById('startDate').addEventListener('change', function () {
+        document.getElementById('ngayBatDau').addEventListener('change', function () {
             const selectedDate = new Date(this.value);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             if (selectedDate <= today) {
-                this.setCustomValidity('Please select a future date.');
+                this.setCustomValidity('Vui lòng chọn ngày trong tương lai.');
                 this.reportValidity();
                 this.value = '';
             } else {

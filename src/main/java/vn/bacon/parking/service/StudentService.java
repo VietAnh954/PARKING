@@ -18,6 +18,7 @@ import vn.bacon.parking.domain.Student;
 import vn.bacon.parking.domain.Class;
 import vn.bacon.parking.repository.ClassRepository;
 import vn.bacon.parking.repository.StudentRepository;
+import vn.bacon.parking.repository.VehicleRepository;
 
 @Service
 public class StudentService {
@@ -27,13 +28,15 @@ public class StudentService {
     private final UploadService uploadService;
     private final ClassRepository classRepository;
     private final AccountService accountService;
+    private final VehicleRepository vehicleRepository;
 
     public StudentService(StudentRepository studentRepository, UploadService uploadService,
-            ClassRepository classRepository, AccountService accountService) {
+            ClassRepository classRepository, AccountService accountService, VehicleRepository vehicleRepository) {
         this.uploadService = uploadService;
         this.studentRepository = studentRepository;
         this.classRepository = classRepository;
         this.accountService = accountService;
+        this.vehicleRepository = vehicleRepository;
     }
 
     public List<Student> getAllStudents() {
@@ -69,11 +72,19 @@ public class StudentService {
         Optional<Student> studentOpt = studentRepository.findById(maSV);
         if (studentOpt.isPresent()) {
             Student student = studentOpt.get();
+
             // Kiểm tra tài khoản liên quan
             if (accountService.existsByUsername(maSV)) {
                 logger.warn("Sinh viên với maSV {} vẫn có tài khoản liên quan", maSV);
                 throw new IllegalStateException("Vui lòng xóa tài khoản liên quan trước khi xóa sinh viên");
             }
+
+            // Kiểm tra xe đã đăng ký
+            if (hasRegisteredVehicle(maSV)) {
+                logger.warn("Sinh viên với maSV {} đã đăng ký xe", maSV);
+                throw new IllegalStateException("Không thể xóa sinh viên vì sinh viên này đã đăng ký xe!");
+            }
+
             // Ngắt tham chiếu với Class nếu không hợp lệ
             if (student.getLop() != null) {
                 Optional<Class> classOpt = classRepository.findById(student.getLop().getMaLop());
@@ -83,10 +94,17 @@ public class StudentService {
                     studentRepository.save(student);
                 }
             }
+
             studentRepository.deleteById(maSV);
+            logger.info("Xóa sinh viên với maSV {} thành công", maSV);
         } else {
             logger.warn("Sinh viên với maSV {} không tồn tại", maSV);
+            throw new IllegalStateException("Sinh viên với mã " + maSV + " không tồn tại!");
         }
+    }
+
+    public boolean hasRegisteredVehicle(String maSV) {
+        return !vehicleRepository.findByMaSV_MaSV(maSV).isEmpty();
     }
 
     public Page<Student> getStudentPage(Pageable pageable, String maLop) {

@@ -12,4 +12,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
     List<Vehicle> findByMaSV_MaSV(String maSV);
 
     boolean existsById(String bienSoXe);
+
+    List<Vehicle> findByMaNV_MaNV(String maNV);
+
 }

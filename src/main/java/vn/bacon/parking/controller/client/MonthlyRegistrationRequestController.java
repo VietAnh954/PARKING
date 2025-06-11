@@ -18,8 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import vn.bacon.parking.domain.MonthlyRegistrationRequest;
+import vn.bacon.parking.domain.ParkingMode;
+import vn.bacon.parking.domain.Price;
 import vn.bacon.parking.domain.Student;
 import vn.bacon.parking.domain.Vehicle;
+import vn.bacon.parking.repository.ParkingModeRepository;
+import vn.bacon.parking.repository.PriceRepository;
 import vn.bacon.parking.service.MonthlyRegistrationRequestService;
 import vn.bacon.parking.service.StudentService;
 import vn.bacon.parking.service.VehicleService;
@@ -33,15 +37,21 @@ public class MonthlyRegistrationRequestController {
     private final MonthlyRegistrationRequestService requestService;
     private final VehicleService vehicleService;
     private final StudentService studentService;
+    private final PriceRepository priceRepository;
+    private final ParkingModeRepository parkingModeRepository;
 
     @Autowired
     public MonthlyRegistrationRequestController(
             MonthlyRegistrationRequestService requestService,
             VehicleService vehicleService,
-            StudentService studentService) {
+            StudentService studentService,
+            PriceRepository priceRepository,
+            ParkingModeRepository parkingModeRepository) {
         this.requestService = requestService;
         this.vehicleService = vehicleService;
         this.studentService = studentService;
+        this.priceRepository = priceRepository;
+        this.parkingModeRepository = parkingModeRepository;
     }
 
     @GetMapping("/request-monthly-registration")
@@ -50,184 +60,199 @@ public class MonthlyRegistrationRequestController {
         if (auth == null || !auth.isAuthenticated()) {
             return "redirect:/login";
         }
-        String studentId = auth.getName();
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(studentId);
+        String maSV = auth.getName();
+        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
         model.addAttribute("request", new MonthlyRegistrationRequest());
         model.addAttribute("vehicles", vehicles);
-        model.addAttribute("studentId", studentId);
+        model.addAttribute("maSV", maSV);
         return "client/student/request-monthly-registration/request";
     }
 
     @PostMapping("/request-monthly-registration")
     public String submitRequest(
-            @RequestParam String vehicleId,
-            @RequestParam("startDate") String startDate,
+            @RequestParam String bienSoXe,
+            @RequestParam("ngayBatDau") String ngayBatDau,
             Model model) {
-        logger.info("Processing POST request for /student/request-monthly-registration");
+        logger.info("Đang xử lý yêu cầu POST cho /student/request-monthly-registration");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             return "redirect:/login";
         }
-        String studentId = auth.getName();
+        String maSV = auth.getName();
 
         try {
-            String requestId = getNextRequestId();
-            LocalDate requestDate = LocalDate.now();
-            LocalDate parsedStartDate = LocalDate.parse(startDate);
-            LocalDate endDate = parsedStartDate.plusMonths(1);
+            String maYeuCau = getNextMaYeuCau();
+            LocalDate ngayGuiYeuCau = LocalDate.now();
+            LocalDate parsedNgayBatDau = LocalDate.parse(ngayBatDau);
+            LocalDate ngayHetHan = parsedNgayBatDau.plusMonths(1);
 
-            if (requestService.hasActiveRequestForVehicle(vehicleId)) {
-                model.addAttribute("error", "An active request already exists for this vehicle.");
-                List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(studentId);
+            if (requestService.hasActiveRequestForVehicle(bienSoXe)) {
+                model.addAttribute("error", "Xe này đã có yêu cầu đang hoạt động.");
+                List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
                 model.addAttribute("vehicles", vehicles);
-                model.addAttribute("studentId", studentId);
+                model.addAttribute("maSV", maSV);
                 return "client/student/request-monthly-registration/request";
             }
 
             MonthlyRegistrationRequest request = new MonthlyRegistrationRequest();
-            request.setRequestId(requestId);
-            Student student = studentService.getStudentById(studentId)
-                    .orElseThrow(() -> new IllegalArgumentException("Student not found with ID: " + studentId));
+            request.setMaYeuCau(maYeuCau);
+            Student student = studentService.getStudentById(maSV)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên với Mã SV: " + maSV));
             request.setStudent(student);
-            Vehicle vehicle = vehicleService.getVehicleById(vehicleId)
-                    .orElseThrow(
-                            () -> new IllegalArgumentException("Vehicle not found with license plate: " + vehicleId));
+            Vehicle vehicle = vehicleService.getVehicleById(bienSoXe)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy xe với biển số: " + bienSoXe));
             request.setVehicle(vehicle);
-            request.setRequestDate(requestDate);
-            request.setStartDate(parsedStartDate);
-            request.setEndDate(endDate);
-            request.setStatus("Chờ duyệt");
+            request.setNgayGuiYeuCau(ngayGuiYeuCau);
+            request.setNgayBatDau(parsedNgayBatDau);
+            request.setNgayHetHan(ngayHetHan);
+            request.setTrangThai("Chờ duyệt");
+
+            ParkingMode hinhThuc = parkingModeRepository.findById("HT002")
+                    .orElseThrow(() -> new IllegalArgumentException("Hình thức gửi tháng (HT002) không tồn tại."));
+            Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(hinhThuc, vehicle.getMaLoaiXe());
+            if (price == null) {
+                throw new IllegalArgumentException(
+                        "Không tìm thấy giá cho xe " + bienSoXe + " với hình thức gửi tháng.");
+            }
+            request.setBangGia(price);
 
             requestService.createRequest(request);
-            model.addAttribute("message", "Request submitted successfully!");
+            model.addAttribute("message", "Yêu cầu đã được gửi thành công!");
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
         } catch (Exception e) {
-            model.addAttribute("error", "An unexpected error occurred: " + e.getMessage());
+            model.addAttribute("error", "Đã xảy ra lỗi bất ngờ: " + e.getMessage());
         }
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(studentId);
+        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
         model.addAttribute("vehicles", vehicles);
-        model.addAttribute("studentId", studentId);
+        model.addAttribute("maSV", maSV);
         return "client/student/request-monthly-registration/request";
     }
 
     @GetMapping("/request-monthly-registration/edit")
-    public String showEditForm(@RequestParam String requestId, Model model, RedirectAttributes redirectAttributes) {
+    public String showEditForm(@RequestParam String maYeuCau, Model model, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             return "redirect:/login";
         }
-        String studentId = auth.getName().trim();
-        String trimmedRequestId = requestId.trim();
-        logger.info("Attempting to edit request with ID: '{}', trimmed to: '{}', for student: '{}'", requestId,
-                trimmedRequestId, studentId);
+        String maSV = auth.getName().trim();
+        String trimmedMaYeuCau = maYeuCau.trim();
+        logger.info("Đang cố gắng chỉnh sửa yêu cầu với Mã: '{}', đã trim: '{}', cho sinh viên: '{}'", maYeuCau,
+                trimmedMaYeuCau, maSV);
 
-        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedRequestId);
+        Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedMaYeuCau);
         if (!requestOpt.isPresent()) {
-            logger.warn("Request not found for ID: '{}'", trimmedRequestId);
+            logger.warn("Không tìm thấy yêu cầu với Mã: '{}'", trimmedMaYeuCau);
             redirectAttributes.addFlashAttribute("errorMessage", "Yêu cầu không tồn tại!");
             return "redirect:/student/request-history";
         }
 
         MonthlyRegistrationRequest request = requestOpt.get();
         String requestMaSV = request.getStudent().getMaSV().trim();
-        logger.debug("Comparing studentId: '{}' with request MaSV: '{}'", studentId, requestMaSV);
-        if (!requestMaSV.equals(studentId)) {
-            logger.warn("Student '{}' does not own request '{}'. Request MaSV: '{}'", studentId, trimmedRequestId,
+        logger.debug("So sánh maSV: '{}' với MaSV của yêu cầu: '{}'", maSV, requestMaSV);
+        if (!requestMaSV.equals(maSV)) {
+            logger.warn("Sinh viên '{}' không sở hữu yêu cầu '{}'. MaSV của yêu cầu: '{}'", maSV, trimmedMaYeuCau,
                     requestMaSV);
             redirectAttributes.addFlashAttribute("errorMessage", "Bạn không có quyền chỉnh sửa yêu cầu này!");
             return "redirect:/student/request-history";
         }
 
-        if (!"Chờ duyệt".equals(request.getStatus())) {
-            logger.warn("Request {} has status '{}', not 'Chờ duyệt'", trimmedRequestId, request.getStatus());
+        if (!"Chờ duyệt".equals(request.getTrangThai())) {
+            logger.warn("Yêu cầu {} có trạng thái '{}', không phải 'Chờ duyệt'", trimmedMaYeuCau,
+                    request.getTrangThai());
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Chỉ có thể chỉnh sửa yêu cầu đang ở trạng thái 'Chờ duyệt'!");
             return "redirect:/student/request-history";
         }
 
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(studentId);
+        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
         model.addAttribute("request", request);
         model.addAttribute("vehicles", vehicles);
-        model.addAttribute("studentId", studentId);
+        model.addAttribute("maSV", maSV);
         return "client/student/request-monthly-registration/edit";
     }
 
     @PostMapping("/request-monthly-registration/edit")
     public String updateRequest(
-            @RequestParam String requestId,
-            @RequestParam String vehicleId,
-            @RequestParam("startDate") String startDate,
+            @RequestParam String maYeuCau,
+            @RequestParam String bienSoXe,
+            @RequestParam("ngayBatDau") String ngayBatDau,
             Model model,
             RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             return "redirect:/login";
         }
-        String studentId = auth.getName().trim();
-        String trimmedRequestId = requestId.trim();
-        logger.info("Updating request with ID: '{}', trimmed to: '{}', for student: '{}'", requestId, trimmedRequestId,
-                studentId);
+        String maSV = auth.getName().trim();
+        String trimmedMaYeuCau = maYeuCau.trim();
+        logger.info("Đang cập nhật yêu cầu với Mã: '{}', đã trim: '{}', cho sinh viên: '{}'", maYeuCau, trimmedMaYeuCau,
+                maSV);
 
         try {
-            Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedRequestId);
+            Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedMaYeuCau);
             if (!requestOpt.isPresent()) {
-                logger.warn("Request not found for ID: '{}'", trimmedRequestId);
+                logger.warn("Không tìm thấy yêu cầu với Mã: '{}'", trimmedMaYeuCau);
                 redirectAttributes.addFlashAttribute("errorMessage", "Yêu cầu không tồn tại!");
                 return "redirect:/student/request-history";
             }
 
             MonthlyRegistrationRequest existingRequest = requestOpt.get();
             String requestMaSV = existingRequest.getStudent().getMaSV().trim();
-            logger.debug("Comparing studentId: '{}' with request MaSV: '{}'", studentId, requestMaSV);
-            if (!requestMaSV.equals(studentId)) {
-                logger.warn("Student '{}' does not own request '{}'. Request MaSV: '{}'", studentId, trimmedRequestId,
+            logger.debug("So sánh maSV: '{}' với MaSV của yêu cầu: '{}'", maSV, requestMaSV);
+            if (!requestMaSV.equals(maSV)) {
+                logger.warn("Sinh viên '{}' không sở hữu yêu cầu '{}'. MaSV của yêu cầu: '{}'", maSV, trimmedMaYeuCau,
                         requestMaSV);
                 redirectAttributes.addFlashAttribute("errorMessage", "Bạn không có quyền chỉnh sửa yêu cầu này!");
                 return "redirect:/student/request-history";
             }
 
-            if (!"Chờ duyệt".equals(existingRequest.getStatus())) {
-                logger.warn("Request {} has status '{}', not 'Chờ duyệt'", trimmedRequestId,
-                        existingRequest.getStatus());
+            if (!"Chờ duyệt".equals(existingRequest.getTrangThai())) {
+                logger.warn("Yêu cầu {} có trạng thái '{}', không phải 'Chờ duyệt'", trimmedMaYeuCau,
+                        existingRequest.getTrangThai());
                 redirectAttributes.addFlashAttribute("errorMessage",
                         "Chỉ có thể chỉnh sửa yêu cầu đang ở trạng thái 'Chờ duyệt'!");
                 return "redirect:/student/request-history";
             }
 
-            LocalDate parsedStartDate = LocalDate.parse(startDate);
-            LocalDate endDate = parsedStartDate.plusMonths(1);
+            LocalDate parsedNgayBatDau = LocalDate.parse(ngayBatDau);
+            LocalDate ngayHetHan = parsedNgayBatDau.plusMonths(1);
 
-            // Check if the new vehicle has an active request (excluding the current
-            // request)
-            if (!vehicleId.equals(existingRequest.getVehicle().getBienSoXe()) &&
-                    requestService.hasActiveRequestForVehicleExcludingRequestId(vehicleId, trimmedRequestId)) {
+            if (!bienSoXe.equals(existingRequest.getVehicle().getBienSoXe()) &&
+                    requestService.hasActiveRequestForVehicleExcludingRequestId(bienSoXe, trimmedMaYeuCau)) {
                 model.addAttribute("error", "Xe này đã có yêu cầu đang hoạt động.");
-                List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(studentId);
+                List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
                 model.addAttribute("request", existingRequest);
                 model.addAttribute("vehicles", vehicles);
-                model.addAttribute("studentId", studentId);
+                model.addAttribute("maSV", maSV);
                 return "client/student/request-monthly-registration/edit";
             }
 
-            // Update the request
-            Vehicle vehicle = vehicleService.getVehicleById(vehicleId)
-                    .orElseThrow(() -> new IllegalArgumentException("Xe không tồn tại với biển số: " + vehicleId));
+            Vehicle vehicle = vehicleService.getVehicleById(bienSoXe)
+                    .orElseThrow(() -> new IllegalArgumentException("Xe không tồn tại với biển số: " + bienSoXe));
             existingRequest.setVehicle(vehicle);
-            existingRequest.setStartDate(parsedStartDate);
-            existingRequest.setEndDate(endDate);
-            existingRequest.setRequestDate(LocalDate.now());
+            existingRequest.setNgayBatDau(parsedNgayBatDau);
+            existingRequest.setNgayHetHan(ngayHetHan);
+            existingRequest.setNgayGuiYeuCau(LocalDate.now());
+
+            ParkingMode hinhThuc = parkingModeRepository.findById("HT002")
+                    .orElseThrow(() -> new IllegalArgumentException("Hình thức gửi tháng (HT002) không tồn tại."));
+            Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(hinhThuc, vehicle.getMaLoaiXe());
+            if (price == null) {
+                throw new IllegalArgumentException(
+                        "Không tìm thấy giá cho xe " + bienSoXe + " với hình thức gửi tháng.");
+            }
+            existingRequest.setBangGia(price);
 
             requestService.updateRequest(existingRequest);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật yêu cầu thành công!");
             return "redirect:/student/request-history";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(studentId);
-            Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedRequestId);
+            List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+            Optional<MonthlyRegistrationRequest> requestOpt = requestService.getRequestById(trimmedMaYeuCau);
             model.addAttribute("request", requestOpt.orElse(new MonthlyRegistrationRequest()));
             model.addAttribute("vehicles", vehicles);
-            model.addAttribute("studentId", studentId);
+            model.addAttribute("maSV", maSV);
             return "client/student/request-monthly-registration/edit";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật yêu cầu: " + e.getMessage());
@@ -241,15 +266,15 @@ public class MonthlyRegistrationRequestController {
         if (auth == null || !auth.isAuthenticated()) {
             return "redirect:/login";
         }
-        String studentId = auth.getName().trim();
-        List<MonthlyRegistrationRequest> requests = requestService.getRequestsByStudentId(studentId);
+        String maSV = auth.getName().trim();
+        List<MonthlyRegistrationRequest> requests = requestService.getRequestsByStudentId(maSV);
         model.addAttribute("requests", requests);
-        model.addAttribute("studentId", studentId);
+        model.addAttribute("maSV", maSV);
         return "client/student/request-monthly-registration/history";
     }
 
-    private String getNextRequestId() {
-        Long maxId = requestService.getMaxRequestId();
+    private String getNextMaYeuCau() {
+        Long maxId = requestService.getMaxMaYeuCau();
         return String.valueOf(maxId != null ? maxId + 1 : 1);
     }
 }

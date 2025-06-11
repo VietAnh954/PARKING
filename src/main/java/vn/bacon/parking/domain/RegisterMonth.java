@@ -70,4 +70,9 @@ public class RegisterMonth {
         this.nvGhiNhan = nvGhiNhan;
     }
 
+    public void setBangGia(Price bangGia) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setBangGia'");
+    }
+
 }
