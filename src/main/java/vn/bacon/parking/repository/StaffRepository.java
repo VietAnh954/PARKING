@@ -18,4 +18,5 @@ public interface StaffRepository extends JpaRepository<Staff, String> {
     boolean existsByEmailAndMaNVNot(String email, String maNV);
 
     boolean existsByCccdAndMaNVNot(String cccd, String maNV);
+
 }

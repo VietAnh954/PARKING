@@ -55,8 +55,10 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
         if (account.getMaNV() != null) {
             Staff staff = account.getMaNV();
-            fullName = staff.getHoTen();
-            avatar = staff.getAvatar();
+            session.setAttribute("isStaff", true);
+            session.setAttribute("chucVu", staff.getChucVu());
+            session.setAttribute("fullName", staff.getHoTen());
+            session.setAttribute("avatar", staff.getAvatar());
         } else if (account.getMaSV() != null) {
             Student student = account.getMaSV();
             fullName = student.getHoTen();

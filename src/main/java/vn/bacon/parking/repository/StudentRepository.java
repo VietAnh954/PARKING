@@ -18,4 +18,5 @@ public interface StudentRepository extends JpaRepository<Student, String> {
     boolean existsByEmailAndMaSVNot(String email, String maSV);
 
     Page<Student> findByLopMaLop(String maLop, Pageable pageable);
+
 }
