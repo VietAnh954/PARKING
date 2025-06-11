@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,9 +34,6 @@
                             <c:out value="${successMessage}"/>
                         </div>
                     </c:if>
-                    <div class="mb-3">
-                        <!-- Optional filter form (commented out as per original) -->
-                    </div>
                     <c:choose>
                         <c:when test="${requestPage.totalElements == 0}">
                             <div class="alert alert-info">Không có yêu cầu nào.</div>
@@ -44,10 +42,10 @@
                             <table class="table table-bordered table-hover">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Mã Yêu Cầu</th>
+                                        <th>Mã Đăng Ký</th>
                                         <th>Mã Sinh Viên</th>
                                         <th>Biển Số Xe</th>
-                                        <th>Ngày Gửi</th>
+                                        <th>Ngày Đăng Ký</th>
                                         <th>Ngày Bắt Đầu</th>
                                         <th>Ngày Kết Thúc</th>
                                         <th>Giá (VNĐ)</th>
@@ -56,34 +54,34 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="request" items="${requestPage.content}">
+                                    <c:forEach var="registration" items="${requestPage.content}">
                                         <tr>
-                                            <td><c:out value="${request.maYeuCau.trim()}"/></td>
-                                            <td><c:out value="${request.student.maSV}"/></td>
-                                            <td><c:out value="${request.vehicle.bienSoXe}"/></td>
-                                            <td><fmt:formatDate value="${request.ngayGuiYeuCauAsDate}" pattern="dd/MM/yyyy"/></td>
-                                            <td><fmt:formatDate value="${request.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
-                                            <td><fmt:formatDate value="${request.ngayHetHanAsDate}" pattern="dd/MM/yyyy"/></td>
-                                            <td><fmt:formatNumber value="${request.gia != null ? request.gia : 0}" pattern="#,###"/></td>
-                                            <td><c:out value="${request.trangThai}"/></td>
+                                            <td><c:out value="${registration.maDangKy.trim()}"/></td>
+                                            <td><c:out value="${registration.bienSoXe.maSV != null ? registration.bienSoXe.maSV.maSV : 'N/A'}"/></td>
+                                            <td><c:out value="${registration.bienSoXe.bienSoXe}"/></td>
+                                            <td><fmt:formatDate value="${registration.ngayDangKyAsDate}" pattern="dd/MM/yyyy"/></td>
+                                            <td><fmt:formatDate value="${registration.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
+                                            <td><fmt:formatDate value="${registration.ngayKetThucAsDate}" pattern="dd/MM/yyyy"/></td>
+                                            <td><fmt:formatNumber value="${registration.bangGia.gia != null ? registration.bangGia.gia : 0}" pattern="#,###"/></td>
+                                            <td><c:out value="${registration.trangThai}"/></td>
                                             <td>
-                                                <c:if test="${request.trangThai != 'Đã duyệt'}">
-                                                    <a href="${pageContext.request.contextPath}/admin/request/approve/${request.maYeuCau.trim()}" class="btn btn-success btn-sm">Duyệt</a>
-                                                    <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal${request.maYeuCau.trim()}">Từ Chối</a>
-                                                    <div class="modal fade" id="rejectModal${request.maYeuCau.trim()}" tabindex="-1" aria-labelledby="rejectModalLabel${request.maYeuCau.trim()}" aria-hidden="true">
+                                                <c:if test="${registration.trangThai != 'Đã duyệt'}">
+                                                    <a href="${pageContext.request.contextPath}/admin/request/approve/${registration.maDangKy.trim()}" class="btn btn-success btn-sm">Duyệt</a>
+                                                    <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal${registration.maDangKy.trim()}">Từ Chối</a>
+                                                    <div class="modal fade" id="rejectModal${registration.maDangKy.trim()}" tabindex="-1" aria-labelledby="rejectModalLabel${registration.maDangKy.trim()}" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <h5 class="modal-title" id="rejectModalLabel${request.maYeuCau.trim()}">Từ Chối Yêu Cầu</h5>
+                                                                    <h5 class="modal-title" id="rejectModalLabel${registration.maDangKy.trim()}">Từ Chối Yêu Cầu</h5>
                                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <form action="${pageContext.request.contextPath}/admin/request/reject" method="post">
-                                                                        <input type="hidden" name="_csrf" value="${_csrf.token}" />
-                                                                        <input type="hidden" name="maYeuCau" value="${request.maYeuCau.trim()}"/>
+                                                                        <sec:csrfInput/>
+                                                                        <input type="hidden" name="maDangKy" value="${registration.maDangKy.trim()}"/>
                                                                         <div class="mb-3">
-                                                                            <label for="ghiChu${request.maYeuCau.trim()}" class="form-label">Lý Do Từ Chối</label>
-                                                                            <textarea class="form-control" id="ghiChu${request.maYeuCau.trim()}" name="ghiChu" rows="3" required></textarea>
+                                                                            <label for="ghiChu${registration.maDangKy.trim()}" class="form-label">Lý Do Từ Chối</label>
+                                                                            <textarea class="form-control" id="ghiChu${registration.maDangKy.trim()}" name="ghiChu" rows="3" required></textarea>
                                                                             <div class="invalid-feedback">Vui lòng nhập lý do từ chối.</div>
                                                                         </div>
                                                                         <button type="submit" class="btn btn-danger">Xác Nhận Từ Chối</button>
@@ -93,7 +91,7 @@
                                                         </div>
                                                     </div>
                                                 </c:if>
-                                                <a href="${pageContext.request.contextPath}/admin/request/view/${request.maYeuCau.trim()}" class="btn btn-info btn-sm mx-1">Xem</a>
+                                                <a href="${pageContext.request.contextPath}/admin/request/view/${registration.maDangKy.trim()}" class="btn btn-info btn-sm mx-1">Xem</a>
                                             </td>
                                         </tr>
                                     </c:forEach>

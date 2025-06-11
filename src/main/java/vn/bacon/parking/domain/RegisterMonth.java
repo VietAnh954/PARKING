@@ -1,16 +1,12 @@
 package vn.bacon.parking.domain;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Entity
-@Table(name = "DangKiThang")
+@Table(name = "DangKyThang")
 public class RegisterMonth {
     @Id
     @Column(name = "MaDangKy", length = 10, columnDefinition = "nchar(10)")
@@ -20,16 +16,30 @@ public class RegisterMonth {
     @JoinColumn(name = "BienSoXe", nullable = false)
     private Vehicle bienSoXe;
 
-    @Column(name = "TGianDangKy", nullable = false)
-    private LocalDate tGianDangKy;
+    @ManyToOne
+    @JoinColumn(name = "MaNV", nullable = true)
+    private Staff maNV; // Nhân viên duyệt/ghi nhận
 
-    @Column(name = "TGianHetHan", nullable = false)
-    private LocalDate tGianHetHan;
+    @Column(name = "NgayDangKy", nullable = false)
+    private LocalDate ngayDangKy;
+
+    @Column(name = "NgayBatDau", nullable = false)
+    private LocalDate ngayBatDau;
+
+    @Column(name = "NgayKetThuc", nullable = false)
+    private LocalDate ngayKetThuc;
+
+    @Column(name = "TrangThai", nullable = false, length = 20)
+    private String trangThai;
+
+    @Column(name = "GhiChu", length = 255)
+    private String ghiChu;
 
     @ManyToOne
-    @JoinColumn(name = "NVGhiNhan", nullable = false)
-    private Staff nvGhiNhan;
+    @JoinColumn(name = "MaBangGia", nullable = false)
+    private Price bangGia;
 
+    // Getters and Setters
     public String getMaDangKy() {
         return maDangKy;
     }
@@ -46,33 +56,78 @@ public class RegisterMonth {
         this.bienSoXe = bienSoXe;
     }
 
-    public LocalDate gettGianDangKy() {
-        return tGianDangKy;
+    public Staff getMaNV() {
+        return maNV;
     }
 
-    public void settGianDangKy(LocalDate tGianDangKy) {
-        this.tGianDangKy = tGianDangKy;
+    public void setMaNV(Staff maNV) {
+        this.maNV = maNV;
     }
 
-    public LocalDate gettGianHetHan() {
-        return tGianHetHan;
+    public LocalDate getNgayDangKy() {
+        return ngayDangKy;
     }
 
-    public void settGianHetHan(LocalDate tGianHetHan) {
-        this.tGianHetHan = tGianHetHan;
+    public void setNgayDangKy(LocalDate ngayDangKy) {
+        this.ngayDangKy = ngayDangKy;
     }
 
-    public Staff getNvGhiNhan() {
-        return nvGhiNhan;
+    public LocalDate getNgayBatDau() {
+        return ngayBatDau;
     }
 
-    public void setNvGhiNhan(Staff nvGhiNhan) {
-        this.nvGhiNhan = nvGhiNhan;
+    public void setNgayBatDau(LocalDate ngayBatDau) {
+        this.ngayBatDau = ngayBatDau;
+    }
+
+    public LocalDate getNgayKetThuc() {
+        return ngayKetThuc;
+    }
+
+    public void setNgayKetThuc(LocalDate ngayKetThuc) {
+        this.ngayKetThuc = ngayKetThuc;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
+    }
+
+    public Price getBangGia() {
+        return bangGia;
     }
 
     public void setBangGia(Price bangGia) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setBangGia'");
+        this.bangGia = bangGia;
     }
 
+    public Date getNgayDangKyAsDate() {
+        return ngayDangKy != null ? Date.from(ngayDangKy.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+    }
+
+    public Date getNgayBatDauAsDate() {
+        return ngayBatDau != null ? Date.from(ngayBatDau.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+    }
+
+    public Date getNgayKetThucAsDate() {
+        return ngayKetThuc != null ? Date.from(ngayKetThuc.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+    }
+
+    @Override
+    public String toString() {
+        return "RegisterMonth [maDangKy=" + maDangKy + ", bienSoXe=" + bienSoXe + ", maNV=" + maNV
+                + ", ngayDangKy=" + ngayDangKy + ", ngayBatDau=" + ngayBatDau + ", ngayKetThuc=" + ngayKetThuc
+                + ", trangThai=" + trangThai + ", ghiChu=" + ghiChu + ", bangGia=" + bangGia + "]";
+    }
 }

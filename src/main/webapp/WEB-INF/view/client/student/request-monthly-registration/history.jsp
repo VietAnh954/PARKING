@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Sử Yêu Cầu</title>
+    <title>Lịch Sử Đăng Ký Tháng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -120,7 +120,7 @@
     <div class="main-content">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                <h1 class="mb-0"><i class="fas fa-history me-2"></i>Lịch Sử Yêu Cầu</h1>
+                <h1 class="mb-0"><i class="fas fa-history me-2"></i>Lịch Sử Đăng Ký Tháng</h1>
             </div>
             <div class="card-body">
                 <c:if test="${not empty successMessage}">
@@ -140,7 +140,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Mã Yêu Cầu</th>
+                            <th>Mã Đăng Ký</th>
                             <th>Biển Số Xe</th>
                             <th>Ngày Bắt Đầu</th>
                             <th>Ngày Hết Hạn</th>
@@ -150,24 +150,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="request" items="${requests}">
+                        <c:forEach var="registration" items="${registrations}">
                             <tr>
-                                <td><c:out value="${request.maYeuCau.trim()}"/></td>
-                                <td><c:out value="${request.vehicle.bienSoXe}"/></td>
-                                <td><fmt:formatDate value="${request.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
-                                <td><fmt:formatDate value="${request.ngayHetHanAsDate}" pattern="dd/MM/yyyy"/></td>
-                                <td><fmt:formatNumber value="${request.gia != null ? request.gia : 0}" pattern="#,###"/></td>
-                                <td><c:out value="${request.trangThai}"/></td>
+                                <td><c:out value="${registration.maDangKy.trim()}"/></td>
+                                <td><c:out value="${registration.bienSoXe.bienSoXe}"/></td>
+                                <td><fmt:formatDate value="${registration.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
+                                <td><fmt:formatDate value="${registration.ngayKetThucAsDate}" pattern="dd/MM/yyyy"/></td>
+                                <td><fmt:formatNumber value="${registration.bangGia.gia != null ? registration.bangGia.gia : 0}" pattern="#,###"/></td>
+                                <td><c:out value="${registration.trangThai}"/></td>
                                 <td>
-                                    <c:if test="${request.trangThai == 'Chờ duyệt'}">
-                                        <a href="${pageContext.request.contextPath}/student/request-monthly-registration/edit?maYeuCau=${request.maYeuCau.trim()}" class="btn-edit">Chỉnh Sửa</a>
+                                    <c:if test="${registration.trangThai == 'Chờ duyệt'}">
+                                        <a href="${pageContext.request.contextPath}/student/request-monthly-registration/edit?maDangKy=${registration.maDangKy.trim()}" class="btn-edit">Chỉnh Sửa</a>
                                     </c:if>
                                 </td>
                             </tr>
                         </c:forEach>
-                        <c:if test="${empty requests}">
+                        <c:if test="${empty registrations}">
                             <tr>
-                                <td colspan="7" class="text-center">Không tìm thấy yêu cầu nào.</td>
+                                <td colspan="7" class="text-center">Không tìm thấy đăng ký nào.</td>
                             </tr>
                         </c:if>
                     </tbody>

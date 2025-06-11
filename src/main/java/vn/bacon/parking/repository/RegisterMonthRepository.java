@@ -13,21 +13,25 @@ import vn.bacon.parking.domain.Vehicle;
 
 @Repository
 public interface RegisterMonthRepository extends JpaRepository<RegisterMonth, String> {
-    // Tìm kiếm theo biển số xe
-    @Query("SELECT d FROM RegisterMonth d WHERE d.bienSoXe.bienSoXe LIKE %:tuKhoa%")
+    List<RegisterMonth> findByBienSoXe_BienSoXe(String bienSoXe);
+
+    @Query("SELECT r FROM RegisterMonth r WHERE r.bienSoXe.bienSoXe LIKE %:tuKhoa%")
     List<RegisterMonth> timKiemTheoBienSoXe(@Param("tuKhoa") String tuKhoa);
 
-    // Lọc đăng ký còn hiệu lực (ngày hết hạn >= ngày hiện tại)
-    @Query("SELECT d FROM RegisterMonth d WHERE d.tGianHetHan >= :ngayHienTai")
+    @Query("SELECT r FROM RegisterMonth r WHERE r.ngayKetThuc >= :ngayHienTai")
     List<RegisterMonth> timDangKyConHieuLuc(@Param("ngayHienTai") LocalDate ngayHienTai);
 
-    // Lọc đăng ký đã hết hạn (ngày hết hạn < ngày hiện tại)
-    @Query("SELECT d FROM RegisterMonth d WHERE d.tGianHetHan < :ngayHienTai")
+    @Query("SELECT r FROM RegisterMonth r WHERE r.ngayKetThuc < :ngayHienTai")
     List<RegisterMonth> timDangKyDaHetHan(@Param("ngayHienTai") LocalDate ngayHienTai);
 
-    // Lấy giá trị lớn nhất của MaDangKy
     @Query("SELECT COALESCE(MAX(CAST(maDangKy AS integer)), 0) FROM RegisterMonth")
     Long findMaxMaDangKy();
 
-    RegisterMonth findByBienSoXeAndTGianHetHanAfter(Vehicle bienSoXe, LocalDate currentDate);
+    boolean existsByBienSoXe_BienSoXeAndTrangThaiInAndNgayKetThucGreaterThanEqual(
+            String bienSoXe, List<String> trangThai, LocalDate ngayKetThuc);
+
+    boolean existsByBienSoXe_BienSoXeAndMaDangKyNotAndTrangThaiInAndNgayKetThucGreaterThanEqual(
+            String bienSoXe, String maDangKy, List<String> trangThai, LocalDate ngayKetThuc);
+
+    RegisterMonth findByBienSoXeAndNgayKetThucAfter(Vehicle bienSoXe, LocalDate currentDate);
 }

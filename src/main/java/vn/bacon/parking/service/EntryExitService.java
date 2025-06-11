@@ -79,7 +79,8 @@ public class EntryExitService {
                     .orElseThrow(() -> new Exception("Hình thức gửi HT001 không tồn tại."));
             gia = 0;
         } else {
-            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndTGianHetHanAfter(
+            // Use the updated method name and field
+            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndNgayKetThucAfter(
                     vehicle, LocalDate.now());
             if (registration != null) {
                 parkingMode = parkingModeRepository.findById("HT002")
@@ -143,7 +144,8 @@ public class EntryExitService {
         if (isLecturer) {
             gia = 0;
         } else {
-            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndTGianHetHanAfter(
+            // Use the updated method name and field
+            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndNgayKetThucAfter(
                     vehicle, LocalDate.now());
             if (registration != null) {
                 gia = 0;

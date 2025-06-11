@@ -28,7 +28,7 @@
                     <div class="container mt-4">
                         <div class="row">
                             <div class="col-md-6 col-12 mx-auto">
-                                <h3>Chi tiết yêu cầu ${request.maYeuCau.trim()}</h3>
+                                <h3>Chi tiết yêu cầu ${registration.maDangKy.trim()}</h3>
                                 <hr />
                                 <c:if test="${not empty errorMessage}">
                                     <div class="alert alert-danger" role="alert">
@@ -38,47 +38,47 @@
                                 <table class="table table-bordered">
                                     <tbody>
                                         <tr>
-                                            <th>Mã Yêu Cầu:</th>
-                                            <td><c:out value="${request.maYeuCau.trim()}"/></td>
+                                            <th>Mã Đăng Ký:</th>
+                                            <td><c:out value="${registration.maDangKy.trim()}"/></td>
                                         </tr>
                                         <tr>
                                             <th>Mã Sinh Viên:</th>
-                                            <td><c:out value="${request.student.maSV}"/></td>
+                                            <td><c:out value="${registration.bienSoXe.maSV != null ? registration.bienSoXe.maSV.maSV : 'N/A'}"/></td>
                                         </tr>
                                         <tr>
                                             <th>Biển Số Xe:</th>
-                                            <td><c:out value="${request.vehicle.bienSoXe}"/></td>
+                                            <td><c:out value="${registration.bienSoXe.bienSoXe}"/></td>
                                         </tr>
                                         <tr>
                                             <th>Giá Tiền (VNĐ):</th>
-                                            <td><fmt:formatNumber value="${request.gia != null ? request.gia : 0}" pattern="#,###"/></td>
+                                            <td><fmt:formatNumber value="${registration.bangGia.gia != null ? registration.bangGia.gia : 0}" pattern="#,###"/></td>
                                         </tr>
                                         <tr>
-                                            <th>Ngày Gửi Yêu Cầu:</th>
-                                            <td><fmt:formatDate value="${request.ngayGuiYeuCauAsDate}" pattern="dd/MM/yyyy"/></td>
+                                            <th>Ngày Đăng Ký:</th>
+                                            <td><fmt:formatDate value="${registration.ngayDangKyAsDate}" pattern="dd/MM/yyyy"/></td>
                                         </tr>
                                         <tr>
                                             <th>Ngày Bắt Đầu:</th>
-                                            <td><fmt:formatDate value="${request.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
+                                            <td><fmt:formatDate value="${registration.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
                                         </tr>
                                         <tr>
                                             <th>Ngày Kết Thúc:</th>
-                                            <td><fmt:formatDate value="${request.ngayHetHanAsDate}" pattern="dd/MM/yyyy"/></td>
+                                            <td><fmt:formatDate value="${registration.ngayKetThucAsDate}" pattern="dd/MM/yyyy"/></td>
                                         </tr>
                                         <tr>
                                             <th>Trạng Thái:</th>
-                                            <td><c:out value="${request.trangThai}"/></td>
+                                            <td><c:out value="${registration.trangThai}"/></td>
                                         </tr>
-                                        <c:if test="${not empty request.nhanVienXuLy}">
+                                        <c:if test="${not empty registration.maNV}">
                                             <tr>
                                                 <th>Được Xử Lý Bởi:</th>
-                                                <td><c:out value="${request.nhanVienXuLy.maNV}"/></td>
+                                                <td><c:out value="${registration.maNV.maNV}"/></td>
                                             </tr>
                                         </c:if>
-                                        <c:if test="${not empty request.ghiChu}">
+                                        <c:if test="${not empty registration.ghiChu}">
                                             <tr>
                                                 <th>Ghi Chú:</th>
-                                                <td><c:out value="${request.ghiChu}"/></td>
+                                                <td><c:out value="${registration.ghiChu}"/></td>
                                             </tr>
                                         </c:if>
                                     </tbody>

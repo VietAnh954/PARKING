@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,7 +29,7 @@
                     <div class="container mt-4">
                         <div class="row">
                             <div class="col-md-6 col-12 mx-auto">
-                                <h3>Duyệt yêu cầu cho mã yêu cầu ${request.maYeuCau.trim()}</h3>
+                                <h3>Duyệt yêu cầu cho mã đăng ký ${registration.maDangKy.trim()}</h3>
                                 <hr />
                                 <c:if test="${not empty errorMessage}">
                                     <div class="alert alert-danger" role="alert">
@@ -36,31 +37,35 @@
                                     </div>
                                 </c:if>
                                 <form method="post" action="${pageContext.request.contextPath}/admin/request/approve" id="approveForm">
-                                    <input type="hidden" name="_csrf" value="${_csrf.token}" />
-                                    <input type="hidden" name="maYeuCau" value="${request.maYeuCau.trim()}" />
+                                    <sec:csrfInput/>
+                                    <input type="hidden" name="maDangKy" value="${registration.maDangKy.trim()}" />
                                     <div class="mb-3">
-                                        <label class="form-label">Mã Yêu Cầu:</label>
-                                        <input type="text" class="form-control" value="${request.maYeuCau.trim()}" readonly />
+                                        <label class="form-label">Mã Đăng Ký:</label>
+                                        <input type="text" class="form-control" value="${registration.maDangKy.trim()}" readonly />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Mã Sinh Viên:</label>
-                                        <input type="text" class="form-control" value="${request.student.maSV}" readonly />
+                                        <input type="text" class="form-control" value="${registration.bienSoXe.maSV != null ? registration.bienSoXe.maSV.maSV : 'N/A'}" readonly />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Biển Số Xe:</label>
-                                        <input type="text" class="form-control" value="${request.vehicle.bienSoXe}" readonly />
+                                        <input type="text" class="form-control" value="${registration.bienSoXe.bienSoXe}" readonly />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Giá Tiền (VNĐ):</label>
-                                        <input type="text" class="form-control" value="<fmt:formatNumber value='${request.gia != null ? request.gia : 0}' pattern='#,###'/>" readonly />
+                                        <input type="text" class="form-control" value="<fmt:formatNumber value='${registration.bangGia.gia != null ? registration.bangGia.gia : 0}' pattern='#,###'/>" readonly />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Ngày Đăng Ký:</label>
+                                        <input type="text" class="form-control" value="<fmt:formatDate value='${registration.ngayDangKyAsDate}' pattern='dd/MM/yyyy'/>" readonly />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Ngày Bắt Đầu:</label>
-                                        <input type="text" class="form-control" value="<fmt:formatDate value='${request.ngayBatDauAsDate}' pattern='dd/MM/yyyy'/>" readonly />
+                                        <input type="text" class="form-control" value="<fmt:formatDate value='${registration.ngayBatDauAsDate}' pattern='dd/MM/yyyy'/>" readonly />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Ngày Kết Thúc:</label>
-                                        <input type="text" class="form-control" value="<fmt:formatDate value='${request.ngayHetHanAsDate}' pattern='dd/MM/yyyy'/>" readonly />
+                                        <input type="text" class="form-control" value="<fmt:formatDate value='${registration.ngayKetThucAsDate}' pattern='dd/MM/yyyy'/>" readonly />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Ghi Chú (Tùy Chọn):</label>
@@ -80,8 +85,8 @@
                                             </div>
                                             <div class="modal-body">
                                                 <form action="${pageContext.request.contextPath}/admin/request/reject" method="post">
-                                                    <input type="hidden" name="_csrf" value="${_csrf.token}" />
-                                                    <input type="hidden" name="maYeuCau" value="${request.maYeuCau.trim()}"/>
+                                                    <sec:csrfInput/>
+                                                    <input type="hidden" name="maDangKy" value="${registration.maDangKy.trim()}"/>
                                                     <div class="mb-3">
                                                         <label for="ghiChu" class="form-label">Lý Do Từ Chối</label>
                                                         <textarea class="form-control" id="ghiChu" name="ghiChu" rows="3" required></textarea>
