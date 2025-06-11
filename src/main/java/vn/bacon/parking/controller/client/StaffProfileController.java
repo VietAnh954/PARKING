@@ -42,7 +42,7 @@ public class StaffProfileController {
         String username = auth.getName();
 
         Optional<Staff> staff = staffService.getStaffById(username);
-        if (staff.isPresent() && "Giảng viên".equals(staff.get().getChucVu())) {
+        if (staff.isPresent()) {
             model.addAttribute("staff", staff.get());
             model.addAttribute("formattedNgayVaoLam", formatDate(staff.get().getNgayVaoLam()));
             return "client/staff/profile/profile";
@@ -57,21 +57,7 @@ public class StaffProfileController {
         String username = auth.getName();
 
         Optional<Staff> staff = staffService.getStaffById(username);
-        if (staff.isPresent() && "Giảng viên".equals(staff.get().getChucVu())) {
-            model.addAttribute("staff", staff.get());
-            model.addAttribute("formattedNgayVaoLam", formatDate(staff.get().getNgayVaoLam()));
-            return "client/staff/profile/editprofile";
-        }
-        return "redirect:/staff/profile";
-    }
-
-    @GetMapping("/profile/edit")
-    public String showEditForm(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-
-        Optional<Staff> staff = staffService.getStaffById(username);
-        if (staff.isPresent() && "Giảng viên".equals(staff.get().getChucVu())) {
+        if (staff.isPresent()) {
             model.addAttribute("staff", staff.get());
             model.addAttribute("formattedNgayVaoLam", formatDate(staff.get().getNgayVaoLam()));
             return "client/staff/profile/editprofile";
@@ -96,8 +82,8 @@ public class StaffProfileController {
         String username = auth.getName();
 
         Optional<Staff> existingStaffOpt = staffService.getStaffById(username);
-        if (!existingStaffOpt.isPresent() || !"Giảng viên".equals(existingStaffOpt.get().getChucVu())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thông tin giảng viên!");
+        if (!existingStaffOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thông tin nhân viên!");
             return "redirect:/staff/profile";
         }
 
@@ -164,7 +150,7 @@ public class StaffProfileController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         Optional<Staff> staff = staffService.getStaffById(username);
-        if (staff.isPresent() && "Giảng viên".equals(staff.get().getChucVu())) {
+        if (staff.isPresent()) {
             return "client/staff/profile/changepassword";
         }
         return "redirect:/";
@@ -180,8 +166,8 @@ public class StaffProfileController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         Optional<Staff> staffOpt = staffService.getStaffById(username);
-        if (!staffOpt.isPresent() || !"Giảng viên".equals(staffOpt.get().getChucVu())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thông tin giảng viên!");
+        if (!staffOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thông tin nhân viên!");
             return "redirect:/staff/profile";
         }
         if (!newPassword.equals(confirmPassword)) {

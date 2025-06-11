@@ -12,4 +12,5 @@ import vn.bacon.parking.domain.Vehicle;
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, String> {
     List<Vehicle> findByMaSV_MaSV(String maSV);
+    List<Vehicle> findByMaNV_MaNV(String maNV);
 }

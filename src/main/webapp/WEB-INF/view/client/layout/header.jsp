@@ -105,9 +105,19 @@
                         <i class="fas fa-list me-2"></i> Chức năng
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chucNangDropdown">
-                        <li><a class="dropdown-item" href="/student/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
-                        <li><a class="dropdown-item" href="/student/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
-                        <li><a class="dropdown-item" href="/student/monthcard"><i class="fas fa-id-card-alt me-2"></i> Quản lý thẻ tháng</a></li>
+                        <sec:authorize access="hasRole('TEACHER')">
+                            <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="/staff/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
+                            <li><a class="dropdown-item" href="/staff/monthcard"><i class="fas fa-id-card-alt me-2"></i> Quản lý thẻ tháng</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasRole('EMPLOYEE')">
+                            <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasRole('STUDENT')">
+                            <li><a class="dropdown-item" href="/student/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="/student/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
+                            <li><a class="dropdown-item" href="/student/monthcard"><i class="fas fa-id-card-alt me-2"></i> Quản lý thẻ tháng</a></li>
+                        </sec:authorize>
                         <sec:authorize access="hasRole('ADMIN')">
                             <li><a class="dropdown-item" href="admin"><i class="fas fa-user-shield me-2"></i> Admin Panel</a></li>
                         </sec:authorize>

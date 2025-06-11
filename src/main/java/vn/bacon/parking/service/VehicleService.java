@@ -45,13 +45,8 @@ public class VehicleService {
     public boolean existsByBienSoXe(String bienSoXe) {
         return vehicleRepository.existsById(bienSoXe);
     }
-
-    public List<Vehicle> getVehiclesByStudentId(String maSV) {
-        return vehicleRepository.findByMaSV_MaSV(maSV);
-    }
-
-    public boolean existsByBienSoXe(String bienSoXe) {
-        return vehicleRepository.existsById(bienSoXe);
+    public List<Vehicle> getVehiclesByStaffId(String maNV) {
+        return vehicleRepository.findByMaNV_MaNV(maNV);
     }
 
 }
