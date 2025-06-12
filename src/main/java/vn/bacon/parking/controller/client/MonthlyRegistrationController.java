@@ -37,7 +37,6 @@ public class MonthlyRegistrationController {
     private final PriceRepository priceRepository;
     private final ParkingModeRepository parkingModeRepository;
 
-   
     public MonthlyRegistrationController(
             RegisterMonthService registerMonthService,
             VehicleService vehicleService,
@@ -291,5 +290,57 @@ public class MonthlyRegistrationController {
         model.addAttribute("registrations", registrations);
         model.addAttribute("maSV", maSV);
         return "client/student/request-monthly-registration/history";
+    }
+
+    @GetMapping("/request-monthly-registration/delete")
+    public String deleteRequest(
+            @RequestParam String maDangKy,
+            RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        String maSV = auth.getName().trim();
+        String trimmedMaDangKy = maDangKy.trim();
+        logger.info("Đang cố gắng xóa đăng ký với Mã: '{}', đã trim: '{}', cho sinh viên: '{}'", maDangKy,
+                trimmedMaDangKy, maSV);
+
+        try {
+            Optional<RegisterMonth> registrationOpt = registerMonthService.getRegistrationById(trimmedMaDangKy);
+            if (!registrationOpt.isPresent()) {
+                logger.warn("Không tìm thấy đăng ký với Mã: '{}'", trimmedMaDangKy);
+                redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn tại!");
+                return "redirect:/student/request-history";
+            }
+
+            RegisterMonth registration = registrationOpt.get();
+            // Kiểm tra quyền sở hữu xe
+            String requestMaSV = registration.getBienSoXe().getMaSV() != null
+                    ? registration.getBienSoXe().getMaSV().getMaSV().trim()
+                    : null;
+            if (requestMaSV == null || !requestMaSV.equals(maSV)) {
+                logger.warn("Sinh viên '{}' không sở hữu đăng ký '{}'. MaSV của xe: '{}'", maSV, trimmedMaDangKy,
+                        requestMaSV);
+                redirectAttributes.addFlashAttribute("errorMessage", "Bạn không có quyền xóa đăng ký này!");
+                return "redirect:/student/request-history";
+            }
+
+            // Kiểm tra trạng thái "Chờ duyệt"
+            if (!"Chờ duyệt".equals(registration.getTrangThai())) {
+                logger.warn("Đăng ký {} có trạng thái '{}', không phải 'Chờ duyệt'", trimmedMaDangKy,
+                        registration.getTrangThai());
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Chỉ có thể xóa đăng ký đang ở trạng thái 'Chờ duyệt'!");
+                return "redirect:/student/request-history";
+            }
+
+            // Xóa đăng ký
+            registerMonthService.deleteRegisterMonthById(trimmedMaDangKy);
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa đăng ký thành công!");
+        } catch (Exception e) {
+            logger.error("Lỗi khi xóa đăng ký '{}': {}", trimmedMaDangKy, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa đăng ký: " + e.getMessage());
+        }
+        return "redirect:/student/request-history";
     }
 }

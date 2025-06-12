@@ -65,33 +65,38 @@
                                             <td><fmt:formatNumber value="${registration.bangGia.gia != null ? registration.bangGia.gia : 0}" pattern="#,###"/></td>
                                             <td><c:out value="${registration.trangThai}"/></td>
                                             <td>
-                                                <c:if test="${registration.trangThai != 'Đã duyệt'}">
-                                                    <a href="${pageContext.request.contextPath}/admin/request/approve/${registration.maDangKy.trim()}" class="btn btn-success btn-sm">Duyệt</a>
-                                                    <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal${registration.maDangKy.trim()}">Từ Chối</a>
-                                                    <div class="modal fade" id="rejectModal${registration.maDangKy.trim()}" tabindex="-1" aria-labelledby="rejectModalLabel${registration.maDangKy.trim()}" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="rejectModalLabel${registration.maDangKy.trim()}">Từ Chối Yêu Cầu</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <form action="${pageContext.request.contextPath}/admin/request/reject" method="post">
-                                                                        <sec:csrfInput/>
-                                                                        <input type="hidden" name="maDangKy" value="${registration.maDangKy.trim()}"/>
-                                                                        <div class="mb-3">
-                                                                            <label for="ghiChu${registration.maDangKy.trim()}" class="form-label">Lý Do Từ Chối</label>
-                                                                            <textarea class="form-control" id="ghiChu${registration.maDangKy.trim()}" name="ghiChu" rows="3" required></textarea>
-                                                                            <div class="invalid-feedback">Vui lòng nhập lý do từ chối.</div>
-                                                                        </div>
-                                                                        <button type="submit" class="btn btn-danger">Xác Nhận Từ Chối</button>
-                                                                    </form>
+                                                <c:choose>
+                                                    <c:when test="${registration.trangThai == 'Đã duyệt' || registration.trangThai == 'Từ chối'}">
+                                                        <a href="${pageContext.request.contextPath}/admin/request/view/${registration.maDangKy.trim()}" class="btn btn-info btn-sm">Xem</a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <a href="${pageContext.request.contextPath}/admin/request/approve/${registration.maDangKy.trim()}" class="btn btn-success btn-sm">Duyệt</a>
+                                                        <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal${registration.maDangKy.trim()}">Từ Chối</a>
+                                                        <div class="modal fade" id="rejectModal${registration.maDangKy.trim()}" tabindex="-1" aria-labelledby="rejectModalLabel${registration.maDangKy.trim()}" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="rejectModalLabel${registration.maDangKy.trim()}">Từ Chối Yêu Cầu</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form action="${pageContext.request.contextPath}/admin/request/reject" method="post">
+                                                                            <sec:csrfInput/>
+                                                                            <input type="hidden" name="maDangKy" value="${registration.maDangKy.trim()}"/>
+                                                                            <div class="mb-3">
+                                                                                <label for="ghiChu${registration.maDangKy.trim()}" class="form-label">Lý Do Từ Chối</label>
+                                                                                <textarea class="form-control" id="ghiChu${registration.maDangKy.trim()}" name="ghiChu" rows="3" required></textarea>
+                                                                                <div class="invalid-feedback">Vui lòng nhập lý do từ chối.</div>
+                                                                            </div>
+                                                                            <button type="submit" class="btn btn-danger">Xác Nhận Từ Chối</button>
+                                                                        </form>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </c:if>
-                                                <a href="${pageContext.request.contextPath}/admin/request/view/${registration.maDangKy.trim()}" class="btn btn-info btn-sm mx-1">Xem</a>
+                                                        <a href="${pageContext.request.contextPath}/admin/request/view/${registration.maDangKy.trim()}" class="btn btn-info btn-sm mx-1">Xem</a>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </td>
                                         </tr>
                                     </c:forEach>

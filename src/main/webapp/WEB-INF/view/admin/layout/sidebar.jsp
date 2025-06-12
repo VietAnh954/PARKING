@@ -9,6 +9,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Dashboard
                 </a>
+                <a class="nav-link" href="/admin/entry-exit">
+                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    Quản lý xe vào/ ra
+                </a>
                 <a class="nav-link" href="/admin/student">
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Sinh Viên

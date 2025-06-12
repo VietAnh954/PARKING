@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,23 +27,27 @@ public class EntryExitService {
 
     private static final Logger logger = LoggerFactory.getLogger(EntryExitService.class);
 
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    private final VehicleRepository vehicleRepository;
+    private final StaffRepository staffRepository;
+    private final RegisterMonthRepository registerMonthRepository;
+    private final PriceRepository priceRepository;
+    private final ParkingModeRepository parkingModeRepository;
+    private final EntryExitDetailRepository entryExitDetailRepository;
 
-    @Autowired
-    private StaffRepository staffRepository;
-
-    @Autowired
-    private RegisterMonthRepository registerMonthRepository;
-
-    @Autowired
-    private PriceRepository priceRepository;
-
-    @Autowired
-    private ParkingModeRepository parkingModeRepository;
-
-    @Autowired
-    private EntryExitDetailRepository entryExitDetailRepository;
+    public EntryExitService(
+            VehicleRepository vehicleRepository,
+            StaffRepository staffRepository,
+            RegisterMonthRepository registerMonthRepository,
+            PriceRepository priceRepository,
+            ParkingModeRepository parkingModeRepository,
+            EntryExitDetailRepository entryExitDetailRepository) {
+        this.vehicleRepository = vehicleRepository;
+        this.staffRepository = staffRepository;
+        this.registerMonthRepository = registerMonthRepository;
+        this.priceRepository = priceRepository;
+        this.parkingModeRepository = parkingModeRepository;
+        this.entryExitDetailRepository = entryExitDetailRepository;
+    }
 
     public EntryExitDetail processVehicleEntry(String bienSoXe, String maNVVao) throws Exception {
         logger.debug("Processing vehicle entry: bienSoXe={}, maNVVao={}", bienSoXe, maNVVao);
@@ -79,8 +82,8 @@ public class EntryExitService {
                     .orElseThrow(() -> new Exception("Hình thức gửi HT001 không tồn tại."));
             gia = 0;
         } else {
-            // Use the updated method name and field
-            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndNgayKetThucAfter(
+            // Sử dụng phương thức mới để kiểm tra trạng thái "Đã duyệt"
+            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndNgayKetThucAfterAndTrangThaiDaDuyet(
                     vehicle, LocalDate.now());
             if (registration != null) {
                 parkingMode = parkingModeRepository.findById("HT002")
@@ -144,8 +147,8 @@ public class EntryExitService {
         if (isLecturer) {
             gia = 0;
         } else {
-            // Use the updated method name and field
-            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndNgayKetThucAfter(
+            // Sử dụng phương thức mới để kiểm tra trạng thái "Đã duyệt"
+            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndNgayKetThucAfterAndTrangThaiDaDuyet(
                     vehicle, LocalDate.now());
             if (registration != null) {
                 gia = 0;
@@ -175,6 +178,12 @@ public class EntryExitService {
     public Page<EntryExitDetail> getAllEntries(Pageable pageable) {
         Page<EntryExitDetail> page = entryExitDetailRepository.findAll(pageable);
         logger.debug("Fetched {} entries for page: {}", page.getContent().size(), pageable);
+        return page;
+    }
+
+    public Page<EntryExitDetail> getEntriesNotExited(Pageable pageable) {
+        Page<EntryExitDetail> page = entryExitDetailRepository.findByTgRaIsNullAndNvRaIsNull(pageable);
+        logger.debug("Fetched {} entries not exited for page: {}", page.getContent().size(), pageable);
         return page;
     }
 }

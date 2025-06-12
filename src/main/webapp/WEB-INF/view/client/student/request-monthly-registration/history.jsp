@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -79,18 +80,24 @@
         tr:hover {
             background-color: #e9ecef;
         }
-        .btn-edit {
-            background-color: var(--accent-color);
+        .btn-edit, .btn-delete {
             border: none;
             border-radius: 8px;
             padding: 0.5rem 1rem;
             color: white;
             text-decoration: none;
             transition: all 0.3s ease;
+            margin-right: 0.5rem;
         }
-        .btn-edit:hover {
+        .btn-edit {
+            background-color: var(--accent-color);
+        }
+        .btn-delete {
+            background-color: var(--danger-color);
+        }
+        .btn-edit:hover, .btn-delete:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(72, 149, 239, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         @media (max-width: 1500px) {
             .main-content {
@@ -146,6 +153,7 @@
                             <th>Ngày Hết Hạn</th>
                             <th>Giá (VNĐ)</th>
                             <th>Trạng Thái</th>
+                            <th>Ghi Chú</th>
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
@@ -158,16 +166,18 @@
                                 <td><fmt:formatDate value="${registration.ngayKetThucAsDate}" pattern="dd/MM/yyyy"/></td>
                                 <td><fmt:formatNumber value="${registration.bangGia.gia != null ? registration.bangGia.gia : 0}" pattern="#,###"/></td>
                                 <td><c:out value="${registration.trangThai}"/></td>
+                                <td><c:out value="${registration.ghiChu != null ? registration.ghiChu : 'N/A'}"/></td>
                                 <td>
                                     <c:if test="${registration.trangThai == 'Chờ duyệt'}">
                                         <a href="${pageContext.request.contextPath}/student/request-monthly-registration/edit?maDangKy=${registration.maDangKy.trim()}" class="btn-edit">Chỉnh Sửa</a>
+                                        <a href="${pageContext.request.contextPath}/student/request-monthly-registration/delete?maDangKy=${registration.maDangKy.trim()}" class="btn-delete" onclick="return confirm('Bạn có chắc muốn xóa yêu cầu này?')">Xóa</a>
                                     </c:if>
                                 </td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty registrations}">
                             <tr>
-                                <td colspan="7" class="text-center">Không tìm thấy đăng ký nào.</td>
+                                <td colspan="8" class="text-center">Không tìm thấy đăng ký nào.</td>
                             </tr>
                         </c:if>
                     </tbody>

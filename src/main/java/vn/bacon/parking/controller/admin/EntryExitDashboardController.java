@@ -28,26 +28,34 @@ public class EntryExitDashboardController {
     private final EntryExitService entryExitService;
     private final StaffService staffService;
 
-    @Autowired
     public EntryExitDashboardController(EntryExitService entryExitService, StaffService staffService) {
         this.entryExitService = entryExitService;
         this.staffService = staffService;
     }
 
     @GetMapping
-    public String listEntries(@RequestParam(defaultValue = "0") int page,
+    public String listEntries(
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String sortByTime,
+            @RequestParam(required = false, defaultValue = "false") boolean showNotExitedOnly,
             Model model) {
-        logger.debug("Listing entries: page={}, size={}, sortByTime={}", page, size, sortByTime);
+        logger.debug("Listing entries with page={}, size={}, sortByTime={}, showNotExitedOnly={}", page, size,
+                sortByTime, showNotExitedOnly);
         Sort sort = Sort.by("tgVao").descending();
         if ("asc".equalsIgnoreCase(sortByTime)) {
             sort = Sort.by("tgVao").ascending();
         }
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<EntryExitDetail> entryPage = entryExitService.getAllEntries(pageable);
+        Page<EntryExitDetail> entryPage;
+        if (showNotExitedOnly) {
+            entryPage = entryExitService.getEntriesNotExited(pageable);
+        } else {
+            entryPage = entryExitService.getAllEntries(pageable);
+        }
         model.addAttribute("entryPage", entryPage);
         model.addAttribute("currentSort", sortByTime);
+        model.addAttribute("showNotExitedOnly", showNotExitedOnly);
         return "admin/entry-exit/show";
     }
 

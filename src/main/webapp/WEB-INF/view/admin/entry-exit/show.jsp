@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,12 +39,21 @@
                             <i class="fas fa-plus"></i> Thêm bản ghi vào
                         </a>
 
-                        <!-- Sort Options -->
+                        <!-- Filter and Sort Options -->
                         <div class="mb-3">
-                            <a href="?sortByTime=asc" class="btn btn-secondary ${currentSort == 'asc' ? 'active' : ''}">
+                            <form id="filterForm" action="/admin/entry-exit" method="get" class="d-inline">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="showNotExitedOnly" name="showNotExitedOnly" value="true" ${showNotExitedOnly ? 'checked' : ''} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="showNotExitedOnly">Chỉ hiển thị xe chưa ra bãi</label>
+                                </div>
+                                <input type="hidden" name="page" value="0">
+                                <input type="hidden" name="size" value="${entryPage.size}">
+                                <input type="hidden" name="sortByTime" value="${currentSort}">
+                            </form>
+                            <a href="?showNotExitedOnly=${showNotExitedOnly}&sortByTime=asc" class="btn btn-secondary ${currentSort == 'asc' ? 'active' : ''}">
                                 <i class="fas fa-sort-up"></i> Sắp xếp thời gian vào (Tăng dần)
                             </a>
-                            <a href="?sortByTime=desc" class="btn btn-secondary ${currentSort == 'desc' || empty currentSort ? 'active' : ''}">
+                            <a href="?showNotExitedOnly=${showNotExitedOnly}&sortByTime=desc" class="btn btn-secondary ${currentSort == 'desc' || empty currentSort ? 'active' : ''}">
                                 <i class="fas fa-sort-down"></i> Sắp xếp thời gian vào (Giảm dần)
                             </a>
                         </div>
@@ -106,7 +115,7 @@
                                                             <c:if test="${entry.tgRa == null}">
                                                                 <form action="<c:url value='/admin/entry-exit/exit' />" method="post" style="display:inline;">
                                                                     <input type="hidden" name="maCTVaoRa" value="${entry.maCTVaoRa}" />
-                                                                    <sec:csrfInput />
+                                                                    <security:csrfInput />
                                                                     <button type="submit" class="btn btn-warning btn-sm">
                                                                         <i class="fas fa-sign-out-alt"></i> Ghi nhận ra
                                                                     </button>
@@ -128,17 +137,17 @@
                                 <ul class="pagination justify-content-center">
                                     <c:if test="${entryPage.hasPrevious()}">
                                         <li class="page-item">
-                                            <a class="page-link" href="?page=${entryPage.number - 1}&size=${entryPage.size}&sortByTime=${currentSort}">Trước</a>
+                                            <a class="page-link" href="?page=${entryPage.number - 1}&size=${entryPage.size}&sortByTime=${currentSort}&showNotExitedOnly=${showNotExitedOnly}">Trước</a>
                                         </li>
                                     </c:if>
                                     <c:forEach begin="0" end="${entryPage.totalPages - 1}" var="i">
                                         <li class="page-item ${entryPage.number == i ? 'active' : ''}">
-                                            <a class="page-link" href="?page=${i}&size=${entryPage.size}&sortByTime=${currentSort}">${i + 1}</a>
+                                            <a class="page-link" href="?page=${i}&size=${entryPage.size}&sortByTime=${currentSort}&showNotExitedOnly=${showNotExitedOnly}">${i + 1}</a>
                                         </li>
                                     </c:forEach>
                                     <c:if test="${entryPage.hasNext()}">
                                         <li class="page-item">
-                                            <a class="page-link" href="?page=${entryPage.number + 1}&size=${entryPage.size}&sortByTime=${currentSort}">Sau</a>
+                                            <a class="page-link" href="?page=${entryPage.number + 1}&size=${entryPage.size}&sortByTime=${currentSort}&showNotExitedOnly=${showNotExitedOnly}">Sau</a>
                                         </li>
                                     </c:if>
                                 </ul>

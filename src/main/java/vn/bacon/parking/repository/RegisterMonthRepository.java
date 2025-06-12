@@ -13,25 +13,27 @@ import vn.bacon.parking.domain.Vehicle;
 
 @Repository
 public interface RegisterMonthRepository extends JpaRepository<RegisterMonth, String> {
-    List<RegisterMonth> findByBienSoXe_BienSoXe(String bienSoXe);
+        List<RegisterMonth> findByBienSoXe_BienSoXe(String bienSoXe);
 
-    @Query("SELECT r FROM RegisterMonth r WHERE r.bienSoXe.bienSoXe LIKE %:tuKhoa%")
-    List<RegisterMonth> timKiemTheoBienSoXe(@Param("tuKhoa") String tuKhoa);
+        @Query("SELECT r FROM RegisterMonth r WHERE r.bienSoXe.bienSoXe LIKE %:tuKhoa%")
+        List<RegisterMonth> timKiemTheoBienSoXe(@Param("tuKhoa") String tuKhoa);
 
-    @Query("SELECT r FROM RegisterMonth r WHERE r.ngayKetThuc >= :ngayHienTai")
-    List<RegisterMonth> timDangKyConHieuLuc(@Param("ngayHienTai") LocalDate ngayHienTai);
+        @Query("SELECT r FROM RegisterMonth r WHERE r.ngayKetThuc >= :ngayHienTai")
+        List<RegisterMonth> timDangKyConHieuLuc(@Param("ngayHienTai") LocalDate ngayHienTai);
 
-    @Query("SELECT r FROM RegisterMonth r WHERE r.ngayKetThuc < :ngayHienTai")
-    List<RegisterMonth> timDangKyDaHetHan(@Param("ngayHienTai") LocalDate ngayHienTai);
+        @Query("SELECT r FROM RegisterMonth r WHERE r.ngayKetThuc < :ngayHienTai")
+        List<RegisterMonth> timDangKyDaHetHan(@Param("ngayHienTai") LocalDate ngayHienTai);
 
-    @Query("SELECT COALESCE(MAX(CAST(maDangKy AS integer)), 0) FROM RegisterMonth")
-    Long findMaxMaDangKy();
+        @Query("SELECT COALESCE(MAX(CAST(maDangKy AS integer)), 0) FROM RegisterMonth")
+        Long findMaxMaDangKy();
 
-    boolean existsByBienSoXe_BienSoXeAndTrangThaiInAndNgayKetThucGreaterThanEqual(
-            String bienSoXe, List<String> trangThai, LocalDate ngayKetThuc);
+        boolean existsByBienSoXe_BienSoXeAndTrangThaiInAndNgayKetThucGreaterThanEqual(
+                        String bienSoXe, List<String> trangThai, LocalDate ngayKetThuc);
 
-    boolean existsByBienSoXe_BienSoXeAndMaDangKyNotAndTrangThaiInAndNgayKetThucGreaterThanEqual(
-            String bienSoXe, String maDangKy, List<String> trangThai, LocalDate ngayKetThuc);
+        boolean existsByBienSoXe_BienSoXeAndMaDangKyNotAndTrangThaiInAndNgayKetThucGreaterThanEqual(
+                        String bienSoXe, String maDangKy, List<String> trangThai, LocalDate ngayKetThuc);
 
-    RegisterMonth findByBienSoXeAndNgayKetThucAfter(Vehicle bienSoXe, LocalDate currentDate);
+        @Query("SELECT r FROM RegisterMonth r WHERE r.bienSoXe = :bienSoXe AND r.ngayKetThuc > :currentDate AND r.trangThai = 'Đã duyệt'")
+        RegisterMonth findByBienSoXeAndNgayKetThucAfterAndTrangThaiDaDuyet(@Param("bienSoXe") Vehicle bienSoXe,
+                        @Param("currentDate") LocalDate currentDate);
 }
