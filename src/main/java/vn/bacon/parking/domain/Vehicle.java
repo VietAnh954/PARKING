@@ -72,6 +72,14 @@ public class Vehicle {
         this.maSV = maSV;
     }
 
+    public String getTenXe() {
+        return tenXe;
+    }
+
+    public void setTenXe(String tenXe) {
+        this.tenXe = tenXe;
+    }
+
     @Override
     public String toString() {
         return "Vehicle [bienSoXe=" + bienSoXe + ", maLoaiXe=" + maLoaiXe + ", maNV=" + maNV + ", maSV=" + maSV + "]";

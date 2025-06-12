@@ -57,7 +57,11 @@ public class StaffProfileController {
         String username = auth.getName();
 
         Optional<Staff> staff = staffService.getStaffById(username);
+<<<<<<< HEAD
         if (staff.isPresent()) {
+=======
+        if (staff.isPresent() && "Giảng viên".equals(staff.get().getChucVu())) {
+>>>>>>> Thanh
             model.addAttribute("staff", staff.get());
             model.addAttribute("formattedNgayVaoLam", formatDate(staff.get().getNgayVaoLam()));
             return "client/staff/profile/editprofile";

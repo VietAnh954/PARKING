@@ -2,12 +2,32 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        height: 100%;
+    }
+
     body {
-        padding-top: 80px;
-        padding-bottom: 120px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
         background-color: #f5f7fa;
         font-family: 'Roboto', 'Arial', sans-serif;
+        padding-top: 80px;
+        padding-bottom: 200px;
     }
+
+    #page-content {
+        flex: 1 0 auto;
+        width: 100%;
+        min-height: calc(100vh - 280px);
+    }
+
     .navbar {
         background: linear-gradient(135deg, #1a2d4e 0%, #3b5998 100%);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -105,6 +125,7 @@
                         <i class="fas fa-list me-2"></i> Chức năng
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chucNangDropdown">
+<<<<<<< HEAD
                         <sec:authorize access="hasRole('TEACHER')">
                             <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="/staff/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
@@ -118,6 +139,34 @@
                             <li><a class="dropdown-item" href="/student/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
                             <li><a class="dropdown-item" href="/student/monthcard"><i class="fas fa-id-card-alt me-2"></i> Quản lý thẻ tháng</a></li>
                         </sec:authorize>
+=======
+                        <c:choose>
+                            <c:when test="${sessionScope.isStaff && sessionScope.chucVu == 'Giảng viên'}">
+                                <!-- Staff (Giảng viên) Links -->
+                               <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="/staff/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Thông tin xe</a></li>
+                                <li><a class="dropdown-item" href="/staff/vehicle/history"><i class="fas fa-history me-2"></i> Lịch sử gửi xe</a></li>
+                            </c:when>
+                            <c:when test="${!sessionScope.isStaff}">
+                                <!-- Student Links -->
+                                <li><a class="dropdown-item" href="/student/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="/student/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
+                                <li><a class="dropdown-item" href="/student/vehicle/history"><i class="fas fa-history me-2"></i> Lịch sử gửi xe</a></li>
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item" href="/student/request-monthly-registration">
+                                        <i class="fas fa-id-card-alt me-2"></i> Đăng ký vé tháng
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/student/request-history"><i class="fas fa-history me-2"></i> Lịch sử yêu cầu</a></li>
+                                    </ul>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <!-- Other Staff (e.g., Quản lý, Bảo vệ) - Limited or No Links -->
+                                <li><a class="dropdown-item" href="/"><i class="fas fa-home me-2"></i> Trang chủ</a></li>
+                            </c:otherwise>
+                        </c:choose>
+>>>>>>> Thanh
                         <sec:authorize access="hasRole('ADMIN')">
                             <li><a class="dropdown-item" href="admin"><i class="fas fa-user-shield me-2"></i> Admin Panel</a></li>
                         </sec:authorize>
@@ -143,3 +192,4 @@
         </div>
     </div>
 </nav>
+<div id="page-content">

@@ -1,12 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request History</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Lịch Sử Đăng Ký Tháng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -54,7 +56,7 @@
         .card-body {
             padding: 2.5rem;
             overflow-y: auto;
-            max-height: calc(800px - 150px); /* Adjust for header and padding */
+            max-height: calc(800px - 150px);
         }
         h1 {
             font-weight: 700;
@@ -78,18 +80,24 @@
         tr:hover {
             background-color: #e9ecef;
         }
-        .btn-edit {
-            background-color: var(--accent-color);
+        .btn-edit, .btn-delete {
             border: none;
             border-radius: 8px;
             padding: 0.5rem 1rem;
             color: white;
             text-decoration: none;
             transition: all 0.3s ease;
+            margin-right: 0.5rem;
         }
-        .btn-edit:hover {
+        .btn-edit {
+            background-color: var(--accent-color);
+        }
+        .btn-delete {
+            background-color: var(--danger-color);
+        }
+        .btn-edit:hover, .btn-delete:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(72, 149, 239, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         @media (max-width: 1500px) {
             .main-content {
@@ -119,7 +127,7 @@
     <div class="main-content">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                <h1 class="mb-0"><i class="fas fa-history me-2"></i>Request History</h1>
+                <h1 class="mb-0"><i class="fas fa-history me-2"></i>Lịch Sử Đăng Ký Tháng</h1>
             </div>
             <div class="card-body">
                 <c:if test="${not empty successMessage}">
@@ -139,32 +147,37 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Request ID</th>
-                            <th>Vehicle License Plate</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th>Mã Đăng Ký</th>
+                            <th>Biển Số Xe</th>
+                            <th>Ngày Bắt Đầu</th>
+                            <th>Ngày Hết Hạn</th>
+                            <th>Giá (VNĐ)</th>
+                            <th>Trạng Thái</th>
+                            <th>Ghi Chú</th>
+                            <th>Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="request" items="${requests}">
+                        <c:forEach var="registration" items="${registrations}">
                             <tr>
-                                <td><c:out value="${request.requestId.trim()}"/></td>
-                                <td><c:out value="${request.vehicle.bienSoXe}"/></td>
-                                <td><c:out value="${request.startDate}"/></td>
-                                <td><c:out value="${request.endDate}"/></td>
-                                <td><c:out value="${request.status}"/></td>
+                                <td><c:out value="${registration.maDangKy.trim()}"/></td>
+                                <td><c:out value="${registration.bienSoXe.bienSoXe}"/></td>
+                                <td><fmt:formatDate value="${registration.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
+                                <td><fmt:formatDate value="${registration.ngayKetThucAsDate}" pattern="dd/MM/yyyy"/></td>
+                                <td><fmt:formatNumber value="${registration.bangGia.gia != null ? registration.bangGia.gia : 0}" pattern="#,###"/></td>
+                                <td><c:out value="${registration.trangThai}"/></td>
+                                <td><c:out value="${registration.ghiChu != null ? registration.ghiChu : 'N/A'}"/></td>
                                 <td>
-                                    <c:if test="${request.status == 'Chờ duyệt'}">
-                                        <a href="${pageContext.request.contextPath}/student/request-monthly-registration/edit?requestId=${request.requestId.trim()}" class="btn-edit">Edit</a>
+                                    <c:if test="${registration.trangThai == 'Chờ duyệt'}">
+                                        <a href="${pageContext.request.contextPath}/student/request-monthly-registration/edit?maDangKy=${registration.maDangKy.trim()}" class="btn-edit">Chỉnh Sửa</a>
+                                        <a href="${pageContext.request.contextPath}/student/request-monthly-registration/delete?maDangKy=${registration.maDangKy.trim()}" class="btn-delete" onclick="return confirm('Bạn có chắc muốn xóa yêu cầu này?')">Xóa</a>
                                     </c:if>
                                 </td>
                             </tr>
                         </c:forEach>
-                        <c:if test="${empty requests}">
+                        <c:if test="${empty registrations}">
                             <tr>
-                                <td colspan="6" class="text-center">No requests found.</td>
+                                <td colspan="8" class="text-center">Không tìm thấy đăng ký nào.</td>
                             </tr>
                         </c:if>
                     </tbody>
@@ -173,7 +186,6 @@
         </div>
     </div>
     <jsp:include page="../../layout/footer.jsp"/>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

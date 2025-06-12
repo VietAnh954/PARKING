@@ -49,4 +49,7 @@ public class VehicleService {
         return vehicleRepository.findByMaNV_MaNV(maNV);
     }
 
+    public List<Vehicle> getVehiclesByStaffId(String maNV) {
+        return vehicleRepository.findByMaNV_MaNV(maNV);
+    }
 }
