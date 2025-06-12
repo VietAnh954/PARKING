@@ -1,13 +1,14 @@
+
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Entry/Exit Records - Admin Dashboard</title>
+    <title>Quản lý vào/ra - Bảng điều khiển Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,11 +23,11 @@
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Quản lý vào/ra</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Entry/Exit Records</li>
+                        <li class="breadcrumb-item"><a href="/admin">Bảng điều khiển</a></li>
+                        <li class="breadcrumb-item active">Bản ghi vào/ra</li>
                     </ol>
                     <div class="container mt-4">
-                        <!-- Success/Error Messages -->
+                        <!-- Thông báo thành công/lỗi -->
                         <c:if test="${not empty successMessage}">
                             <div class="alert alert-success">${successMessage}</div>
                         </c:if>
@@ -34,12 +35,40 @@
                             <div class="alert alert-danger">${errorMessage}</div>
                         </c:if>
 
-                        <!-- Add New Entry Button -->
+                        <!-- Tình trạng bãi đỗ -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-parking me-1"></i>
+                                Tình trạng bãi đỗ
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên bãi đỗ</th>
+                                            <th>Loại xe</th>
+                                            <th>Số chỗ trống</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="parkingLot" items="${parkingLotList}">
+                                            <tr>
+                                                <td>${parkingLot.parkingLotName}</td>
+                                                <td>${parkingLot.vehicleType != null ? parkingLot.vehicleType.tenLoaiXe : 'N/A'}</td>
+                                                <td>${parkingLot.availableSpaces}</td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Nút thêm bản ghi mới -->
                         <a href="/admin/entry-exit/add" class="btn btn-primary mb-3">
                             <i class="fas fa-plus"></i> Thêm bản ghi vào
                         </a>
 
-                        <!-- Filter and Sort Options -->
+                        <!-- Tùy chọn lọc và sắp xếp -->
                         <div class="mb-3">
                             <form id="filterForm" action="/admin/entry-exit" method="get" class="d-inline">
                                 <div class="form-check form-check-inline">
@@ -51,30 +80,30 @@
                                 <input type="hidden" name="sortByTime" value="${currentSort}">
                             </form>
                             <a href="?showNotExitedOnly=${showNotExitedOnly}&sortByTime=asc" class="btn btn-secondary ${currentSort == 'asc' ? 'active' : ''}">
-                                <i class="fas fa-sort-up"></i> Sắp xếp thời gian vào (Tăng dần)
+                                <i class="fas fa-sort-up"></i> Sắp xếp theo thời gian vào (Tăng dần)
                             </a>
                             <a href="?showNotExitedOnly=${showNotExitedOnly}&sortByTime=desc" class="btn btn-secondary ${currentSort == 'desc' || empty currentSort ? 'active' : ''}">
-                                <i class="fas fa-sort-down"></i> Sắp xếp thời gian vào (Giảm dần)
+                                <i class="fas fa-sort-down"></i> Sắp xếp theo thời gian vào (Giảm dần)
                             </a>
                         </div>
 
-                        <!-- Debug Output for Null Fields -->
+                        <!-- Gỡ lỗi trường null -->
                         <c:if test="${not empty entryPage.content}">
                             <c:forEach var="entry" items="${entryPage.content}">
                                 <c:if test="${entry.tgVao == null}">
                                     <div class="alert alert-warning">
-                                        Warning: Null tgVao detected for MaCTVaoRa=${entry.maCTVaoRa}
+                                        Cảnh báo: Phát hiện tgVao null cho MaCTVaoRa=${entry.maCTVaoRa}
                                     </div>
                                 </c:if>
                                 <c:if test="${entry.bienSoXe == null}">
                                     <div class="alert alert-warning">
-                                        Warning: Null bienSoXe detected for MaCTVaoRa=${entry.maCTVaoRa}
+                                        Cảnh báo: Phát hiện bienSoXe null cho MaCTVaoRa=${entry.maCTVaoRa}
                                     </div>
                                 </c:if>
                             </c:forEach>
                         </c:if>
 
-                        <!-- Entry Table -->
+                        <!-- Bảng bản ghi vào/ra -->
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
@@ -95,7 +124,7 @@
                                                     <th>Thời gian ra</th>
                                                     <th>Nhân viên vào</th>
                                                     <th>Nhân viên ra</th>
-                                                    <th>Hình thức</th>
+                                                    <th>Hình thức gửi</th>
                                                     <th>Giá (VNĐ)</th>
                                                     <th>Thao tác</th>
                                                 </tr>
@@ -131,9 +160,9 @@
                             </div>
                         </div>
 
-                        <!-- Pagination -->
+                        <!-- Phân trang -->
                         <c:if test="${entryPage != null && entryPage.totalPages > 0}">
-                            <nav aria-label="Pagination">
+                            <nav aria-label="Phân trang">
                                 <ul class="pagination justify-content-center">
                                     <c:if test="${entryPage.hasPrevious()}">
                                         <li class="page-item">

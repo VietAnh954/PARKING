@@ -2,7 +2,6 @@ package vn.bacon.parking.controller.admin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import vn.bacon.parking.domain.EntryExitDetail;
+import vn.bacon.parking.repository.ParkingLotRepository;
 import vn.bacon.parking.service.EntryExitService;
 import vn.bacon.parking.service.StaffService;
 
@@ -27,10 +27,15 @@ public class EntryExitDashboardController {
 
     private final EntryExitService entryExitService;
     private final StaffService staffService;
+    private final ParkingLotRepository parkingLotRepository;
 
-    public EntryExitDashboardController(EntryExitService entryExitService, StaffService staffService) {
+    public EntryExitDashboardController(
+            EntryExitService entryExitService,
+            StaffService staffService,
+            ParkingLotRepository parkingLotRepository) {
         this.entryExitService = entryExitService;
         this.staffService = staffService;
+        this.parkingLotRepository = parkingLotRepository;
     }
 
     @GetMapping
@@ -56,6 +61,7 @@ public class EntryExitDashboardController {
         model.addAttribute("entryPage", entryPage);
         model.addAttribute("currentSort", sortByTime);
         model.addAttribute("showNotExitedOnly", showNotExitedOnly);
+        model.addAttribute("parkingLotList", parkingLotRepository.findAll());
         return "admin/entry-exit/show";
     }
 
@@ -77,8 +83,8 @@ public class EntryExitDashboardController {
                     "Xe " + bienSoXe + " đã được ghi nhận vào bãi. Giá: "
                             + (entry.getGia() != null ? entry.getGia() : 0) + " VNĐ");
         } catch (Exception e) {
-            logger.error("Error adding entry: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            logger.error("Lỗi khi thêm bản ghi: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }
         return "redirect:/admin/entry-exit";
     }
@@ -92,11 +98,11 @@ public class EntryExitDashboardController {
             EntryExitDetail entry = entryExitService.processVehicleExit(maCTVaoRa, maNVRa);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Xe " + (entry.getBienSoXe() != null ? entry.getBienSoXe().getBienSoXe() : "N/A")
-                            + " đã được ghi nhận ra. Giá: "
+                            + " đã được ghi nhận ra bãi. Giá: "
                             + (entry.getGia() != null ? entry.getGia() : 0) + " VNĐ");
         } catch (Exception e) {
-            logger.error("Error processing exit: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            logger.error("Lỗi khi xử lý xe ra: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }
         return "redirect:/admin/entry-exit";
     }
