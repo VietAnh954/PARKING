@@ -125,7 +125,11 @@
                         <i class="fas fa-list me-2"></i> Chức năng
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chucNangDropdown">
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+>>>>>>> e7d97f61338e2fd66a6d7fa1ee760a392083ebe5
                         <sec:authorize access="hasRole('TEACHER')">
                             <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="/staff/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
@@ -166,7 +170,11 @@
                                 <li><a class="dropdown-item" href="/"><i class="fas fa-home me-2"></i> Trang chủ</a></li>
                             </c:otherwise>
                         </c:choose>
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> Thanh
+>>>>>>> e7d97f61338e2fd66a6d7fa1ee760a392083ebe5
                         <sec:authorize access="hasRole('ADMIN')">
                             <li><a class="dropdown-item" href="admin"><i class="fas fa-user-shield me-2"></i> Admin Panel</a></li>
                         </sec:authorize>

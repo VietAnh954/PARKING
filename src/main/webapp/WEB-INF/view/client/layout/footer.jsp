@@ -25,13 +25,21 @@
         bottom: 0;
         left: 0;
         z-index: 1000;
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+>>>>>>> e7d97f61338e2fd66a6d7fa1ee760a392083ebe5
         position: fixed;
         bottom: 0;
         left: 0;
 =======
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> Thanh
+>>>>>>> e7d97f61338e2fd66a6d7fa1ee760a392083ebe5
     }
     .footer-title {
         font-size: 1.2rem;

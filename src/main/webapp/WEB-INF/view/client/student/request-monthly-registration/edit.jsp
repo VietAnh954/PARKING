@@ -1,12 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Monthly Registration Request</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Chỉnh Sửa Đăng Ký Tháng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -30,11 +32,10 @@
         }
         .main-content {
             width: 1500px;
-            height: 800px;
             margin: 0 auto;
             padding: 2rem 0;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
         }
         .card {
@@ -43,7 +44,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1400px;
         }
         .card-header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -53,8 +54,6 @@
         }
         .card-body {
             padding: 2.5rem;
-            overflow-y: auto;
-            max-height: calc(800px - 150px); /* Adjust for header and padding */
         }
         h1 {
             font-weight: 700;
@@ -63,49 +62,23 @@
             font-size: 1.8rem;
         }
         .form-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 0.5rem;
-        }
-        .form-control, .form-select {
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            font-weight: 500;
         }
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-color: var(--accent-color);
             border: none;
             border-radius: 8px;
             padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
             transition: all 0.3s ease;
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-        .alert {
-            border-radius: 8px;
-            padding: 1rem;
-        }
-        .invalid-feedback {
-            color: var(--danger-color);
-            font-size: 0.85rem;
+            box-shadow: 0 5px 15px rgba(72, 149, 239, 0.3);
         }
         @media (max-width: 1500px) {
             .main-content {
                 width: 100%;
-                height: auto;
                 padding: 1rem;
-            }
-            .card-body {
-                max-height: none;
             }
         }
         @media (max-width: 768px) {
@@ -123,7 +96,7 @@
     <div class="main-content">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                <h1 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Monthly Registration Request</h1>
+                <h1 class="mb-0"><i class="fas fa-edit me-2"></i>Chỉnh Sửa Đăng Ký Tháng</h1>
             </div>
             <div class="card-body">
                 <c:if test="${not empty error}">
@@ -133,82 +106,42 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 </c:if>
-                <form action="${pageContext.request.contextPath}/student/request-monthly-registration/edit" 
-                      method="post" class="needs-validation" novalidate>
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                    <input type="hidden" name="requestId" value="${request.requestId.trim()}"/>
-                    <div class="mb-4">
-                        <label for="studentId" class="form-label">
-                            <i class="fas fa-id-card me-2"></i>Student ID
-                        </label>
-                        <input type="text" id="studentId" value="${studentId}" class="form-control" readonly>
-                    </div>
-                    <div class="mb-4">
-                        <label for="vehicleId" class="form-label">
-                            <i class="fas fa-motorcycle me-2"></i>Vehicle License Plate
-                        </label>
-                        <select id="vehicleId" name="vehicleId" class="form-select" required>
-                            <option value="" disabled>Select a vehicle</option>
+                <form method="post" action="${pageContext.request.contextPath}/student/request-monthly-registration/edit" id="editForm">
+                    <sec:csrfInput/>
+                    <input type="hidden" name="maDangKy" value="${registration.maDangKy}"/>
+                    <div class="mb-3">
+                        <label for="bienSoXe" class="form-label">Biển Số Xe</label>
+                        <select name="bienSoXe" class="form-control" id="bienSoXe" required>
+                            <option value="">-- Chọn xe --</option>
                             <c:forEach var="vehicle" items="${vehicles}">
-                                <option value="${vehicle.bienSoXe}" ${vehicle.bienSoXe == request.vehicle.bienSoXe ? 'selected' : ''}>
+                                <option value="${vehicle.bienSoXe}" ${vehicle.bienSoXe == registration.bienSoXe.bienSoXe ? 'selected' : ''}>
                                     <c:out value="${vehicle.bienSoXe}"/>
                                 </option>
                             </c:forEach>
                         </select>
-                        <div class="invalid-feedback">Please select a vehicle.</div>
-                        <c:if test="${empty vehicles}">
-                            <div class="mt-2 text-danger">
-                                <i class="fas fa-info-circle me-2"></i>No vehicles registered. Please add a vehicle first.
-                            </div>
-                        </c:if>
                     </div>
-                    <div class="mb-4">
-                        <label for="startDate" class="form-label">
-                            <i class="far fa-calendar-alt me-2"></i>Start Date
-                        </label>
-                        <input type="date" id="startDate" name="startDate" class="form-control" required
-                               value="${request.startDate}" min="<%= java.time.LocalDate.now().plusDays(1) %>">
-                        <div class="invalid-feedback">Please select a future date.</div>
+                    <div class="mb-3">
+                        <label for="ngayBatDau" class="form-label">Ngày Bắt Đầu</label>
+                        <input type="date" name="ngayBatDau" class="form-control" id="ngayBatDau" value="${registration.ngayBatDau}" required/>
                     </div>
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-save me-2"></i>Update Request
-                        </button>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Cập Nhật</button>
                 </form>
             </div>
         </div>
     </div>
     <jsp:include page="../../layout/footer.jsp"/>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Bootstrap form validation
-        (function () {
-            'use strict';
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        })();
-
-        // Client-side date validation
-        document.getElementById('startDate').addEventListener('change', function () {
-            const selectedDate = new Date(this.value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            if (selectedDate <= today) {
-                this.setCustomValidity('Please select a future date.');
-                this.reportValidity();
-                this.value = '';
-            } else {
-                this.setCustomValidity('');
+        document.getElementById('editForm').addEventListener('submit', function(event) {
+            const formData = new FormData(this);
+            console.log('Form data being submitted:');
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+            const maDangKy = formData.get('maDangKy');
+            if (!maDangKy) {
+                event.preventDefault();
+                alert('Mã đăng ký không được để trống!');
             }
         });
     </script>

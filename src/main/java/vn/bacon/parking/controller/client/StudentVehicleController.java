@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+>>>>>>> e7d97f61338e2fd66a6d7fa1ee760a392083ebe5
 package vn.bacon.parking.controller.client;
 
 import org.springframework.security.core.Authentication;
@@ -108,4 +112,8 @@ public class StudentVehicleController {
         return "redirect:/";
     }
 }
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> Thanh
+>>>>>>> e7d97f61338e2fd66a6d7fa1ee760a392083ebe5

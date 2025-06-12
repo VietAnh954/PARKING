@@ -45,8 +45,10 @@ public class VehicleService {
     public boolean existsByBienSoXe(String bienSoXe) {
         return vehicleRepository.existsById(bienSoXe);
     }
-    public List<Vehicle> getVehiclesByStaffId(String maNV) {
+
+    public List<Vehicle> getVehiclesByStaffId(String maNV) { // Giữ lại phương thức này
         return vehicleRepository.findByMaNV_MaNV(maNV);
     }
 
+    // Đã xóa phương thức getVehiclesByStaffId(String maNV) bị trùng lặp ở đây.
 }

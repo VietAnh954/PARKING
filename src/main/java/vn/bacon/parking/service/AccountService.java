@@ -23,7 +23,7 @@ public class AccountService {
     private final StudentRepository studentRepository;
     private final StaffRepository staffRepository;
 
-    @Autowired
+    
     public AccountService(AccountRepository accountRepository, RoleRepository roleRepository,
             PasswordEncoder passwordEncoder, StudentRepository studentRepository, StaffRepository staffRepository) {
         this.studentRepository = studentRepository;

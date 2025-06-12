@@ -40,11 +40,11 @@ public class Vehicle {
         this.bienSoXe = bienSoXe;
     }
 
-    public String getTenXe() {
+    public String getTenXe() { // Giữ lại cặp này
         return tenXe;
     }
 
-    public void setTenXe(String tenXe) {
+    public void setTenXe(String tenXe) { // Giữ lại cặp này
         this.tenXe = tenXe;
     }
 
@@ -72,9 +72,10 @@ public class Vehicle {
         this.maSV = maSV;
     }
 
+    // Đã xóa cặp getTenXe()/setTenXe() bị trùng lặp ở đây.
+
     @Override
     public String toString() {
         return "Vehicle [bienSoXe=" + bienSoXe + ", maLoaiXe=" + maLoaiXe + ", maNV=" + maNV + ", maSV=" + maSV + "]";
     }
-
 }

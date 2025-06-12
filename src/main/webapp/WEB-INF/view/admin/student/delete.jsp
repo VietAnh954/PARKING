@@ -34,6 +34,11 @@
                         <h3>Xóa sinh viên với MÃ SV = ${maSV}</h3>
                         <div class="card">
                             <div class="card-body">
+                                <c:if test="${not empty errorMessage}">
+                                    <div class="alert alert-danger" role="alert">
+                                        ${errorMessage}
+                                    </div>
+                                </c:if>
                                 <div class="alert alert-danger" role="alert">
                                     Bạn có chắc chắn muốn xóa sinh viên này? Hành động này không thể hoàn tác.
                                     <c:if test="${hasAccount}">
