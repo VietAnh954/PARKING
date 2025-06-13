@@ -145,11 +145,14 @@
                             <c:when test="${sessionScope.isStaff && sessionScope.chucVu == 'Giảng viên'}">
                                 <!-- Staff (Giảng viên) Links -->
                                 <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="/staff/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Thông tin xe</a></li>
+                                <li><a class="dropdown-item" href="/staff/vehicle/history"><i class="fas fa-history me-2"></i> Lịch sử gửi xe</a></li>
                             </c:when>
                             <c:when test="${!sessionScope.isStaff}">
                                 <!-- Student Links -->
                                 <li><a class="dropdown-item" href="/student/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
                                 <li><a class="dropdown-item" href="/student/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
+                                 <li><a class="dropdown-item" href="/student/vehicle/history"><i class="fas fa-history me-2"></i> Lịch sử gửi xe</a></li>
                                 <li class="dropdown-submenu">
                                     <a class="dropdown-item" href="/student/request-monthly-registration">
                                         <i class="fas fa-id-card-alt me-2"></i> Đăng ký vé tháng
