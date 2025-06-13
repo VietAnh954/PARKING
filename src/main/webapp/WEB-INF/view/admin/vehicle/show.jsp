@@ -81,20 +81,27 @@
                                             <!-- PHÂN TRANG -->
                                             <nav>
                                                 <ul class="pagination justify-content-center">
-                                                    <c:if test="${!vehiclePage.first}">
+
+                                                    <c:if test="${!vehiclePage.first && vehiclePage.totalPages > 0}">
+
                                                         <li class="page-item">
                                                             <a class="page-link"
                                                                 href="?page=${vehiclePage.number - 1}&size=${vehiclePage.size}">Trước</a>
                                                         </li>
                                                     </c:if>
-                                                    <c:forEach begin="0" end="${vehiclePage.totalPages - 1}" var="i">
-                                                        <li
-                                                            class="page-item ${i == vehiclePage.number ? 'active' : ''}">
-                                                            <a class="page-link"
-                                                                href="?page=${i}&size=${vehiclePage.size}">${i + 1}</a>
-                                                        </li>
-                                                    </c:forEach>
-                                                    <c:if test="${!vehiclePage.last}">
+                                                    <c:if test="${vehiclePage.totalPages > 0}">
+                                                        <c:forEach begin="0" end="${vehiclePage.totalPages - 1}"
+                                                            var="i">
+                                                            <li
+                                                                class="page-item ${i == vehiclePage.number ? 'active' : ''}">
+                                                                <a class="page-link"
+                                                                    href="?page=${i}&size=${vehiclePage.size}">${i
+                                                                    + 1}</a>
+                                                            </li>
+                                                        </c:forEach>
+                                                    </c:if>
+                                                    <c:if test="${!vehiclePage.last && vehiclePage.totalPages > 0}">
+
                                                         <li class="page-item">
                                                             <a class="page-link"
                                                                 href="?page=${vehiclePage.number + 1}&size=${vehiclePage.size}">Sau</a>
@@ -115,6 +122,10 @@
                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
                 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                    crossorigin="anonymous"></script>
+
             </body>
 
             </html>

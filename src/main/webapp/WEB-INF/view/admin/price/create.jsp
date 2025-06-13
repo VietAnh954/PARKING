@@ -26,37 +26,47 @@
                                     <div class="row">
                                         <div class="col-md-6 col-12 mx-auto">
                                             <h1>Thêm Bảng Giá</h1>
-
+                                            <c:if test="${not empty error}">
+                                                <div class="alert alert-danger" role="alert">
+                                                    ${error}
+                                                </div>
+                                            </c:if>
                                             <form:form action="/admin/price/create" method="post"
                                                 modelAttribute="newBangGia">
-                                                <div class="mb-3 ">
-                                                    <label class="form-label"> Mã bảng giá:</label>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Mã bảng giá:</label>
                                                     <form:input type="text" class="form-control" path="maBangGia" />
+                                                    <form:errors path="maBangGia" cssClass="text-danger" />
                                                 </div>
-                                                <div class="mb-3 ">
-                                                    <label class="form-label">MÃ LOẠI XE:</label>
 
+                                                <div class="mb-3">
+                                                    <label class="form-label">Loại xe:</label>
                                                     <form:select class="form-select" path="maLoaiXe">
-                                                        <form:option value="LX001" label="Xe máy" />
-                                                        <form:option value="LX002" label="Ô tô" />
-
+                                                        <form:option value="" label="-- Chọn loại xe --" />
+                                                        <form:options items="${vehicleTypes}" itemValue="maLoaiXe"
+                                                            itemLabel="tenLoaiXe" />
                                                     </form:select>
+                                                    <form:errors path="maLoaiXe" cssClass="text-danger" />
                                                 </div>
+
                                                 <div class="mb-3">
-                                                    <label class="form-label"> Hình Thức Gửi:</label>
+                                                    <label class="form-label">Hình thức gửi:</label>
                                                     <form:select class="form-select" path="maHinhThuc">
-                                                        <form:option value="HT001" label="Gửi vãng lai" />
-                                                        <form:option value="HT002" label="Gửi tháng" />
-
+                                                        <form:option value="" label="-- Chọn hình thức --" />
+                                                        <form:options items="${parkingModes}" itemValue="maHinhThuc"
+                                                            itemLabel="tenHinhThuc" />
                                                     </form:select>
+                                                    <form:errors path="maHinhThuc" cssClass="text-danger" />
                                                 </div>
+
                                                 <div class="mb-3">
-                                                    <label class="form-label"> Giá: </label>
-                                                    <form:input type="text" class="form-control" path="gia" />
+                                                    <label class="form-label">Giá:</label>
+                                                    <form:input type="number" class="form-control" path="gia" />
+                                                    <form:errors path="gia" cssClass="text-danger" />
                                                 </div>
 
-
-                                                <button type="submit" class="btn btn-primary">Create</button>
+                                                <button type="submit" class="btn btn-primary">Thêm mới</button>
+                                                <a href="/admin/price" class="btn btn-secondary">Hủy</a>
                                             </form:form>
 
                                         </div>

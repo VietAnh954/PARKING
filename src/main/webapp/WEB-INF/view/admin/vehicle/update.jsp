@@ -38,6 +38,10 @@
                                                     <form:input type="text" class="form-control" path="maLoaiXe" />
                                                 </div>
                                                 <div class="mb-3">
+                                                    <label class="form-label">TÊN XE:</label>
+                                                    <form:input type="text" class="form-control" path="tenXe" />
+                                                </div>
+                                                <div class="mb-3">
                                                     <label class="form-label">MÃ NV:</label>
                                                     <form:input type="text" class="form-control" path="maNV" />
                                                 </div>
@@ -62,6 +66,8 @@
                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
                 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                    crossorigin="anonymous"></script>
             </body>
 
             </html>

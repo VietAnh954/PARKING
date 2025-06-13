@@ -52,8 +52,8 @@
                                                             <td>
                                                                 <a href="/admin/parkingmode/update/${hinhThuc.maHinhThuc}"
                                                                     class="btn btn-warning mx-2">Update</a>
-                                                                <a href="/admin/parkingmode/delete/${hinhThuc.maHinhThuc}"
-                                                                    class="btn btn-danger">Delete</a>
+                                                                <!-- <a href="/admin/parkingmode/delete/${hinhThuc.maHinhThuc}"
+                                                                    class="btn btn-danger">Delete</a> -->
                                                             </td>
                                                         </tr>
                                                     </c:forEach>
