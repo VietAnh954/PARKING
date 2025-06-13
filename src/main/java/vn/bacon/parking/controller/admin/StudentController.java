@@ -61,6 +61,13 @@ public class StudentController {
             return "admin/student/create";
         }
 
+        // Check if maSV already exists
+        if (studentService.existsByMaSV(student.getMaSV())) {
+            result.rejectValue("maSV", "error.student", "Mã sinh viên đã tồn tại!");
+            model.addAttribute("classes", studentService.getAllClasses());
+            return "admin/student/create";
+        }
+
         if (studentService.existsBySdt(student.getSdt())) {
             result.rejectValue("sdt", "error.student", "Số điện thoại đã tồn tại!");
             model.addAttribute("classes", studentService.getAllClasses());

@@ -23,7 +23,7 @@ public class AccountService {
     private final StudentRepository studentRepository;
     private final StaffRepository staffRepository;
 
-    @Autowired
+    
     public AccountService(AccountRepository accountRepository, RoleRepository roleRepository,
             PasswordEncoder passwordEncoder, StudentRepository studentRepository, StaffRepository staffRepository) {
         this.studentRepository = studentRepository;
@@ -128,5 +128,18 @@ public class AccountService {
 
     public boolean isStudentAccount(Account account) {
         return account.getMaSV() != null;
+    }
+
+    public boolean changePassword(String username, String oldPassword, String newPassword) {
+        Optional<Account> accountOpt = accountRepository.findById(username);
+        if (!accountOpt.isPresent())
+            return false;
+        Account account = accountOpt.get();
+        if (!passwordEncoder.matches(oldPassword, account.getPassword())) {
+            return false;
+        }
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+        return true;
     }
 }

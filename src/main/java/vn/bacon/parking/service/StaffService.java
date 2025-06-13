@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -91,4 +92,16 @@ public class StaffService {
     public String handleAvatarUpload(MultipartFile file, String targetFolder) {
         return uploadService.handleSaveUploadFile(file, targetFolder);
     }
+
+    public Staff getCurrentStaff() {
+        String staffId = SecurityContextHolder.getContext().getAuthentication().getName().trim();
+        logger.debug("Fetching current staff with ID: '{}'", staffId);
+        return staffRepository.findById(staffId)
+                .orElseThrow(() -> new IllegalStateException("Không tìm thấy nhân viên với ID: " + staffId));
+    }
+
+    public boolean existsByMaNV(String maNV) {
+        return staffRepository.existsById(maNV);
+    }
+
 }

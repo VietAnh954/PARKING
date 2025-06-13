@@ -54,6 +54,11 @@ public class StaffController {
         if (result.hasErrors()) {
             return "admin/staff/create";
         }
+        // Check if maNV already exists
+        if (staffService.existsByMaNV(staff.getMaNV())) {
+            result.rejectValue("maNV", "error.staff", "Mã nhân viên đã tồn tại!");
+            return "admin/staff/create";
+        }
 
         if (staffService.existsBySdt(staff.getSdt())) {
             result.rejectValue("sdt", "error.staff", "Số điện thoại đã tồn tại!");

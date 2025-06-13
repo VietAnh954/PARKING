@@ -9,6 +9,10 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
+                        <a class="nav-link" href="/admin/entry-exit">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Quản lý xe vào/ ra
+                        </a>
                         <a class="nav-link" href="/admin/student">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Sinh Viên
@@ -21,7 +25,6 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Lớp
                         </a>
-
                         <!-- Menu Đăng Ký Tháng với Dropdown -->
                         <a class="nav-link collapsed" href="/admin/registermonth" data-bs-toggle="collapse"
                             data-bs-target="#collapseRegisterMonth" aria-expanded="false"
@@ -102,7 +105,7 @@
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as:</div>
-                    Lữ Thành
+                    <c:out value="${sessionScope.fullName}" default="User" />
                 </div>
             </nav>
         </div>
