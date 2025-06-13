@@ -51,10 +51,9 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
         }
         .card-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1.5rem;
-            border-bottom: none;
+            background: #4361ee;
+            padding: 0;
+            border: none;
         }
         .card-body {
             padding: 2.5rem;
@@ -136,6 +135,23 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--secondary-color);
         }
+        .form-title {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 1rem;
+            margin: 0;
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .form-title i {
+            font-size: 1.3rem;
+        }
     </style>
 </head>
 <body>
@@ -143,7 +159,7 @@
     <div class="main-content">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                <h1 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Gửi Yêu Cầu Đăng Ký Tháng</h1>
+                <h1 class="form-title mb-0"><i class="fas fa-calendar-alt me-2"></i>Gửi Yêu Cầu Đăng Ký Tháng</h1>
             </div>
             <div class="card-body">
                 <c:if test="${not empty message}">
