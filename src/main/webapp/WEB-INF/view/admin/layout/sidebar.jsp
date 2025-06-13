@@ -103,7 +103,7 @@
         </div>
         <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>
-            Lữ Thành
+           <c:out value="${sessionScope.fullName}" default="User" />
         </div>
     </nav>
 </div>

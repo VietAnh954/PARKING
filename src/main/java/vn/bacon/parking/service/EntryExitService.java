@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class EntryExitService {
     private final ParkingModeRepository parkingModeRepository;
     private final EntryExitDetailRepository entryExitDetailRepository;
     private final ParkingLotRepository parkingLotRepository;
+    private final RegisterMonthService registerMonthService;
 
     public EntryExitService(
             VehicleRepository vehicleRepository,
@@ -45,7 +47,8 @@ public class EntryExitService {
             PriceRepository priceRepository,
             ParkingModeRepository parkingModeRepository,
             EntryExitDetailRepository entryExitDetailRepository,
-            ParkingLotRepository parkingLotRepository) {
+            ParkingLotRepository parkingLotRepository,
+            RegisterMonthService registerMonthService) {
         this.vehicleRepository = vehicleRepository;
         this.staffRepository = staffRepository;
         this.registerMonthRepository = registerMonthRepository;
@@ -53,6 +56,7 @@ public class EntryExitService {
         this.parkingModeRepository = parkingModeRepository;
         this.entryExitDetailRepository = entryExitDetailRepository;
         this.parkingLotRepository = parkingLotRepository;
+        this.registerMonthService = registerMonthService;
     }
 
     @Transactional
@@ -61,22 +65,26 @@ public class EntryExitService {
 
         Vehicle vehicle = vehicleRepository.findById(bienSoXe)
                 .orElseThrow(
-                        () -> new Exception(
-                                "Vehicle with license plate " + bienSoXe + " is not registered. Please register it."));
+                        () -> new Exception("Xe với biển số " + bienSoXe + " chưa được đăng ký. Vui lòng đăng ký."));
+
+        // Check if vehicle is already in the parking lot
+        if (entryExitDetailRepository.existsByBienSoXeAndTgRaIsNull(vehicle)) {
+            throw new Exception("Xe với biển số " + bienSoXe + " đã ở trong bãi, không thể vào lại.");
+        }
 
         Staff nvVao = staffRepository.findById(maNVVao)
-                .orElseThrow(() -> new Exception("Staff member " + maNVVao + " does not exist."));
+                .orElseThrow(() -> new Exception("Nhân viên " + maNVVao + " không tồn tại."));
 
         // Find parking lot based on vehicle type
         String maLoaiXe = vehicle.getMaLoaiXe().getMaLoaiXe();
         ParkingLot parkingLot = parkingLotRepository.findByVehicleType_MaLoaiXe(maLoaiXe);
         if (parkingLot == null) {
-            throw new Exception("No parking lot found for vehicle type " + vehicle.getMaLoaiXe().getTenLoaiXe());
+            throw new Exception("Không tìm thấy bãi đỗ cho loại xe " + vehicle.getMaLoaiXe().getTenLoaiXe());
         }
 
         // Check if parking lot has available spaces
         if (parkingLot.getAvailableSpaces() <= 0) {
-            throw new Exception("Parking lot " + parkingLot.getParkingLotName() + " is full.");
+            throw new Exception("Bãi đỗ " + parkingLot.getParkingLotName() + " đã hết chỗ.");
         }
 
         // Decrement available spaces in the parking lot
@@ -103,25 +111,21 @@ public class EntryExitService {
 
         if (isLecturer) {
             parkingMode = parkingModeRepository.findById("HT001")
-                    .orElseThrow(() -> new Exception("Parking mode HT001 does not exist."));
+                    .orElseThrow(() -> new Exception("Hình thức gửi HT001 không tồn tại."));
+            gia = 0;
+        } else if (registerMonthService.hasActiveRegistrationForVehicle(bienSoXe)) {
+            parkingMode = parkingModeRepository.findById("HT002")
+                    .orElseThrow(() -> new Exception("Hình thức gửi tháng HT002 không tồn tại."));
             gia = 0;
         } else {
-            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndNgayKetThucAfterAndTrangThaiDaDuyet(
-                    vehicle, LocalDate.now());
-            if (registration != null) {
-                parkingMode = parkingModeRepository.findById("HT002")
-                        .orElseThrow(() -> new Exception("Parking mode HT002 does not exist."));
-                gia = 0;
-            } else {
-                parkingMode = parkingModeRepository.findById("HT001")
-                        .orElseThrow(() -> new Exception("Parking mode HT001 does not exist."));
-                Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(parkingMode, vehicle.getMaLoaiXe());
-                if (price == null) {
-                    throw new Exception("No price found for parking mode " + parkingMode.getTenHinhThuc()
-                            + " and vehicle type " + vehicle.getMaLoaiXe().getTenLoaiXe());
-                }
-                gia = price.getGia();
+            parkingMode = parkingModeRepository.findById("HT001")
+                    .orElseThrow(() -> new Exception("Hình thức gửi HT001 không tồn tại."));
+            Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(parkingMode, vehicle.getMaLoaiXe());
+            if (price == null) {
+                throw new Exception("Không tìm thấy giá cho hình thức " + parkingMode.getTenHinhThuc()
+                        + " và loại xe " + vehicle.getMaLoaiXe().getTenLoaiXe());
             }
+            gia = price.getGia();
         }
 
         entry.setHinhThuc(parkingMode);
@@ -141,24 +145,24 @@ public class EntryExitService {
         logger.debug("Processing vehicle exit: maCTVaoRa={}, maNVRa={}", maCTVaoRa, maNVRa);
 
         EntryExitDetail entry = entryExitDetailRepository.findById(maCTVaoRa)
-                .orElseThrow(() -> new Exception("No record found with ID " + maCTVaoRa));
+                .orElseThrow(() -> new Exception("Không tìm thấy bản ghi với mã " + maCTVaoRa));
 
         if (entry.getTgRa() != null) {
-            throw new Exception("Vehicle has already exited at " + entry.getTgRaFormatted());
+            throw new Exception("Xe đã được ghi nhận ra vào " + entry.getTgRaFormatted());
         }
 
         Staff nvRa = staffRepository.findById(maNVRa)
-                .orElseThrow(() -> new Exception("Staff member " + maNVRa + " does not exist."));
+                .orElseThrow(() -> new Exception("Nhân viên " + maNVRa + " không tồn tại."));
 
         // Find parking lot based on vehicle type
         Vehicle vehicle = entry.getBienSoXe();
         if (vehicle == null) {
-            throw new Exception("Invalid license plate for record " + maCTVaoRa);
+            throw new Exception("Biển số xe không hợp lệ cho bản ghi " + maCTVaoRa);
         }
         String maLoaiXe = vehicle.getMaLoaiXe().getMaLoaiXe();
         ParkingLot parkingLot = parkingLotRepository.findByVehicleType_MaLoaiXe(maLoaiXe);
         if (parkingLot == null) {
-            throw new Exception("No parking lot found for vehicle type " + vehicle.getMaLoaiXe().getTenLoaiXe());
+            throw new Exception("Không tìm thấy bãi đỗ cho loại xe " + vehicle.getMaLoaiXe().getTenLoaiXe());
         }
 
         // Increment available spaces in the parking lot
@@ -180,25 +184,21 @@ public class EntryExitService {
         Integer gia = null;
         if (isLecturer) {
             gia = 0;
+        } else if (registerMonthService.hasActiveRegistrationForVehicle(vehicle.getBienSoXe())) {
+            gia = 0;
         } else {
-            RegisterMonth registration = registerMonthRepository.findByBienSoXeAndNgayKetThucAfterAndTrangThaiDaDuyet(
-                    vehicle, LocalDate.now());
-            if (registration != null) {
-                gia = 0;
-            } else {
-                ParkingMode parkingMode = entry.getHinhThuc();
-                if (!"HT001".equals(parkingMode.getMaHinhThuc())) {
-                    parkingMode = parkingModeRepository.findById("HT001")
-                            .orElseThrow(() -> new Exception("Parking mode HT001 does not exist."));
-                    entry.setHinhThuc(parkingMode);
-                }
-                Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(parkingMode, vehicle.getMaLoaiXe());
-                if (price == null) {
-                    throw new Exception("No price found for parking mode " + parkingMode.getTenHinhThuc()
-                            + " and vehicle type " + vehicle.getMaLoaiXe().getTenLoaiXe());
-                }
-                gia = price.getGia();
+            ParkingMode parkingMode = entry.getHinhThuc();
+            if (!"HT001".equals(parkingMode.getMaHinhThuc())) {
+                parkingMode = parkingModeRepository.findById("HT001")
+                        .orElseThrow(() -> new Exception("Hình thức gửi HT001 không tồn tại."));
+                entry.setHinhThuc(parkingMode);
             }
+            Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(parkingMode, vehicle.getMaLoaiXe());
+            if (price == null) {
+                throw new Exception("Không tìm thấy giá cho hình thức " + parkingMode.getTenHinhThuc()
+                        + " và loại xe " + vehicle.getMaLoaiXe().getTenLoaiXe());
+            }
+            gia = price.getGia();
         }
 
         entry.setGia(gia);
@@ -206,6 +206,7 @@ public class EntryExitService {
         EntryExitDetail savedEntry = entryExitDetailRepository.save(entry);
         logger.debug("Saved exit entry: {}", savedEntry);
         return savedEntry;
+
     }
 
     public Page<EntryExitDetail> getAllEntries(Pageable pageable) {

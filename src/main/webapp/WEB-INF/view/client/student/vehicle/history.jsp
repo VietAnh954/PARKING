@@ -44,6 +44,34 @@
             font-weight: 600;
             margin-bottom: 1.5rem;
         }
+<<<<<<< HEAD
+=======
+        .pagination {
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .pagination .page-link {
+            color: #1a2d4e;
+            border-radius: 5px;
+            margin: 0 3px;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #3b5998;
+            border-color: #3b5998;
+            color: #fff;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+        .sort-buttons {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .sort-buttons .btn {
+            border-radius: 5px;
+        }
+>>>>>>> 0931d4466593cda6726b4fdf7f254ca7a57d17ea
     </style>
 </head>
 <body>
@@ -56,6 +84,21 @@
                     <h2 class="page-title">Lịch sử gửi xe của bạn</h2>
                     <div class="card">
                         <div class="card-body p-4">
+<<<<<<< HEAD
+=======
+                            <!-- Sort Buttons -->
+                            <div class="sort-buttons">
+                                <a href="?page=${currentPage}&size=${pageSize}&sortByTime=asc" 
+                                   class="btn btn-outline-primary ${currentSort == 'asc' ? 'active' : ''}">
+                                    <i class="fas fa-sort-up"></i> Sắp xếp tăng dần
+                                </a>
+                                <a href="?page=${currentPage}&size=${pageSize}&sortByTime=desc" 
+                                   class="btn btn-outline-primary ${currentSort == 'desc' || empty currentSort ? 'active' : ''}">
+                                    <i class="fas fa-sort-down"></i> Sắp xếp giảm dần
+                                </a>
+                            </div>
+                            <!-- Table -->
+>>>>>>> 0931d4466593cda6726b4fdf7f254ca7a57d17ea
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -73,7 +116,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+<<<<<<< HEAD
                                         <c:forEach var="entry" items="${entryExitList}">
+=======
+                                        <c:forEach var="entry" items="${entryExitPage.content}">
+>>>>>>> 0931d4466593cda6726b4fdf7f254ca7a57d17ea
                                             <tr>
                                                 <td>${entry.maCTVaoRa}</td>
                                                 <td>${entry.bienSoXe.bienSoXe}</td>
@@ -90,6 +137,31 @@
                                     </tbody>
                                 </table>
                             </div>
+<<<<<<< HEAD
+=======
+                            <!-- Pagination -->
+                            <c:if test="${entryExitPage.totalPages > 0}">
+                                <nav aria-label="Phân trang">
+                                    <ul class="pagination">
+                                        <li class="page-item ${entryExitPage.hasPrevious() ? '' : 'disabled'}">
+                                            <a class="page-link" href="?page=${entryExitPage.number - 1}&size=${pageSize}&sortByTime=${currentSort}" aria-label="Trước">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <c:forEach begin="0" end="${entryExitPage.totalPages - 1}" var="i">
+                                            <li class="page-item ${entryExitPage.number == i ? 'active' : ''}">
+                                                <a class="page-link" href="?page=${i}&size=${pageSize}&sortByTime=${currentSort}">${i + 1}</a>
+                                            </li>
+                                        </c:forEach>
+                                        <li class="page-item ${entryExitPage.hasNext() ? '' : 'disabled'}">
+                                            <a class="page-link" href="?page=${entryExitPage.number + 1}&size=${pageSize}&sortByTime=${currentSort}" aria-label="Sau">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </c:if>
+>>>>>>> 0931d4466593cda6726b4fdf7f254ca7a57d17ea
                         </div>
                     </div>
                 </div>
@@ -101,4 +173,8 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> 0931d4466593cda6726b4fdf7f254ca7a57d17ea

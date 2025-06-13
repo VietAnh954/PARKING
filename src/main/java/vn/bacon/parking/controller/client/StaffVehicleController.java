@@ -7,8 +7,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import vn.bacon.parking.domain.EntryExitDetail;
 import vn.bacon.parking.domain.Staff;
 import vn.bacon.parking.domain.Vehicle;
+import vn.bacon.parking.repository.EntryExitDetailRepository;
 import vn.bacon.parking.service.StaffService;
 import vn.bacon.parking.service.VehicleService;
 import vn.bacon.parking.domain.EntryExitDetail;
@@ -24,7 +26,13 @@ public class StaffVehicleController {
     private final StaffService staffService;
     private final EntryExitDetailRepository entryExitDetailRepository;
 
+<<<<<<< HEAD
     public StaffVehicleController(VehicleService vehicleService, StaffService staffService, EntryExitDetailRepository entryExitDetailRepository) {
+=======
+    public StaffVehicleController(VehicleService vehicleService, StaffService staffService,
+            EntryExitDetailRepository entryExitDetailRepository) {
+        this.entryExitDetailRepository = entryExitDetailRepository;
+>>>>>>> 0931d4466593cda6726b4fdf7f254ca7a57d17ea
         this.vehicleService = vehicleService;
         this.staffService = staffService;
         this.entryExitDetailRepository = entryExitDetailRepository;
@@ -55,8 +63,13 @@ public class StaffVehicleController {
             List<EntryExitDetail> entryExitList = new java.util.ArrayList<>();
             for (Vehicle v : vehicleList) {
                 entryExitList.addAll(entryExitDetailRepository.findAll().stream()
+<<<<<<< HEAD
                     .filter(e -> e.getBienSoXe() != null && e.getBienSoXe().getBienSoXe().equals(v.getBienSoXe()))
                     .toList());
+=======
+                        .filter(e -> e.getBienSoXe() != null && e.getBienSoXe().getBienSoXe().equals(v.getBienSoXe()))
+                        .toList());
+>>>>>>> 0931d4466593cda6726b4fdf7f254ca7a57d17ea
             }
             model.addAttribute("entryExitList", entryExitList);
             return "client/staff/vehicle/history";

@@ -125,6 +125,7 @@
                         <i class="fas fa-list me-2"></i> Chức năng
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chucNangDropdown">
+<<<<<<< HEAD
                         <sec:authorize access="hasRole('TEACHER')">
                             <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="/staff/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Thông tin xe</a></li>
@@ -143,6 +144,34 @@
                             <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
                         </sec:authorize>
 
+=======
+                        <c:choose>
+                            <c:when test="${sessionScope.isStaff && sessionScope.chucVu == 'Giảng viên'}">
+                                <!-- Staff (Giảng viên) Links -->
+                                <li><a class="dropdown-item" href="/staff/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="/staff/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Thông tin xe</a></li>
+                                <li><a class="dropdown-item" href="/staff/vehicle/history"><i class="fas fa-history me-2"></i> Lịch sử gửi xe</a></li>
+                            </c:when>
+                            <c:when test="${!sessionScope.isStaff}">
+                                <!-- Student Links -->
+                                <li><a class="dropdown-item" href="/student/profile"><i class="fas fa-user-circle me-2"></i> Quản lý thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="/student/vehicle/list"><i class="fas fa-motorcycle me-2"></i> Quản lý xe</a></li>
+                                 <li><a class="dropdown-item" href="/student/vehicle/history"><i class="fas fa-history me-2"></i> Lịch sử gửi xe</a></li>
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item" href="/student/request-monthly-registration">
+                                        <i class="fas fa-id-card-alt me-2"></i> Đăng ký vé tháng
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/student/request-history"><i class="fas fa-history me-2"></i> Lịch sử yêu cầu</a></li>
+                                    </ul>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <!-- Other Staff (e.g., Quản lý, Bảo vệ) - Limited or No Links -->
+                                <li><a class="dropdown-item" href="/"><i class="fas fa-home me-2"></i> Trang chủ</a></li>
+                            </c:otherwise>
+                        </c:choose>
+>>>>>>> 0931d4466593cda6726b4fdf7f254ca7a57d17ea
                         <sec:authorize access="hasRole('ADMIN')">
                             <li><a class="dropdown-item" href="admin"><i class="fas fa-user-shield me-2"></i> Admin Panel</a></li>
                         </sec:authorize>
