@@ -9,4 +9,6 @@ import vn.bacon.parking.domain.VehicleType;
 public interface PriceRepository extends JpaRepository<Price, String> {
     Price findByMaHinhThucAndMaLoaiXe(ParkingMode maHinhThuc, VehicleType maLoaiXe);
 
+    boolean existsByMaLoaiXeAndMaHinhThuc(VehicleType maLoaiXe, ParkingMode maHinhThuc);
+
 }

@@ -1,30 +1,42 @@
 package vn.bacon.parking.controller.admin;
 
 import java.util.Optional;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.validation.Valid;
 import vn.bacon.parking.domain.Price;
+import vn.bacon.parking.domain.VehicleType;
+import vn.bacon.parking.domain.ParkingMode;
 import vn.bacon.parking.service.PriceService;
+import vn.bacon.parking.service.VehicleTypeService;
+import vn.bacon.parking.service.ParkingModeService;
 
 @Controller
 @RequestMapping("/admin/price")
 public class PriceController {
-    private final PriceService priceService;
+    @Autowired
+    private PriceService priceService;
 
-    public PriceController(PriceService priceService) {
-        this.priceService = priceService;
-    }
+    @Autowired
+    private VehicleTypeService vehicleTypeService;
+
+    @Autowired
+    private ParkingModeService parkingModeService;
 
     // Hiển thị danh sách Bảng Giá
     @GetMapping
@@ -40,18 +52,43 @@ public class PriceController {
 
     // Hiển thị form Thêm Bảng Giá
     @GetMapping("/create")
-    public String getCreatePricePage(Model model) {
-        // model.addAttribute("loaiXeList", loaiXeService.findAll());
-        // model.addAttribute("hinhThucGuiXeList", hinhThucGuiXeService.findAll());
+    public String showCreateForm(Model model) {
+        List<ParkingMode> parkingModes = parkingModeService.findAll();
+        List<VehicleType> vehicleTypes = vehicleTypeService.getAllVehicleTypes();
         model.addAttribute("newBangGia", new Price());
+        model.addAttribute("vehicleTypes", vehicleTypes);
+        model.addAttribute("parkingModes", parkingModes);
         return "admin/price/create";
     }
 
     // Xử lý Thêm Bảng Giá
     @PostMapping("/create")
-    public String createBangGia(@ModelAttribute("newBangGia") Price BangGia) {
-        this.priceService.save(BangGia);
-        return "redirect:/admin/price";
+    public String createPrice(@Valid @ModelAttribute("newBangGia") Price price,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            List<VehicleType> vehicleTypes = vehicleTypeService.getAllVehicleTypes();
+            List<ParkingMode> parkingModes = parkingModeService.findAll();
+
+            model.addAttribute("vehicleTypes", vehicleTypes);
+            model.addAttribute("parkingModes", parkingModes);
+            return "admin/price/create";
+        }
+
+        try {
+            priceService.savePrice(price);
+            redirectAttributes.addFlashAttribute("success", "Thêm bảng giá thành công!");
+            return "redirect:/admin/price";
+        } catch (IllegalArgumentException e) {
+            List<VehicleType> vehicleTypes = vehicleTypeService.getAllVehicleTypes();
+            List<ParkingMode> parkingModes = parkingModeService.findAll();
+
+            model.addAttribute("vehicleTypes", vehicleTypes);
+            model.addAttribute("parkingModes", parkingModes);
+            model.addAttribute("error", e.getMessage());
+            return "admin/price/create";
+        }
     }
 
     // Hiển thị form Cập Nhật Bảng Giá
@@ -72,7 +109,7 @@ public class PriceController {
             currentBangGia.setMaHinhThuc(BangGia.getMaHinhThuc());
             currentBangGia.setGia(BangGia.getGia());
 
-            priceService.save(currentBangGia);
+            priceService.savePrice(currentBangGia);
         }
         return "redirect:/admin/price";
     }
@@ -88,7 +125,7 @@ public class PriceController {
     // Xử lý Xóa Bảng Giá
     @PostMapping("/delete")
     public String deleteBangGia(@ModelAttribute("newPrice") Price BangGia) {
-        this.priceService.deleteById(BangGia.getMaBangGia());
+        this.priceService.deletePrice(BangGia.getMaBangGia());
         return "redirect:/admin/price";
     }
 }

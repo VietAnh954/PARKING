@@ -100,4 +100,8 @@ public class StaffService {
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy nhân viên với ID: " + staffId));
     }
 
+    public boolean existsByMaNV(String maNV) {
+        return staffRepository.existsById(maNV);
+    }
+
 }

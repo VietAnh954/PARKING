@@ -25,28 +25,30 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Lớp
                 </a>
-                <!-- Menu Đăng Ký Tháng với Dropdown -->
-                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseRegisterMonth"
-                    aria-expanded="false" aria-controls="collapseRegisterMonth">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                    Đăng Ký Tháng
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                </a>
-                <div class="collapse" id="collapseRegisterMonth" aria-labelledby="headingRegisterMonth"
-                    data-bs-parent="#sidenavAccordion">
-                    <ul class="sb-sidenav-menu-nested nav">
-                        <li><a class="nav-link" href="/admin/request">Xử lý yêu cầu đăng ký tháng</a></li>
-                        <li><a class="nav-link" href="/admin/registermonth">Đăng ký tháng</a></li>
-                    </ul>
-                </div>
-                <a class="nav-link" href="/admin/vehicle">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                    Đăng Ký Xe
-                </a>
-                <a class="nav-link" href="/admin/price">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                    Bảng giá xe
-                </a>
+                        <!-- Menu Đăng Ký Tháng với Dropdown -->
+                        <a class="nav-link collapsed" href="/admin/registermonth" data-bs-toggle="collapse"
+                            data-bs-target="#collapseRegisterMonth" aria-expanded="false"
+                            aria-controls="collapseRegisterMonth">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Đăng Ký Tháng
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseRegisterMonth" aria-labelledby="headingRegisterMonth"
+                            data-bs-parent="#sidenavAccordion">
+                            <ul class="sb-sidenav-menu-nested nav">
+                                <li><a class="nav-link" href="/admin/request">Xử lý yêu cầu đăng ký tháng</a></li>
+                                <li><a class="nav-link" href="/admin/registermonth">Đăng ký tháng</a></li>
+                            </ul>
+                        </div>
+
+                        <a class="nav-link" href="/admin/vehicle">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Đăng Ký Xe
+                        </a>
+                        <a class="nav-link" href="/admin/price">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Bảng giá xe
+                        </a>
                 <!-- <div class="sb-sidenav-menu-heading">Interface</div>
                  <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                     <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>

@@ -1,6 +1,7 @@
 package vn.bacon.parking.controller.admin;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import vn.bacon.parking.domain.Vehicle;
 import vn.bacon.parking.service.VehicleService;
@@ -52,15 +54,24 @@ public class VehicleController {
     }
 
     @PostMapping("admin/vehicle/update")
-    public String updateVehicle(Model model, @ModelAttribute("newVehicle") Vehicle vehicle1) {
-        Vehicle currentVehicle = this.vehicleService.getVehicleById(vehicle1.getBienSoXe()).get();
-        if (currentVehicle != null) {
-            currentVehicle.setBienSoXe(vehicle1.getBienSoXe());
-            currentVehicle.setMaLoaiXe(vehicle1.getMaLoaiXe());
-            currentVehicle.setMaNV(vehicle1.getMaNV());
-            currentVehicle.setMaSV(vehicle1.getMaSV());
-            this.vehicleService.saveVehicle(currentVehicle);
+    public String updateVehicle(Model model, @ModelAttribute("newVehicle") Vehicle vehicle1,
+            RedirectAttributes redirectAttributes) {
+        Optional<Vehicle> currentVehicleOpt = this.vehicleService.getVehicleById(vehicle1.getBienSoXe());
+        if (!currentVehicleOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Không tìm thấy xe với biển số " + vehicle1.getBienSoXe());
+            return "redirect:/admin/vehicle";
         }
+
+        Vehicle currentVehicle = currentVehicleOpt.get();
+        currentVehicle.setBienSoXe(vehicle1.getBienSoXe());
+        currentVehicle.setMaLoaiXe(vehicle1.getMaLoaiXe());
+        currentVehicle.setTenXe(vehicle1.getTenXe());
+        currentVehicle.setMaNV(vehicle1.getMaNV());
+        currentVehicle.setMaSV(vehicle1.getMaSV());
+        this.vehicleService.saveVehicle(currentVehicle);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật xe thành công!");
         return "redirect:/admin/vehicle";
     }
 
@@ -86,5 +97,4 @@ public class VehicleController {
         model.addAttribute("vehicleList", vehiclePage.getContent());
         return "admin/vehicle/show";
     }
-
 }

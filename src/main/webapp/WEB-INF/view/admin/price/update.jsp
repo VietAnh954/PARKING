@@ -34,24 +34,25 @@
 
                                                 <div class="mb-3 ">
                                                     <label class="form-label"> Mã bảng giá:</label>
-                                                    <form:input type="text" class="form-control" path="maBangGia" />
+                                                    <form:input type="text" class="form-control" path="maBangGia"
+                                                        readonly="true" />
                                                 </div>
                                                 <div class="mb-3 ">
                                                     <label class="form-label">MÃ LOẠI XE:</label>
 
-                                                    <form:select class="form-select" path="maLoaiXe">
-                                                        <form:option value="LX001" label="Xe máy" />
-                                                        <form:option value="LX002" label="Ô tô" />
+                                                    <form:input type="text" class="form-control" path="maLoaiXe"
+                                                        readonly="true" />
 
-                                                    </form:select>
+
+
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label"> Hình Thức Gửi:</label>
-                                                    <form:select class="form-select" path="maHinhThuc">
-                                                        <form:option value="HT001" label="Gửi vãng lai" />
-                                                        <form:option value="HT002" label="Gửi tháng" />
+                                                    <form:input type="text" class="form-control" path="maHinhThuc"
+                                                        readonly="true" />
 
-                                                    </form:select>
+
+
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label"> Giá: </label>
@@ -75,7 +76,8 @@
                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
                 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                    crossorigin="anonymous"></script>
 
 
 

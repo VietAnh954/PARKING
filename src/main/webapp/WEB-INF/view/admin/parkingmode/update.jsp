@@ -34,7 +34,8 @@
 
                                                 <div class="mb-3 ">
                                                     <label class="form-label"> Mã hình thức:</label>
-                                                    <form:input type="text" class="form-control" path="maHinhThuc" />
+                                                    <form:input type="text" class="form-control" path="maHinhThuc"
+                                                        readonly="true" />
                                                 </div>
                                                 <div class="mb-3 ">
                                                     <label class="form-label"> Tên hình thức:</label>
