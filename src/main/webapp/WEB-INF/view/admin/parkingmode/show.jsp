@@ -28,8 +28,8 @@
                                         <div class=" col-12 mx-auto">
                                             <div class="d-flex justify-content-between">
                                                 <h3>Hình Thức Gửi Xe</h3>
-                                                <a href="/admin/parkingmode/create" class="btn btn-primary">Thêm Hình
-                                                    Thức Gửi Xe</a>
+                                                <!-- <a href="/admin/parkingmode/create" class="btn btn-primary">Thêm Hình
+                                                    Thức Gửi Xe</a> -->
                                             </div>
 
                                             <hr />
@@ -51,15 +51,16 @@
 
                                                             <td>
                                                                 <a href="/admin/parkingmode/update/${hinhThuc.maHinhThuc}"
-                                                                    class="btn btn-warning mx-2">Update</a>
+                                                                    class="btn btn-warning mx-2">Cập nhật</a>
                                                                 <!-- <a href="/admin/parkingmode/delete/${hinhThuc.maHinhThuc}"
-                                                                    class="btn btn-danger">Delete</a> -->
+                                                                    class="btn btn-danger">Xóa</a> -->
                                                             </td>
                                                         </tr>
                                                     </c:forEach>
 
                                                 </tbody>
                                             </table>
+                                            <a href="/admin/price" class="btn btn-info">Quay lại</a>
 
                                         </div>
 

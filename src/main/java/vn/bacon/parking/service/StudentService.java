@@ -104,7 +104,7 @@ public class StudentService {
     }
 
     public boolean hasRegisteredVehicle(String maSV) {
-        return !vehicleRepository.findByMaSV_MaSV(maSV).isEmpty();
+        return vehicleRepository.existsByMaSV_MaSV(maSV);
     }
 
     public Page<Student> getStudentPage(Pageable pageable, String maLop) {

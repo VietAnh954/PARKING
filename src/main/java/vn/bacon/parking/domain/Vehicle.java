@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.PrePersist;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Xe")
@@ -31,6 +33,27 @@ public class Vehicle {
     @ManyToOne
     @JoinColumn(name = "MaSV")
     private Student maSV;
+
+    @Column(name = "CreatedDate", nullable = false, updatable = false)
+    private LocalDateTime createdDate;
+
+    // Default constructor
+    public Vehicle() {
+        this.createdDate = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = LocalDateTime.now();
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
 
     public String getBienSoXe() {
         return bienSoXe;

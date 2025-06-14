@@ -56,9 +56,9 @@
                                                             <td>${bangGia.gia} VNĐ</td>
                                                             <td>
                                                                 <a href="/admin/price/update/${bangGia.maBangGia}"
-                                                                    class="btn btn-warning mx-2">Update</a>
+                                                                    class="btn btn-warning mx-2">Cập nhật</a>
                                                                 <a href="/admin/price/delete/${bangGia.maBangGia}"
-                                                                    class="btn btn-danger">Delete</a>
+                                                                    class="btn btn-danger">Xóa</a>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>

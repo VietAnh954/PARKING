@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import vn.bacon.parking.domain.ParkingMode;
 import vn.bacon.parking.domain.Price;
 import vn.bacon.parking.domain.RegisterMonth;
@@ -55,7 +57,8 @@ public class MonthlyRegistrationController {
             return "redirect:/login";
         }
         String maSV = auth.getName().trim();
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+        Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE));
+        List<Vehicle> vehicles = vehiclePage.getContent();
         model.addAttribute("registration", new RegisterMonth());
         model.addAttribute("vehicles", vehicles);
         model.addAttribute("maSV", maSV);
@@ -82,7 +85,9 @@ public class MonthlyRegistrationController {
 
             if (registerMonthService.hasActiveRegistrationForVehicle(bienSoXe)) {
                 model.addAttribute("error", "Xe này đã có đăng ký đang hoạt động.");
-                List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+                Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(maSV,
+                        PageRequest.of(0, Integer.MAX_VALUE));
+                List<Vehicle> vehicles = vehiclePage.getContent();
                 model.addAttribute("registration", new RegisterMonth());
                 model.addAttribute("vehicles", vehicles);
                 model.addAttribute("maSV", maSV);
@@ -121,7 +126,8 @@ public class MonthlyRegistrationController {
         } catch (Exception e) {
             model.addAttribute("error", "Đã xảy ra lỗi bất ngờ: " + e.getMessage());
         }
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+        Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE));
+        List<Vehicle> vehicles = vehiclePage.getContent();
         model.addAttribute("registration", new RegisterMonth());
         model.addAttribute("vehicles", vehicles);
         model.addAttribute("maSV", maSV);
@@ -166,7 +172,8 @@ public class MonthlyRegistrationController {
             return "redirect:/student/request-history";
         }
 
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+        Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE));
+        List<Vehicle> vehicles = vehiclePage.getContent();
         model.addAttribute("registration", registration);
         model.addAttribute("vehicles", vehicles);
         model.addAttribute("maSV", maSV);
@@ -233,7 +240,8 @@ public class MonthlyRegistrationController {
             if (!bienSoXe.equals(existingRegistration.getBienSoXe().getBienSoXe()) &&
                     registerMonthService.hasActiveRegistrationForVehicleExcludingId(bienSoXe, trimmedMaDangKy)) {
                 model.addAttribute("error", "Xe này đã có đăng ký đang hoạt động.");
-                List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+                List<Vehicle> vehicles = vehicleService
+                        .getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE)).getContent();
                 model.addAttribute("registration", existingRegistration);
                 model.addAttribute("vehicles", vehicles);
                 model.addAttribute("maSV", maSV);
@@ -262,7 +270,8 @@ public class MonthlyRegistrationController {
         } catch (IllegalArgumentException e) {
             logger.error("Lỗi tham số khi cập nhật đăng ký: {}", e.getMessage());
             model.addAttribute("error", e.getMessage());
-            List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+            List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE))
+                    .getContent();
             Optional<RegisterMonth> registrationOpt = registerMonthService.getRegistrationById(trimmedMaDangKy);
             model.addAttribute("registration", registrationOpt.orElse(new RegisterMonth()));
             model.addAttribute("vehicles", vehicles);
@@ -282,7 +291,8 @@ public class MonthlyRegistrationController {
             return "redirect:/login";
         }
         String maSV = auth.getName().trim();
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE))
+                .getContent();
         // Lấy tất cả đăng ký của các xe thuộc sinh viên
         List<RegisterMonth> registrations = vehicles.stream()
                 .flatMap(v -> registerMonthService.getRegistrationsByVehicleId(v.getBienSoXe()).stream())

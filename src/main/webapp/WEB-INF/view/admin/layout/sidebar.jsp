@@ -13,18 +13,6 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Quản lý xe vào/ ra
                         </a>
-                        <a class="nav-link" href="/admin/student">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Sinh Viên
-                        </a>
-                        <a class="nav-link" href="/admin/staff">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Nhân Viên
-                        </a>
-                        <a class="nav-link" href="/admin/class">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Lớp
-                        </a>
                         <!-- Menu Đăng Ký Tháng với Dropdown -->
                         <a class="nav-link collapsed" href="/admin/registermonth" data-bs-toggle="collapse"
                             data-bs-target="#collapseRegisterMonth" aria-expanded="false"
@@ -40,6 +28,23 @@
                                 <li><a class="nav-link" href="/admin/registermonth">Đăng ký tháng</a></li>
                             </ul>
                         </div>
+                        <a class="nav-link" href="/admin/account">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Tài khoản
+                        </a>
+                        <a class="nav-link" href="/admin/student">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Sinh Viên
+                        </a>
+                        <a class="nav-link" href="/admin/staff">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Nhân Viên
+                        </a>
+                        <a class="nav-link" href="/admin/class">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Lớp
+                        </a>
+
 
                         <a class="nav-link" href="/admin/vehicle">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>

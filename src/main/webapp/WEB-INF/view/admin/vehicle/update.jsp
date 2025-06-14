@@ -26,16 +26,35 @@
                                         <div class="col-md-6 col-12 mx-auto">
                                             <h3>Cập nhật thông tin xe</h3>
                                             <hr />
+
+                                            <c:if test="${not empty errorMessage}">
+                                                <div class="alert alert-danger" role="alert">
+                                                    ${errorMessage}
+                                                </div>
+                                            </c:if>
+                                            <c:if test="${not empty successMessage}">
+                                                <div class="alert alert-success" role="alert">
+                                                    ${successMessage}
+                                                </div>
+                                            </c:if>
+
                                             <form:form method="post" action="/admin/vehicle/update"
                                                 modelAttribute="newVehicle">
 
                                                 <div class="mb-3 ">
                                                     <label class="form-label">BIỂN SỐ XE:</label>
-                                                    <form:input type="text" class="form-control" path="bienSoXe" />
+                                                    <form:input type="text" class="form-control" path="bienSoXe"
+                                                        readonly="true" />
                                                 </div>
                                                 <div class="mb-3 ">
                                                     <label class="form-label">MÃ LOẠI XE:</label>
-                                                    <form:input type="text" class="form-control" path="maLoaiXe" />
+                                                    <form:select class="form-select" path="maLoaiXe.maLoaiXe">
+                                                        <form:option value="" label="-- Chọn loại xe --" />
+                                                        <c:forEach var="type" items="${vehicleTypes}">
+                                                            <form:option value="${type.maLoaiXe}"
+                                                                label="${type.maLoaiXe} - ${type.tenLoaiXe}" />
+                                                        </c:forEach>
+                                                    </form:select>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">TÊN XE:</label>
@@ -43,15 +62,19 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">MÃ NV:</label>
-                                                    <form:input type="text" class="form-control" path="maNV" />
+                                                    <form:input type="text" class="form-control" path="maNV.maNV"
+                                                        id="maNVInput" onkeyup="disableOther('maNV')" />
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Mã SV:</label>
-                                                    <form:input type="text" class="form-control" path="maSV" />
+                                                    <form:input type="text" class="form-control" path="maSV.maSV"
+                                                        id="maSVInput" onkeyup="disableOther('maSV')" />
                                                 </div>
 
 
-                                                <button type="submit" class="btn btn-warning">Update</button>
+                                                <button type="submit" class="btn btn-warning">Cập nhật</button>
+                                                <a href="/admin/vehicle" class="btn btn-danger">Quay lại</a>
+
                                             </form:form>
                                         </div>
 
@@ -68,6 +91,38 @@
                 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
                     crossorigin="anonymous"></script>
+                <script>
+                    function disableOther(currentField) {
+                        var maNVInput = document.getElementById('maNVInput');
+                        var maSVInput = document.getElementById('maSVInput');
+
+                        if (currentField === 'maNV') {
+                            if (maNVInput.value.trim() !== '') {
+                                maSVInput.disabled = true;
+                                maSVInput.value = ''; // Clear the other field if something is entered
+                            } else {
+                                maSVInput.disabled = false;
+                            }
+                        } else if (currentField === 'maSV') {
+                            if (maSVInput.value.trim() !== '') {
+                                maNVInput.disabled = true;
+                                maNVInput.value = ''; // Clear the other field if something is entered
+                            } else {
+                                maNVInput.disabled = false;
+                            }
+                        }
+                    }
+                    // Initial check on page load if one of the fields already has a value
+                    window.onload = function () {
+                        var maNVInput = document.getElementById('maNVInput');
+                        var maSVInput = document.getElementById('maSVInput');
+                        if (maNVInput.value.trim() !== '') {
+                            maSVInput.disabled = true;
+                        } else if (maSVInput.value.trim() !== '') {
+                            maNVInput.disabled = true;
+                        }
+                    };
+                </script>
             </body>
 
             </html>

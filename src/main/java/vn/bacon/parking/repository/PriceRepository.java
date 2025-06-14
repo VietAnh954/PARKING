@@ -10,6 +10,4 @@ public interface PriceRepository extends JpaRepository<Price, String> {
     Price findByMaHinhThucAndMaLoaiXe(ParkingMode maHinhThuc, VehicleType maLoaiXe);
 
     boolean existsByMaLoaiXeAndMaHinhThuc(VehicleType maLoaiXe, ParkingMode maHinhThuc);
-
-    boolean existsByMaLoaiXeAndMaHinhThuc(VehicleType maLoaiXe, ParkingMode maHinhThuc);
 }

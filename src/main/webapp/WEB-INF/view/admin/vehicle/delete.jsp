@@ -30,6 +30,18 @@
                                                 <h3>Xóa xe với biển số xe là : ${bienSoXe}</h3>
                                             </div>
                                             <hr />
+
+                                            <c:if test="${not empty errorMessage}">
+                                                <div class="alert alert-danger" role="alert">
+                                                    ${errorMessage}
+                                                </div>
+                                            </c:if>
+                                            <c:if test="${not empty successMessage}">
+                                                <div class="alert alert-success" role="alert">
+                                                    ${successMessage}
+                                                </div>
+                                            </c:if>
+
                                             <div class="alert alert-danger" role="alert">
                                                 Bạn có chắc chắn muốn xóa xe này không? Hành động này không thể
                                                 hoàn tác.
