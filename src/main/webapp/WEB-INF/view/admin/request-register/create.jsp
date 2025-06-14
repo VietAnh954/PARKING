@@ -19,57 +19,44 @@
         <jsp:include page="../layout/sidebar.jsp" />
         <div id="layoutSidenav_content">
             <main>
-                <div class="container-fluid px-4">
-                    <h1 class="mt-4">Tạo Đăng Ký Tháng Mới</h1>
-                    <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/request">Danh Sách Yêu Cầu</a></li>
-                        <li class="breadcrumb-item active">Tạo Đăng Ký Mới</li>
-                    </ol>
-                    <c:if test="${not empty errorMessage}">
-                        <div class="alert alert-danger" role="alert">
-                            <c:out value="${errorMessage}"/>
-                        </div>
-                    </c:if>
-                    <c:if test="${not empty successMessage}">
-                        <div class="alert alert-success" role="alert">
-                            <c:out value="${successMessage}"/>
-                        </div>
-                    </c:if>
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-file-alt me-1"></i>
-                            Thông Tin Đăng Ký
-                        </div>
-                        <div class="card-body">
-                            <form action="${pageContext.request.contextPath}/admin/request/create" method="post">
-                                <sec:csrfInput/>
-                                <div class="mb-3">
-                                    <label for="bienSoXe" class="form-label">Biển Số Xe</label>
-                                    <input type="text" class="form-control" id="bienSoXe" name="bienSoXe" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="soThang" class="form-label">Số Tháng Đăng Ký</label>
-                                    <select class="form-control" id="soThang" name="soThang" required>
-                                        <option value="1">1 Tháng</option>
-                                        <option value="6">3 Tháng</option>
-                                        <option value="12">6 Tháng</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="ngayBatDau" class="form-label">Ngày Bắt Đầu</label>
-                                    <input type="date" class="form-control" id="ngayBatDau" name="ngayBatDau" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="ghiChu" class="form-label">Ghi Chú</label>
-                                    <textarea class="form-control" id="ghiChu" name="ghiChu" rows="3"></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Tạo Đăng Ký</button>
-                                <a href="${pageContext.request.contextPath}/admin/request" class="btn btn-secondary">Hủy</a>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+    <div class="container mt-4">
+        <h1>Tạo Đăng Ký Tháng</h1>
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-danger">
+                <c:out value="${errorMessage}" />
+            </div>
+        </c:if>
+        <form action="${pageContext.request.contextPath}/admin/request/create" method="post" class="needs-validation" novalidate>
+            <sec:csrfInput />
+            <div class="mb-3">
+                <label for="bienSoXe" class="form-label">Biển Số Xe</label>
+                <input type="text" class="form-control" id="bienSoXe" name="bienSoXe" required>
+                <div class="invalid-feedback">Vui lòng nhập biển số xe.</div>
+            </div>
+            <div class="mb-3">
+                <label for="soThang" class="form-label">Số Tháng</label>
+                <select class="form-select" id="soThang" name="soThang" required>
+                    <option value="" disabled selected>Chọn số tháng</option>
+                    <option value="1">1 Tháng</option>
+                    <option value="3">3 Tháng</option>
+                    <option value="6">6 Tháng</option>
+                </select>
+                <div class="invalid-feedback">Vui lòng chọn số tháng.</div>
+            </div>
+            <div class="mb-3">
+                <label for="ngayBatDau" class="form-label">Ngày Bắt Đầu</label>
+                <input type="date" class="form-control" id="ngayBatDau" name="ngayBatDau" required
+                       min="<%= java.time.LocalDate.now() %>">
+                <div class="invalid-feedback">Vui lòng chọn ngày bắt đầu.</div>
+            </div>
+            <div class="mb-3">
+                <label for="ghiChu" class="form-label">Ghi Chú</label>
+                <textarea class="form-control" id="ghiChu" name="ghiChu" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Tạo Đăng Ký</button>
+            <a href="${pageContext.request.contextPath}/admin/request" class="btn btn-secondary">Hủy</a>
+        </form>
+    </div>
             </main>
             <jsp:include page="../layout/footer.jsp" />
         </div>

@@ -52,18 +52,34 @@ public class MonthlyRegisterDashboardController {
     }
 
     @GetMapping
-    public String listRequests(@RequestParam(defaultValue = "0") int page,
+    public String listRequests(
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String sortByStatus,
+            @RequestParam(defaultValue = "all") String filter,
             Model model) {
         Sort sort = Sort.by("trangThai").ascending();
         if ("desc".equalsIgnoreCase(sortByStatus)) {
             sort = Sort.by("trangThai").descending();
         }
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<RegisterMonth> requestPage = registerMonthService.getRegisterMonthPage(pageable);
+
+        Page<RegisterMonth> requestPage;
+        switch (filter.toLowerCase()) {
+            case "active":
+                requestPage = registerMonthService.getActiveRegisterMonthPage(pageable);
+                break;
+            case "expired":
+                requestPage = registerMonthService.getExpiredRegisterMonthPage(pageable);
+                break;
+            default:
+                requestPage = registerMonthService.getRegisterMonthPage(pageable);
+                break;
+        }
+
         model.addAttribute("requestPage", requestPage);
         model.addAttribute("currentSort", sortByStatus);
+        model.addAttribute("currentFilter", filter);
         return "admin/request-register/show";
     }
 
@@ -188,7 +204,7 @@ public class MonthlyRegisterDashboardController {
             if (bienSoXe == null || bienSoXe.trim().isEmpty()) {
                 throw new IllegalArgumentException("Biển số xe không được để trống.");
             }
-            if (soThang != 1 && soThang != 6 && soThang != 12) {
+            if (soThang != 1 && soThang != 3 && soThang != 6) {
                 throw new IllegalArgumentException("Số tháng phải là 1, 3 hoặc 6.");
             }
             LocalDate startDate = LocalDate.parse(ngayBatDau);
@@ -202,6 +218,11 @@ public class MonthlyRegisterDashboardController {
                 throw new IllegalArgumentException("Xe với biển số " + bienSoXe + " không tồn tại trong hệ thống.");
             }
             Vehicle vehicle = vehicleOpt.get();
+
+            // Check if vehicle is owned by a student
+            if (vehicle.getMaSV() == null || vehicle.getMaNV() != null) {
+                throw new IllegalArgumentException("Xe với biển số " + bienSoXe + " không thuộc sở hữu của sinh viên.");
+            }
 
             // Create new registration
             RegisterMonth registration = new RegisterMonth();
@@ -227,7 +248,7 @@ public class MonthlyRegisterDashboardController {
                 throw new IllegalArgumentException("Không tìm thấy giá cho loại xe này với hình thức gửi tháng.");
             }
             registration.setBangGia(price);
-            registration.setGia(price.getGia() * soThang); // Price per month * number of months
+            registration.setGia(price.getGia() * soThang);
 
             // Validate date range
             if (!registerMonthService.isValidNewRegistrationDateRange(

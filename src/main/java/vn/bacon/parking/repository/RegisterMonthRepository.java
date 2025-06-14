@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -62,4 +64,11 @@ public interface RegisterMonthRepository extends JpaRepository<RegisterMonth, St
         // New method to find the latest ngayKetThuc for a vehicle
         @Query("SELECT MAX(r.ngayKetThuc) FROM RegisterMonth r WHERE r.bienSoXe.bienSoXe = :bienSoXe")
         Optional<LocalDate> findLatestNgayKetThucByBienSoXe(@Param("bienSoXe") String bienSoXe);
+
+        @Query("SELECT r FROM RegisterMonth r WHERE r.ngayKetThuc >= :ngayHienTai")
+        Page<RegisterMonth> findByNgayKetThucGreaterThanEqual(@Param("ngayHienTai") LocalDate ngayHienTai,
+                        Pageable pageable);
+
+        @Query("SELECT r FROM RegisterMonth r WHERE r.ngayKetThuc < :ngayHienTai")
+        Page<RegisterMonth> findByNgayKetThucLessThan(@Param("ngayHienTai") LocalDate ngayHienTai, Pageable pageable);
 }

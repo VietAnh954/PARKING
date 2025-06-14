@@ -276,4 +276,12 @@ public class RegisterMonthService {
         return registerMonthRepository.findAll(pageable);
     }
 
+    public Page<RegisterMonth> getActiveRegisterMonthPage(Pageable pageable) {
+        return registerMonthRepository.findByNgayKetThucGreaterThanEqual(LocalDate.now(), pageable);
+    }
+
+    public Page<RegisterMonth> getExpiredRegisterMonthPage(Pageable pageable) {
+        return registerMonthRepository.findByNgayKetThucLessThan(LocalDate.now(), pageable);
+    }
+
 }
