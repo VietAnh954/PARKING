@@ -13,6 +13,14 @@
     <link href="/css/styles.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .status-pending { color: orange; font-weight: bold; }
+        .status-approved { color: green; font-weight: bold; }
+        .status-cancelled { color: red; font-weight: bold; }
+    </style>
 </head>
 <body class="sb-nav-fixed">
     <jsp:include page="../layout/header.jsp" />
@@ -76,43 +84,66 @@
                                 </div>
 
                                 <!-- Bảng danh sách -->
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Mã Đăng Ký</th>
-                                            <th>Biển Số Xe</th>
-                                            <th>Ngày Đăng Ký</th>
-                                            <th>Ngày Bắt Đầu</th>
-                                            <th>Ngày Kết Thúc</th>
-                                            <th>Nhân Viên Ghi Nhận</th>
-                                            <th>Thao Tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach items="${registerMonthList}" var="registerMonth">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
                                             <tr>
-                                                <td><c:out value="${registerMonth.maDangKy}"/></td>
-                                                <td><c:out value="${registerMonth.bienSoXe.bienSoXe}"/></td>
-                                                <td><fmt:formatDate value="${registerMonth.ngayDangKyAsDate}" pattern="dd/MM/yyyy"/></td>
-                                                <td><fmt:formatDate value="${registerMonth.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
-                                                <td><fmt:formatDate value="${registerMonth.ngayKetThucAsDate}" pattern="dd/MM/yyyy"/></td>
-                                                <td><c:out value="${registerMonth.maNV != null ? registerMonth.maNV.maNV : 'N/A'}"/></td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <a href="<c:url value='/admin/registermonth/update/${registerMonth.maDangKy}'/>" class="btn btn-warning btn-sm">Sửa</a>
-                                                        <a href="<c:url value='/admin/registermonth/delete/${registerMonth.maDangKy}'/>" class="btn btn-danger btn-sm">Xóa</a>
-                                                        <a href="<c:url value='/admin/registermonth/extend/${registerMonth.maDangKy}'/>" class="btn btn-info btn-sm">Gia hạn</a>
-                                                    </div>
-                                                </td>
+                                                <th>Mã Đăng Ký</th>
+                                                <th>Biển Số Xe</th>
+                                                <th>Ngày Đăng Ký</th>
+                                                <th>Ngày Bắt Đầu</th>
+                                                <th>Ngày Kết Thúc</th>
+                                                <th>Trạng Thái</th>
+                                                <th>Nhân Viên Ghi Nhận</th>
+                                                <th>Giá Tiền</th>
+                                                <th>Ghi Chú</th>
+                                                <th>Thao Tác</th>
                                             </tr>
-                                        </c:forEach>
-                                        <c:if test="${empty registerMonthList}">
-                                            <tr>
-                                                <td colspan="7" class="text-center">Không tìm thấy đăng ký nào.</td>
-                                            </tr>
-                                        </c:if>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${registerMonthList}" var="registerMonth">
+                                                <tr>
+                                                    <td><c:out value="${registerMonth.maDangKy}"/></td>
+                                                    <td><c:out value="${registerMonth.bienSoXe.bienSoXe}"/></td>
+                                                    <td><fmt:formatDate value="${registerMonth.ngayDangKyAsDate}" pattern="dd/MM/yyyy"/></td>
+                                                    <td><fmt:formatDate value="${registerMonth.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
+                                                    <td><fmt:formatDate value="${registerMonth.ngayKetThucAsDate}" pattern="dd/MM/yyyy"/></td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${registerMonth.trangThai == 'Chờ duyệt'}">
+                                                                <span class="status-pending"><c:out value="${registerMonth.trangThai}"/></span>
+                                                            </c:when>
+                                                            <c:when test="${registerMonth.trangThai == 'Đã duyệt'}">
+                                                                <span class="status-approved"><c:out value="${registerMonth.trangThai}"/></span>
+                                                            </c:when>
+                                                            <c:when test="${registerMonth.trangThai == 'Từ chối'}">
+                                                                <span class="status-cancelled"><c:out value="${registerMonth.trangThai}"/></span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <c:out value="${registerMonth.trangThai}"/>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td><c:out value="${registerMonth.maNV != null ? registerMonth.maNV.hoTen : 'N/A'}"/> - 
+                                                        <c:out value="${registerMonth.maNV != null ? registerMonth.maNV.maNV : 'N/A'}"/></td>
+                                                    <td><c:out value="${registerMonth.gia}"/></td>
+                                                    <td><c:out value="${registerMonth.ghiChu != null ? registerMonth.ghiChu : 'N/A'}"/></td>
+                                                    <td>
+                                                        <div class="btn-group" role="group">
+                                                            <a href="<c:url value='/admin/registermonth/update/${registerMonth.maDangKy}'/>" class="btn btn-warning btn-sm">Sửa</a>
+                                                            <a href="<c:url value='/admin/registermonth/extend/${registerMonth.maDangKy}'/>" class="btn btn-info btn-sm">Gia hạn</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                            <c:if test="${empty registerMonthList}">
+                                                <tr>
+                                                    <td colspan="10" class="text-center">Không tìm thấy đăng ký nào.</td>
+                                                </tr>
+                                            </c:if>
+                                        </tbody>
+                                    </table>
+                                </div>
 
                                 <!-- Phân trang -->
                                 <c:if test="${registerMonthPage != null && registerMonthPage.totalPages > 0}">
@@ -149,7 +180,14 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script>
             const table = document.querySelector('table');
-            if (table) new simpleDatatables.DataTable(table);
+            if (table) new simpleDatatables.DataTable(table, {
+                labels: {
+                    placeholder: "Tìm kiếm...",
+                    perPage: "{select} bản ghi mỗi trang",
+                    noRows: "Không tìm thấy dữ liệu",
+                    info: "Hiển thị {start} đến {end} của {rows} bản ghi"
+                }
+            });
         </script>
-    </body>
+</body>
 </html>

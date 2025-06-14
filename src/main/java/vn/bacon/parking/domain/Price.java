@@ -6,30 +6,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "BangGia")
 public class Price {
     @Id
-    @NotBlank(message = "Mã bảng giá không được để trống")
-    @Pattern(regexp = "^BG\\d{3}$", message = "Mã bảng giá phải có định dạng BGxxx (x là số)")
     @Column(name = "MaBangGia", columnDefinition = "nchar(10)")
     private String maBangGia;
 
-    @NotNull(message = "Vui lòng chọn loại xe")
     @ManyToOne
     @JoinColumn(name = "MaLoaiXe")
     private VehicleType maLoaiXe;
 
-    @NotNull(message = "Vui lòng chọn hình thức gửi")
     @ManyToOne
     @JoinColumn(name = "MaHinhThuc")
     private ParkingMode maHinhThuc;
 
-    @NotNull(message = "Giá không được để trống")
     @Column(name = "Gia")
     private Integer gia;
 

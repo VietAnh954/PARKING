@@ -1,6 +1,9 @@
 package vn.bacon.parking.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +37,33 @@ public class AccountController {
         this.studentService = studentService;
         this.staffService = staffService;
         this.roleRepository = roleRepository;
+    }
+
+    @GetMapping
+    public String listAccounts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchUsername,
+            @RequestParam(required = false) Integer filterRoleId,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Account> accountPage;
+
+        if (searchUsername != null && !searchUsername.trim().isEmpty()) {
+            accountPage = accountService.searchAccountsByUsername(searchUsername, pageable);
+        } else if (filterRoleId != null) {
+            accountPage = accountService.getAccountsByRoleId(filterRoleId, pageable);
+        } else {
+            accountPage = accountService.getAllAccounts(pageable);
+        }
+
+        model.addAttribute("accountPage", accountPage);
+        model.addAttribute("searchUsername", searchUsername);
+        model.addAttribute("filterRoleId", filterRoleId);
+        model.addAttribute("roles", roleRepository.findAll());
+
+        return "admin/account/show";
     }
 
     @GetMapping("/create/{id}")

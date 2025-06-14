@@ -1,6 +1,8 @@
 package vn.bacon.parking.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.bacon.parking.domain.Account;
@@ -23,7 +25,6 @@ public class AccountService {
     private final StudentRepository studentRepository;
     private final StaffRepository staffRepository;
 
-    
     public AccountService(AccountRepository accountRepository, RoleRepository roleRepository,
             PasswordEncoder passwordEncoder, StudentRepository studentRepository, StaffRepository staffRepository) {
         this.studentRepository = studentRepository;
@@ -141,5 +142,17 @@ public class AccountService {
         account.setPassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account);
         return true;
+    }
+
+    public Page<Account> getAllAccounts(Pageable pageable) {
+        return accountRepository.findAll(pageable);
+    }
+
+    public Page<Account> searchAccountsByUsername(String username, Pageable pageable) {
+        return accountRepository.findByUsernameContainingIgnoreCase(username, pageable);
+    }
+
+    public Page<Account> getAccountsByRoleId(Integer roleId, Pageable pageable) {
+        return accountRepository.findByRole_RoleID(roleId, pageable);
     }
 }

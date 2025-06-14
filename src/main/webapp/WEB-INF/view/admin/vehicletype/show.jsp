@@ -1,4 +1,3 @@
-
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
@@ -27,9 +26,9 @@
                                         <div class=" col-12 mx-auto">
                                             <div class="d-flex justify-content-between">
                                                 <h3>Bảng loại xe</h3>
-                                                <a href="/admin/vehicleType/create" class="btn btn-primary">Thêm loại xe
+                                                <!-- <a href="/admin/vehicleType/create" class="btn btn-primary">Thêm loại xe
                                                     mới
-                                                </a>
+                                                </a> -->
                                                 <a href="/admin/vehicle" class="btn btn-secondary">Quay lại danh sách xe
                                                 </a>
                                             </div>
@@ -51,8 +50,8 @@
                                                             <td>
                                                                 <a href="/admin/vehicleType/update/${vehicletype.maLoaiXe}"
                                                                     class="btn btn-warning mx-2">Cập nhật</a>
-                                                                <a href="/admin/vehicleType/delete/${vehicletype.maLoaiXe}"
-                                                                    class="btn btn-danger">Xóa</a>
+                                                                <!-- <a href="/admin/vehicleType/delete/${vehicletype.maLoaiXe}"
+                                                                    class="btn btn-danger">Xóa</a> -->
 
                                                             </td>
                                                         </tr>

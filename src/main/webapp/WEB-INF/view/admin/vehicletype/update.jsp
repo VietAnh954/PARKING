@@ -31,7 +31,7 @@
                                                 <div class="mb-3 ">
                                                     <label class="form-label">MÃ LOẠI XE:</label>
                                                     <form:input type="text" class="form-control" path="maLoaiXe"
-                                                        disabled="true" />
+                                                        readonly="true" />
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">TÊN LOẠI XE:</label>

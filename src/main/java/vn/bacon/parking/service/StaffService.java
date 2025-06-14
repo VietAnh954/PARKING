@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import vn.bacon.parking.domain.Staff;
 import vn.bacon.parking.repository.StaffRepository;
+import vn.bacon.parking.repository.VehicleRepository;
 
 @Service
 public class StaffService {
@@ -24,11 +25,14 @@ public class StaffService {
     private final StaffRepository staffRepository;
     private final UploadService uploadService;
     private final AccountService accountService;
+    private final VehicleRepository vehicleRepository;
 
-    public StaffService(StaffRepository staffRepository, UploadService uploadService, AccountService accountService) {
+    public StaffService(StaffRepository staffRepository, UploadService uploadService, AccountService accountService,
+            VehicleRepository vehicleRepository) {
         this.uploadService = uploadService;
         this.staffRepository = staffRepository;
         this.accountService = accountService;
+        this.vehicleRepository = vehicleRepository;
     }
 
     public List<Staff> getAllStaffs() {
@@ -43,15 +47,26 @@ public class StaffService {
         logger.info("Đang cố gắng xóa nhân viên với maNV: {}", maNV);
         Optional<Staff> staffOpt = staffRepository.findById(maNV);
         if (staffOpt.isPresent()) {
-            // Kiểm tra tài khoản liên quan
             if (accountService.existsByUsername(maNV)) {
                 logger.warn("Nhân viên với maNV {} vẫn có tài khoản liên quan", maNV);
                 throw new IllegalStateException("Vui lòng xóa tài khoản liên quan trước khi xóa nhân viên");
             }
+            if (hasRegisteredVehicle(maNV)) {
+                logger.warn("Nhân viên với maNV {} đã đăng ký xe", maNV);
+                throw new IllegalStateException("Không thể xóa nhân viên vì nhân viên này đã đăng ký xe!");
+            }
             staffRepository.deleteById(maNV);
+            logger.info("Xóa nhân viên với maNV {} thành công", maNV);
         } else {
             logger.warn("Nhân viên với maNV {} không tồn tại", maNV);
+            throw new IllegalStateException("Nhân viên với mã " + maNV + " không tồn tại!");
         }
+    }
+
+    public boolean hasRegisteredVehicle(String maNV) {
+        boolean hasVehicles = vehicleRepository.existsByMaNV_MaNV(maNV);
+        logger.debug("Checking vehicles for maNV: {}. Result: {}", maNV, hasVehicles);
+        return hasVehicles;
     }
 
     public Page<Staff> getStaffPage(Pageable pageable) {

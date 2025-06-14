@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import vn.bacon.parking.domain.ParkingMode;
 import vn.bacon.parking.domain.Price;
 import vn.bacon.parking.domain.RegisterMonth;
@@ -55,7 +57,8 @@ public class MonthlyRegistrationController {
             return "redirect:/login";
         }
         String maSV = auth.getName().trim();
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+        Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE));
+        List<Vehicle> vehicles = vehiclePage.getContent();
         model.addAttribute("registration", new RegisterMonth());
         model.addAttribute("vehicles", vehicles);
         model.addAttribute("maSV", maSV);
@@ -66,6 +69,7 @@ public class MonthlyRegistrationController {
     public String submitRequest(
             @RequestParam String bienSoXe,
             @RequestParam("ngayBatDau") String ngayBatDau,
+            @RequestParam("soThang") int soThang,
             Model model) {
         logger.info("Đang xử lý yêu cầu POST cho /student/request-monthly-registration");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -75,19 +79,21 @@ public class MonthlyRegistrationController {
         String maSV = auth.getName().trim();
 
         try {
+            // Validate inputs
+            if (bienSoXe == null || bienSoXe.trim().isEmpty()) {
+                throw new IllegalArgumentException("Biển số xe không được để trống.");
+            }
+            if (ngayBatDau == null || ngayBatDau.trim().isEmpty()) {
+                throw new IllegalArgumentException("Ngày bắt đầu không được để trống.");
+            }
+            if (soThang != 1 && soThang != 3 && soThang != 6) {
+                throw new IllegalArgumentException("Số tháng phải là 1, 3 hoặc 6.");
+            }
+
             String maDangKy = registerMonthService.getNextMaDangKy();
             LocalDate ngayDangKy = LocalDate.now();
             LocalDate parsedNgayBatDau = LocalDate.parse(ngayBatDau);
-            LocalDate ngayKetThuc = parsedNgayBatDau.plusMonths(1);
-
-            if (registerMonthService.hasActiveRegistrationForVehicle(bienSoXe)) {
-                model.addAttribute("error", "Xe này đã có đăng ký đang hoạt động.");
-                List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
-                model.addAttribute("registration", new RegisterMonth());
-                model.addAttribute("vehicles", vehicles);
-                model.addAttribute("maSV", maSV);
-                return "client/student/request-monthly-registration/request";
-            }
+            LocalDate ngayKetThuc = parsedNgayBatDau.plusMonths(soThang);
 
             Vehicle vehicle = vehicleService.getVehicleById(bienSoXe)
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy xe với biển số: " + bienSoXe));
@@ -113,18 +119,30 @@ public class MonthlyRegistrationController {
                         "Không tìm thấy giá cho xe " + bienSoXe + " với hình thức gửi tháng.");
             }
             registration.setBangGia(price);
+            registration.setGia(price.getGia() * soThang);
 
             registerMonthService.createRegistration(registration);
             model.addAttribute("message", "Yêu cầu đã được gửi thành công!");
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
+            Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(maSV,
+                    PageRequest.of(0, Integer.MAX_VALUE));
+            List<Vehicle> vehicles = vehiclePage.getContent();
+            model.addAttribute("registration", new RegisterMonth());
+            model.addAttribute("vehicles", vehicles);
+            model.addAttribute("maSV", maSV);
+            return "client/student/request-monthly-registration/request";
         } catch (Exception e) {
+            logger.error("Lỗi khi gửi yêu cầu đăng ký: {}", e.getMessage(), e);
             model.addAttribute("error", "Đã xảy ra lỗi bất ngờ: " + e.getMessage());
+            Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(maSV,
+                    PageRequest.of(0, Integer.MAX_VALUE));
+            List<Vehicle> vehicles = vehiclePage.getContent();
+            model.addAttribute("registration", new RegisterMonth());
+            model.addAttribute("vehicles", vehicles);
+            model.addAttribute("maSV", maSV);
+            return "client/student/request-monthly-registration/request";
         }
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
-        model.addAttribute("registration", new RegisterMonth());
-        model.addAttribute("vehicles", vehicles);
-        model.addAttribute("maSV", maSV);
         return "client/student/request-monthly-registration/request";
     }
 
@@ -147,7 +165,6 @@ public class MonthlyRegistrationController {
         }
 
         RegisterMonth registration = registrationOpt.get();
-        // Kiểm tra quyền sở hữu xe
         String requestMaSV = registration.getBienSoXe().getMaSV() != null
                 ? registration.getBienSoXe().getMaSV().getMaSV().trim()
                 : null;
@@ -166,10 +183,20 @@ public class MonthlyRegistrationController {
             return "redirect:/student/request-history";
         }
 
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+        // Calculate soThang
+        long soThang = java.time.temporal.ChronoUnit.MONTHS.between(
+                registration.getNgayBatDau().withDayOfMonth(1),
+                registration.getNgayKetThuc().withDayOfMonth(1));
+        if (soThang != 1 && soThang != 3 && soThang != 6) {
+            soThang = 1; // Default to 1 if invalid
+        }
+
+        Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE));
+        List<Vehicle> vehicles = vehiclePage.getContent();
         model.addAttribute("registration", registration);
         model.addAttribute("vehicles", vehicles);
         model.addAttribute("maSV", maSV);
+        model.addAttribute("soThang", soThang);
         return "client/student/request-monthly-registration/edit";
     }
 
@@ -178,6 +205,7 @@ public class MonthlyRegistrationController {
             @RequestParam String maDangKy,
             @RequestParam String bienSoXe,
             @RequestParam("ngayBatDau") String ngayBatDau,
+            @RequestParam("soThang") int soThang,
             Model model,
             RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -187,8 +215,8 @@ public class MonthlyRegistrationController {
         String maSV = auth.getName().trim();
         String trimmedMaDangKy = maDangKy != null ? maDangKy.trim() : "";
         logger.info(
-                "Đang cập nhật đăng ký với Mã: '{}', đã trim: '{}', cho sinh viên: '{}', bienSoXe: '{}', ngayBatDau: '{}'",
-                maDangKy, trimmedMaDangKy, maSV, bienSoXe, ngayBatDau);
+                "Đang cập nhật đăng ký với Mã: '{}', đã trim: '{}', cho sinh viên: '{}', bienSoXe: '{}', ngayBatDau: '{}', soThang: '{}'",
+                maDangKy, trimmedMaDangKy, maSV, bienSoXe, ngayBatDau, soThang);
 
         try {
             if (trimmedMaDangKy.isEmpty()) {
@@ -199,6 +227,9 @@ public class MonthlyRegistrationController {
             }
             if (ngayBatDau == null || ngayBatDau.trim().isEmpty()) {
                 throw new IllegalArgumentException("Ngày bắt đầu không được để trống.");
+            }
+            if (soThang != 1 && soThang != 3 && soThang != 6) {
+                throw new IllegalArgumentException("Số tháng phải là 1, 3 hoặc 6.");
             }
 
             Optional<RegisterMonth> registrationOpt = registerMonthService.getRegistrationById(trimmedMaDangKy);
@@ -228,20 +259,15 @@ public class MonthlyRegistrationController {
             }
 
             LocalDate parsedNgayBatDau = LocalDate.parse(ngayBatDau);
-            LocalDate ngayKetThuc = parsedNgayBatDau.plusMonths(1);
-
-            if (!bienSoXe.equals(existingRegistration.getBienSoXe().getBienSoXe()) &&
-                    registerMonthService.hasActiveRegistrationForVehicleExcludingId(bienSoXe, trimmedMaDangKy)) {
-                model.addAttribute("error", "Xe này đã có đăng ký đang hoạt động.");
-                List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
-                model.addAttribute("registration", existingRegistration);
-                model.addAttribute("vehicles", vehicles);
-                model.addAttribute("maSV", maSV);
-                return "client/student/request-monthly-registration/edit";
-            }
+            LocalDate ngayKetThuc = parsedNgayBatDau.plusMonths(soThang);
 
             Vehicle vehicle = vehicleService.getVehicleById(bienSoXe)
                     .orElseThrow(() -> new IllegalArgumentException("Xe không tồn tại với biển số: " + bienSoXe));
+
+            if (vehicle.getMaSV() == null || !vehicle.getMaSV().getMaSV().trim().equals(maSV)) {
+                throw new IllegalArgumentException("Bạn không sở hữu xe này.");
+            }
+
             existingRegistration.setBienSoXe(vehicle);
             existingRegistration.setNgayBatDau(parsedNgayBatDau);
             existingRegistration.setNgayKetThuc(ngayKetThuc);
@@ -255,6 +281,7 @@ public class MonthlyRegistrationController {
                         "Không tìm thấy giá cho xe " + bienSoXe + " với hình thức gửi tháng.");
             }
             existingRegistration.setBangGia(price);
+            existingRegistration.setGia(price.getGia() * soThang);
 
             registerMonthService.updateRegistration(existingRegistration);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật đăng ký thành công!");
@@ -262,7 +289,8 @@ public class MonthlyRegistrationController {
         } catch (IllegalArgumentException e) {
             logger.error("Lỗi tham số khi cập nhật đăng ký: {}", e.getMessage());
             model.addAttribute("error", e.getMessage());
-            List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+            List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE))
+                    .getContent();
             Optional<RegisterMonth> registrationOpt = registerMonthService.getRegistrationById(trimmedMaDangKy);
             model.addAttribute("registration", registrationOpt.orElse(new RegisterMonth()));
             model.addAttribute("vehicles", vehicles);
@@ -270,8 +298,14 @@ public class MonthlyRegistrationController {
             return "client/student/request-monthly-registration/edit";
         } catch (Exception e) {
             logger.error("Lỗi bất ngờ khi cập nhật đăng ký: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật đăng ký: " + e.getMessage());
-            return "redirect:/student/request-history";
+            model.addAttribute("error", "Lỗi khi cập nhật đăng ký: " + e.getMessage());
+            List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE))
+                    .getContent();
+            Optional<RegisterMonth> registrationOpt = registerMonthService.getRegistrationById(trimmedMaDangKy);
+            model.addAttribute("registration", registrationOpt.orElse(new RegisterMonth()));
+            model.addAttribute("vehicles", vehicles);
+            model.addAttribute("maSV", maSV);
+            return "client/student/request-monthly-registration/edit";
         }
     }
 
@@ -282,7 +316,8 @@ public class MonthlyRegistrationController {
             return "redirect:/login";
         }
         String maSV = auth.getName().trim();
-        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV);
+        List<Vehicle> vehicles = vehicleService.getVehiclesByStudentId(maSV, PageRequest.of(0, Integer.MAX_VALUE))
+                .getContent();
         // Lấy tất cả đăng ký của các xe thuộc sinh viên
         List<RegisterMonth> registrations = vehicles.stream()
                 .flatMap(v -> registerMonthService.getRegistrationsByVehicleId(v.getBienSoXe()).stream())

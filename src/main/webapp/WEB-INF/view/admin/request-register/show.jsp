@@ -4,6 +4,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,6 +15,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
+
 <body class="sb-nav-fixed">
     <jsp:include page="../layout/header.jsp" />
     <div id="layoutSidenav">
@@ -28,10 +30,12 @@
                     </ol>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3>Danh Sách Yêu Cầu</h3>
+                        <a href="${pageContext.request.contextPath}/admin/request/create" class="btn btn-primary">Tạo
+                            Đăng Ký Mới</a>
                     </div>
                     <c:if test="${not empty successMessage}">
                         <div class="alert alert-success" role="alert">
-                            <c:out value="${successMessage}"/>
+                            <c:out value="${successMessage}" />
                         </div>
                     </c:if>
                     <c:choose>
@@ -56,45 +60,93 @@
                                 <tbody>
                                     <c:forEach var="registration" items="${requestPage.content}">
                                         <tr>
-                                            <td><c:out value="${registration.maDangKy.trim()}"/></td>
-                                            <td><c:out value="${registration.bienSoXe.maSV != null ? registration.bienSoXe.maSV.maSV : 'N/A'}"/></td>
-                                            <td><c:out value="${registration.bienSoXe.bienSoXe}"/></td>
-                                            <td><fmt:formatDate value="${registration.ngayDangKyAsDate}" pattern="dd/MM/yyyy"/></td>
-                                            <td><fmt:formatDate value="${registration.ngayBatDauAsDate}" pattern="dd/MM/yyyy"/></td>
-                                            <td><fmt:formatDate value="${registration.ngayKetThucAsDate}" pattern="dd/MM/yyyy"/></td>
-                                            <td><fmt:formatNumber value="${registration.bangGia.gia != null ? registration.bangGia.gia : 0}" pattern="#,###"/></td>
-                                            <td><c:out value="${registration.trangThai}"/></td>
+                                            <td>
+                                                <c:out value="${registration.maDangKy.trim()}" />
+                                            </td>
+                                            <td>
+                                                <c:out
+                                                    value="${registration.bienSoXe.maSV != null ? registration.bienSoXe.maSV.maSV : 'N/A'}" />
+                                            </td>
+                                            <td>
+                                                <c:out value="${registration.bienSoXe.bienSoXe}" />
+                                            </td>
+                                            <td>
+                                                <fmt:formatDate value="${registration.ngayDangKyAsDate}"
+                                                    pattern="dd/MM/yyyy" />
+                                            </td>
+                                            <td>
+                                                <fmt:formatDate value="${registration.ngayBatDauAsDate}"
+                                                    pattern="dd/MM/yyyy" />
+                                            </td>
+                                            <td>
+                                                <fmt:formatDate value="${registration.ngayKetThucAsDate}"
+                                                    pattern="dd/MM/yyyy" />
+                                            </td>
+                                            <td>
+                                                <fmt:formatNumber
+                                                    value="${registration.bangGia.gia != null ? registration.bangGia.gia : 0}"
+                                                    pattern="#,###" />
+                                            </td>
+                                            <td>
+                                                <c:out value="${registration.trangThai}" />
+                                            </td>
                                             <td>
                                                 <c:choose>
-                                                    <c:when test="${registration.trangThai == 'Đã duyệt' || registration.trangThai == 'Từ chối'}">
-                                                        <a href="${pageContext.request.contextPath}/admin/request/view/${registration.maDangKy.trim()}" class="btn btn-info btn-sm">Xem</a>
+                                                    <c:when
+                                                        test="${registration.trangThai == 'Đã duyệt' || registration.trangThai == 'Từ chối'}">
+                                                        <a href="${pageContext.request.contextPath}/admin/request/view/${registration.maDangKy.trim()}"
+                                                            class="btn btn-info btn-sm">Xem</a>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <a href="${pageContext.request.contextPath}/admin/request/approve/${registration.maDangKy.trim()}" class="btn btn-success btn-sm">Duyệt</a>
-                                                        <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal${registration.maDangKy.trim()}">Từ Chối</a>
-                                                        <div class="modal fade" id="rejectModal${registration.maDangKy.trim()}" tabindex="-1" aria-labelledby="rejectModalLabel${registration.maDangKy.trim()}" aria-hidden="true">
+                                                        <a href="${pageContext.request.contextPath}/admin/request/approve/${registration.maDangKy.trim()}"
+                                                            class="btn btn-success btn-sm">Duyệt</a>
+                                                        <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#rejectModal${registration.maDangKy.trim()}">Từ
+                                                            Chối</a>
+                                                        <div class="modal fade"
+                                                            id="rejectModal${registration.maDangKy.trim()}"
+                                                            tabindex="-1"
+                                                            aria-labelledby="rejectModalLabel${registration.maDangKy.trim()}"
+                                                            aria-hidden="true">
                                                             <div class="modal-dialog">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title" id="rejectModalLabel${registration.maDangKy.trim()}">Từ Chối Yêu Cầu</h5>
-                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        <h5 class="modal-title"
+                                                                            id="rejectModalLabel${registration.maDangKy.trim()}">
+                                                                            Từ Chối Yêu Cầu</h5>
+                                                                        <button type="button" class="btn-close"
+                                                                            data-bs-dismiss="modal"
+                                                                            aria-label="Close"></button>
                                                                     </div>
                                                                     <div class="modal-body">
-                                                                        <form action="${pageContext.request.contextPath}/admin/request/reject" method="post">
-                                                                            <sec:csrfInput/>
-                                                                            <input type="hidden" name="maDangKy" value="${registration.maDangKy.trim()}"/>
+                                                                        <form
+                                                                            action="${pageContext.request.contextPath}/admin/request/reject"
+                                                                            method="post">
+                                                                            <sec:csrfInput />
+                                                                            <input type="hidden" name="maDangKy"
+                                                                                value="${registration.maDangKy.trim()}" />
                                                                             <div class="mb-3">
-                                                                                <label for="ghiChu${registration.maDangKy.trim()}" class="form-label">Lý Do Từ Chối</label>
-                                                                                <textarea class="form-control" id="ghiChu${registration.maDangKy.trim()}" name="ghiChu" rows="3" required></textarea>
-                                                                                <div class="invalid-feedback">Vui lòng nhập lý do từ chối.</div>
+                                                                                <label
+                                                                                    for="ghiChu${registration.maDangKy.trim()}"
+                                                                                    class="form-label">Lý Do Từ
+                                                                                    Chối</label>
+                                                                                <textarea class="form-control"
+                                                                                    id="ghiChu${registration.maDangKy.trim()}"
+                                                                                    name="ghiChu" rows="3"
+                                                                                    required></textarea>
+                                                                                <div class="invalid-feedback">Vui lòng
+                                                                                    nhập lý do từ chối.</div>
                                                                             </div>
-                                                                            <button type="submit" class="btn btn-danger">Xác Nhận Từ Chối</button>
+                                                                            <button type="submit"
+                                                                                class="btn btn-danger">Xác Nhận Từ
+                                                                                Chối</button>
                                                                         </form>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <a href="${pageContext.request.contextPath}/admin/request/view/${registration.maDangKy.trim()}" class="btn btn-info btn-sm mx-1">Xem</a>
+                                                        <a href="${pageContext.request.contextPath}/admin/request/view/${registration.maDangKy.trim()}"
+                                                            class="btn btn-info btn-sm mx-1">Xem</a>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
@@ -106,17 +158,21 @@
                                 <ul class="pagination justify-content-center">
                                     <c:if test="${!requestPage.first}">
                                         <li class="page-item">
-                                            <a class="page-link" href="?page=${requestPage.number - 1}&size=${requestPage.size}&sortByStatus=${currentSort}">Trước</a>
+                                            <a class="page-link"
+                                                href="?page=${requestPage.number - 1}&size=${requestPage.size}&sortByStatus=${currentSort}">Trước</a>
                                         </li>
                                     </c:if>
                                     <c:forEach begin="0" end="${requestPage.totalPages - 1}" var="i">
                                         <li class="page-item ${i == requestPage.number ? 'active' : ''}">
-                                            <a class="page-link" href="?page=${i}&size=${requestPage.size}&sortByStatus=${currentSort}">${i + 1}</a>
+                                            <a class="page-link"
+                                                href="?page=${i}&size=${requestPage.size}&sortByStatus=${currentSort}">${i
+                                                + 1}</a>
                                         </li>
                                     </c:forEach>
                                     <c:if test="${!requestPage.last}">
                                         <li class="page-item">
-                                            <a class="page-link" href="?page=${requestPage.number + 1}&size=${requestPage.size}&sortByStatus=${currentSort}">Sau</a>
+                                            <a class="page-link"
+                                                href="?page=${requestPage.number + 1}&size=${requestPage.size}&sortByStatus=${currentSort}">Sau</a>
                                         </li>
                                     </c:if>
                                 </ul>
@@ -130,11 +186,13 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/scripts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+        crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
         const table = document.querySelector('table');
         if (table) new simpleDatatables.DataTable(table);
     </script>
 </body>
+
 </html>

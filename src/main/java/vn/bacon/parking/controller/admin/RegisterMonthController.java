@@ -1,292 +1,441 @@
-package vn.bacon.parking.controller.admin;
+// package vn.bacon.parking.controller.admin;
 
-import java.util.List;
-import java.util.Optional;
+// import java.time.LocalDate;
+// import java.util.HashMap;
+// import java.util.List;
+// import java.util.Map;
+// import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
+// import org.springframework.data.domain.Page;
+// import org.springframework.data.domain.PageRequest;
+// import org.springframework.data.domain.Pageable;
+// import org.springframework.security.core.Authentication;
+// import org.springframework.security.core.context.SecurityContextHolder;
+// import org.springframework.stereotype.Controller;
+// import org.springframework.ui.Model;
+// import org.springframework.validation.BindingResult;
+// import org.springframework.web.bind.annotation.GetMapping;
+// import org.springframework.web.bind.annotation.ModelAttribute;
+// import org.springframework.web.bind.annotation.PathVariable;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.RequestMapping;
+// import org.springframework.web.bind.annotation.RequestParam;
+// import org.springframework.web.bind.annotation.ResponseBody;
+// import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import vn.bacon.parking.domain.RegisterMonth;
-import vn.bacon.parking.service.RegisterMonthService;
+// import jakarta.validation.Valid;
+// import vn.bacon.parking.domain.ParkingMode;
+// import vn.bacon.parking.domain.Price;
+// import vn.bacon.parking.domain.RegisterMonth;
+// import vn.bacon.parking.domain.Vehicle;
+// import vn.bacon.parking.domain.dto.RegisterMonthForm;
+// import vn.bacon.parking.repository.ParkingModeRepository;
+// import vn.bacon.parking.repository.PriceRepository;
+// import vn.bacon.parking.repository.VehicleRepository;
+// import vn.bacon.parking.service.RegisterMonthService;
 
-@Controller
-@RequestMapping("/admin/registermonth")
-public class RegisterMonthController {
+// @Controller
+// @RequestMapping("/admin/registermonth")
+// public class RegisterMonthController {
 
-    private static final Logger logger = LoggerFactory.getLogger(RegisterMonthController.class);
+// private static final Logger logger =
+// LoggerFactory.getLogger(RegisterMonthController.class);
 
-    private final RegisterMonthService registerMonthService;
+// private final RegisterMonthService registerMonthService;
+// private final VehicleRepository vehicleRepository;
+// private final ParkingModeRepository parkingModeRepository;
+// private final PriceRepository priceRepository;
 
-    public RegisterMonthController(RegisterMonthService registerMonthService) {
-        this.registerMonthService = registerMonthService;
-    }
+// public RegisterMonthController(
+// RegisterMonthService registerMonthService,
+// VehicleRepository vehicleRepository,
+// ParkingModeRepository parkingModeRepository,
+// PriceRepository priceRepository) {
+// this.registerMonthService = registerMonthService;
+// this.vehicleRepository = vehicleRepository;
+// this.parkingModeRepository = parkingModeRepository;
+// this.priceRepository = priceRepository;
+// }
 
-    // Show all register months with pagination
-    @GetMapping
-    public String listRegisterMonth(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            Model model) {
-        logger.info("Fetching register months for page: {}, size: {}", page, size);
-        Pageable pageable = PageRequest.of(page, size);
-        Page<RegisterMonth> registerMonthPage = registerMonthService.getRegisterMonthPage(pageable);
-        model.addAttribute("registerMonthPage", registerMonthPage);
-        model.addAttribute("registerMonthList", registerMonthPage.getContent());
-        return "admin/registermonth/show";
-    }
+// // Show all register months with pagination
+// @GetMapping
+// public String listRegisterMonth(@RequestParam(defaultValue = "0") int page,
+// @RequestParam(defaultValue = "10") int size,
+// Model model) {
+// logger.info("Fetching register months for page: {}, size: {}", page, size);
+// Pageable pageable = PageRequest.of(page, size);
+// Page<RegisterMonth> registerMonthPage =
+// registerMonthService.getRegisterMonthPage(pageable);
+// model.addAttribute("registerMonthPage", registerMonthPage);
+// model.addAttribute("registerMonthList", registerMonthPage.getContent());
+// return "admin/registermonth/show";
+// }
 
-    // Create new register month
-    @GetMapping("/create")
-    public String getCreateRegisterMonthPage(Model model) {
-        model.addAttribute("newRegisterMonth", new RegisterMonth());
-        return "admin/registermonth/create";
-    }
+// // Show form to create a new monthly registration
+// @GetMapping("/create")
+// public String showCreateForm(Model model) {
+// model.addAttribute("registerMonthForm", new RegisterMonthForm());
+// return "admin/registermonth/create";
+// }
 
-    @PostMapping("/create")
-    public String createRegisterMonth(@ModelAttribute("newRegisterMonth") RegisterMonth registerMonth,
-            RedirectAttributes redirectAttributes) {
-        logger.info("Creating new register month with maDangKy: {}", registerMonth.getMaDangKy());
-        try {
-            registerMonthService.saveRegisterMonth(registerMonth);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã tạo đăng ký tháng thành công!");
-        } catch (IllegalArgumentException e) {
-            logger.error("Failed to create register month: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi tạo đăng ký: " + e.getMessage());
-        } catch (Exception e) {
-            logger.error("Unexpected error while creating register month: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi bất ngờ: " + e.getMessage());
-        }
-        return "redirect:/admin/registermonth";
-    }
+// // Handle creation of a new monthly registration
+// @PostMapping("/create")
+// public String createRegisterMonth(
+// @Valid @ModelAttribute("registerMonthForm") RegisterMonthForm form,
+// BindingResult result,
+// RedirectAttributes redirectAttributes) {
+// logger.info("Processing creation of new monthly registration for bienSoXe:
+// {}", form.getBienSoXe());
+// if (result.hasErrors()) {
+// logger.error("Form validation errors: {}", result.getAllErrors());
+// redirectAttributes.addFlashAttribute("errorMessage", "Dữ liệu không hợp lệ.
+// Vui lòng kiểm tra lại.");
+// return "redirect:/admin/registermonth/create";
+// }
 
-    // Update register month
-    @GetMapping("/update/{maDangKy}")
-    public String getUpdateRegisterMonthPage(@PathVariable String maDangKy, Model model,
-            RedirectAttributes redirectAttributes) {
-        logger.info("Fetching register month for update with maDangKy: {}", maDangKy);
-        Optional<RegisterMonth> currentRegisterMonth = registerMonthService.getRegistrationById(maDangKy.trim());
-        if (!currentRegisterMonth.isPresent()) {
-            logger.warn("Register month not found with maDangKy: {}", maDangKy);
-            redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn tại!");
-            return "redirect:/admin/registermonth";
-        }
-        model.addAttribute("newRegisterMonth", currentRegisterMonth.get());
-        return "admin/registermonth/update";
-    }
+// try {
+// // Validate soThang
+// int soThang = form.getSoThang();
+// if (soThang != 1 && soThang != 3 && soThang != 6) {
+// throw new IllegalArgumentException("Số tháng phải là 1, 3 hoặc 6.");
+// }
 
-    @PostMapping("/update")
-    public String updateRegisterMonth(@ModelAttribute("newRegisterMonth") RegisterMonth registerMonth,
-            RedirectAttributes redirectAttributes) {
-        logger.info("Updating register month with maDangKy: {}", registerMonth.getMaDangKy());
-        try {
-            Optional<RegisterMonth> existingRegisterMonth = registerMonthService
-                    .getRegistrationById(registerMonth.getMaDangKy().trim());
-            if (!existingRegisterMonth.isPresent()) {
-                logger.warn("Register month not found with maDangKy: {}", registerMonth.getMaDangKy());
-                redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn tại!");
-                return "redirect:/admin/registermonth";
-            }
-            RegisterMonth currentRegisterMonth = existingRegisterMonth.get();
-            currentRegisterMonth.setBienSoXe(registerMonth.getBienSoXe());
-            currentRegisterMonth.setMaNV(registerMonth.getMaNV());
-            currentRegisterMonth.setNgayDangKy(registerMonth.getNgayDangKy());
-            currentRegisterMonth.setNgayBatDau(registerMonth.getNgayBatDau());
-            currentRegisterMonth.setNgayKetThuc(registerMonth.getNgayKetThuc());
-            currentRegisterMonth.setTrangThai(registerMonth.getTrangThai());
-            currentRegisterMonth.setGhiChu(registerMonth.getGhiChu());
-            currentRegisterMonth.setBangGia(registerMonth.getBangGia());
-            registerMonthService.saveRegisterMonth(currentRegisterMonth);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã cập nhật đăng ký tháng thành công!");
-        } catch (IllegalArgumentException e) {
-            logger.error("Failed to update register month: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật đăng ký: " + e.getMessage());
-        } catch (Exception e) {
-            logger.error("Unexpected error while updating register month: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi bất ngờ: " + e.getMessage());
-        }
-        return "redirect:/admin/registermonth";
-    }
+// // Generate maDangKy
+// String maDangKy = registerMonthService.getNextMaDangKy();
+// LocalDate ngayDangKy = LocalDate.now();
+// LocalDate ngayBatDau = LocalDate.parse(form.getNgayBatDau());
+// LocalDate ngayKetThuc = ngayBatDau.plusMonths(soThang);
 
-    // Delete register month
-    @GetMapping("/delete/{maDangKy}")
-    public String getDeleteRegisterMonthPage(@PathVariable String maDangKy, Model model,
-            RedirectAttributes redirectAttributes) {
-        logger.info("Fetching register month for deletion with maDangKy: {}", maDangKy);
-        Optional<RegisterMonth> registerMonth = registerMonthService.getRegistrationById(maDangKy.trim());
-        if (!registerMonth.isPresent()) {
-            logger.warn("Register month not found with maDangKy: {}", maDangKy);
-            redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn tại!");
-            return "redirect:/admin/registermonth";
-        }
-        model.addAttribute("maDangKy", maDangKy);
-        model.addAttribute("newRegisterMonth", registerMonth.get());
-        return "admin/registermonth/delete";
-    }
+// // Validate date range
+// if (!registerMonthService.isValidNewRegistrationDateRange(form.getBienSoXe(),
+// ngayBatDau, ngayKetThuc)) {
+// throw new IllegalArgumentException(
+// "Thời gian đăng ký không hợp lệ. Vui lòng chọn ngày bắt đầu sau ngày kết thúc
+// của đăng ký trước đó.");
+// }
 
-    @PostMapping("/delete")
-    public String deleteRegisterMonth(@RequestParam String maDangKy, RedirectAttributes redirectAttributes) {
-        logger.info("Deleting register month with maDangKy: {}", maDangKy);
-        try {
-            Optional<RegisterMonth> existingRegisterMonth = registerMonthService
-                    .getRegistrationById(maDangKy.trim());
-            if (!existingRegisterMonth.isPresent()) {
-                logger.warn("Register month not found with maDangKy: {}", maDangKy);
-                redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn tại!");
-            } else {
-                registerMonthService.deleteRegisterMonthById(maDangKy.trim());
-                redirectAttributes.addFlashAttribute("successMessage", "Đã xóa đăng ký tháng thành công!");
-            }
-        } catch (RuntimeException e) {
-            logger.error("Failed to delete register month: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa đăng ký: " + e.getMessage());
-        } catch (Exception e) {
-            logger.error("Unexpected error while deleting register month: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi bất ngờ: " + e.getMessage());
-        }
-        return "redirect:/admin/registermonth";
-    }
+// // Get vehicle
+// Vehicle vehicle = vehicleRepository.findById(form.getBienSoXe())
+// .orElseThrow(
+// () -> new IllegalArgumentException("Không tìm thấy xe với biển số: " +
+// form.getBienSoXe()));
 
-    // Extend register month
-    @GetMapping("/extend/{maDangKy}")
-    public String getExtendRegisterMonthPage(@PathVariable String maDangKy, Model model,
-            RedirectAttributes redirectAttributes) {
-        logger.info("Fetching register month for extension with maDangKy: {}", maDangKy);
-        Optional<RegisterMonth> registerMonth = registerMonthService.getRegistrationById(maDangKy.trim());
-        if (!registerMonth.isPresent()) {
-            logger.warn("Register month not found with maDangKy: {}", maDangKy);
-            redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn tại!");
-            return "redirect:/admin/registermonth";
-        }
-        model.addAttribute("registerMonth", registerMonth.get());
-        return "admin/registermonth/extend";
-    }
+// // Create registration
+// RegisterMonth registration = new RegisterMonth();
+// registration.setMaDangKy(maDangKy);
+// registration.setBienSoXe(vehicle);
+// registration.setNgayDangKy(ngayDangKy);
+// registration.setNgayBatDau(ngayBatDau);
+// registration.setNgayKetThuc(ngayKetThuc);
+// registration.setTrangThai("Đã duyệt"); // Admin-created registrations are
+// auto-approved
+// registration.setGhiChu(form.getGhiChu());
 
-    @PostMapping("/extend")
-    public String extendRegisterMonth(@RequestParam String maDangKy, @RequestParam int soThang,
-            RedirectAttributes redirectAttributes) {
-        logger.info("Extending register month with maDangKy: {} for {} months", maDangKy, soThang);
-        try {
-            registerMonthService.giaHanDangKy(maDangKy.trim(), soThang);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Đã gia hạn đăng ký tháng thành công cho " + soThang + " tháng!");
-        } catch (IllegalArgumentException e) {
-            logger.error("Failed to extend register month: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi gia hạn: " + e.getMessage());
-        } catch (Exception e) {
-            logger.error("Unexpected error while extending register month: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi bất ngờ: " + e.getMessage());
-        }
-        return "redirect:/admin/registermonth";
-    }
+// // Set price
+// ParkingMode hinhThuc = parkingModeRepository.findById("HT002")
+// .orElseThrow(() -> new IllegalArgumentException("Hình thức gửi tháng (HT002)
+// không tồn tại."));
+// Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(hinhThuc,
+// vehicle.getMaLoaiXe());
+// if (price == null) {
+// throw new IllegalArgumentException(
+// "Không tìm thấy giá cho xe " + form.getBienSoXe() + " với hình thức gửi
+// tháng.");
+// }
+// registration.setBangGia(price);
+// registration.setGia(price.getGia() * soThang);
 
-    // Search by license plate
-    @GetMapping("/search")
-    public String searchRegisterMonth(@RequestParam("tuKhoa") String tuKhoa, Model model) {
-        logger.info("Searching register months with tuKhoa: {}", tuKhoa);
-        List<RegisterMonth> registerMonths = registerMonthService.timKiemTheoBienSoXe(tuKhoa);
-        model.addAttribute("registerMonthList", registerMonths);
-        model.addAttribute("tuKhoa", tuKhoa);
-        return "admin/registermonth/show";
-    }
+// // Optional: Set admin info
+// Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+// if (auth != null && auth.isAuthenticated()) {
+// // Assuming maNV is stored in auth.getName() or you have a way to fetch
+// Employee
+// // entity
+// // registration.setMaNV(employeeService.getEmployeeById(auth.getName()));
+// }
 
-    // Filter active register months
-    @GetMapping("/active")
-    public String getActiveRegisterMonths(Model model) {
-        logger.info("Fetching active register months");
-        List<RegisterMonth> registerMonths = registerMonthService.timDangKyConHieuLuc();
-        model.addAttribute("registerMonthList", registerMonths);
-        model.addAttribute("filter", "active");
-        return "admin/registermonth/show";
-    }
+// registerMonthService.createRegistration(registration);
+// redirectAttributes.addFlashAttribute("successMessage", "Thêm đăng ký tháng
+// thành công!");
+// } catch (IllegalArgumentException e) {
+// logger.error("Validation error: {}", e.getMessage());
+// redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+// } catch (Exception e) {
+// logger.error("Unexpected error: {}", e.getMessage(), e);
+// redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi: " +
+// e.getMessage());
+// }
+// return "redirect:/admin/registermonth";
+// }
 
-    // Filter expired register months
-    @GetMapping("/expired")
-    public String getExpiredRegisterMonths(Model model) {
-        logger.info("Fetching expired register months");
-        List<RegisterMonth> registerMonths = registerMonthService.timDangKyDaHetHan();
-        model.addAttribute("registerMonthList", registerMonths);
-        model.addAttribute("filter", "expired");
-        return "admin/registermonth/show";
-    }
+// // Search vehicle by license plate
+// @PostMapping("/search-vehicle")
+// @ResponseBody
+// public Map<String, Object> searchVehicle(@RequestParam("bienSoXe") String
+// bienSoXe) {
+// logger.info("Searching for vehicle with bienSoXe: {}", bienSoXe);
+// Map<String, Object> response = new HashMap<>();
+// Optional<Vehicle> vehicleOpt = vehicleRepository.findById(bienSoXe.trim());
+// if (vehicleOpt.isPresent()) {
+// Vehicle vehicle = vehicleOpt.get();
+// Map<String, String> vehicleData = new HashMap<>();
+// vehicleData.put("bienSoXe", vehicle.getBienSoXe());
+// vehicleData.put("tenXe", vehicle.getTenXe() != null ? vehicle.getTenXe() :
+// "N/A");
+// response.put("found", true);
+// response.put("vehicle", vehicleData);
+// } else {
+// response.put("found", false);
+// }
+// return response;
+// }
 
-    // Test email notification for a single registration
-    @GetMapping("/test-email/{maDangKy}")
-    public String testEmailNotification(@PathVariable String maDangKy, RedirectAttributes redirectAttributes) {
-        logger.info("Testing email notification for maDangKy: {}", maDangKy);
-        try {
-            registerMonthService.testGuiEmailThongBao(maDangKy.trim());
-            redirectAttributes.addFlashAttribute("successMessage", "Đã gửi email thông báo thành công!");
-        } catch (Exception e) {
-            logger.error("Failed to send email notification: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi gửi email: " + e.getMessage());
-        }
-        return "redirect:/admin/registermonth";
-    }
+// // Show form to update an existing monthly registration
+// @GetMapping("/update/{maDangKy}")
+// public String showUpdateForm(@PathVariable String maDangKy, Model model,
+// RedirectAttributes redirectAttributes) {
+// logger.info("Fetching registration for update with maDangKy: {}", maDangKy);
+// Optional<RegisterMonth> registrationOpt =
+// registerMonthService.getRegistrationById(maDangKy);
+// if (!registrationOpt.isPresent()) {
+// logger.warn("Registration not found with maDangKy: {}", maDangKy);
+// redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn
+// tại!");
+// return "redirect:/admin/registermonth";
+// }
+// RegisterMonth registration = registrationOpt.get();
+// RegisterMonthForm form = new RegisterMonthForm();
+// form.setBienSoXe(registration.getBienSoXe().getBienSoXe());
+// form.setNgayBatDau(registration.getNgayBatDau().toString());
+// form.setSoThang((int)
+// registration.getNgayBatDau().until(registration.getNgayKetThuc(),
+// java.time.temporal.ChronoUnit.MONTHS));
+// form.setGhiChu(registration.getGhiChu());
+// model.addAttribute("registerMonthForm", form);
+// model.addAttribute("maDangKy", maDangKy);
+// model.addAttribute("trangThai", registration.getTrangThai());
+// return "admin/registermonth/update";
+// }
 
-    // Test sending all email notifications
-    @GetMapping("/test-all-emails")
-    public String testAllEmailNotifications(RedirectAttributes redirectAttributes) {
-        logger.info("Testing all email notifications");
-        try {
-            registerMonthService.kiemTraVaGuiThongBao();
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Đã kiểm tra và gửi email thông báo cho tất cả đăng ký sắp hết hạn!");
-        } catch (Exception e) {
-            logger.error("Failed to send all email notifications: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi gửi email: " + e.getMessage());
-        }
-        return "redirect:/admin/registermonth";
-    }
+// // Handle update of an existing monthly registration
+// @PostMapping("/update/{maDangKy}")
+// public String updateRegisterMonth(
+// @PathVariable String maDangKy,
+// @Valid @ModelAttribute("registerMonthForm") RegisterMonthForm form,
+// BindingResult result,
+// @RequestParam String trangThai,
+// RedirectAttributes redirectAttributes) {
+// logger.info("Updating registration with maDangKy: {}", maDangKy);
+// if (result.hasErrors()) {
+// logger.error("Form validation errors: {}", result.getAllErrors());
+// redirectAttributes.addFlashAttribute("errorMessage", "Dữ liệu không hợp lệ.
+// Vui lòng kiểm tra lại.");
+// return "redirect:/admin/registermonth/update/" + maDangKy;
+// }
 
-    // Show expiring soon register months (within 5 days)
-    @GetMapping("/expiring-soon")
-    public String getExpiringSoonRegisterMonths(Model model) {
-        logger.info("Fetching register months expiring soon");
-        List<RegisterMonth> expiringSoon = registerMonthService.getRegisterMonthsExpiringSoon();
-        model.addAttribute("registerMonths", expiringSoon);
-        return "admin/registermonth/expiring-soon";
-    }
+// try {
+// // Validate soThang
+// int soThang = form.getSoThang();
+// if (soThang != 1 && soThang != 3 && soThang != 6) {
+// throw new IllegalArgumentException("Số tháng phải là 1, 3 hoặc 6.");
+// }
 
-    // Send email for a single expiring soon registration
-    @GetMapping("/expiring-soon/send-email/{maDangKy}")
-    public String sendEmailExpiringSoon(@PathVariable String maDangKy, RedirectAttributes redirectAttributes) {
-        logger.info("Sending email for expiring soon registration with maDangKy: {}", maDangKy);
-        try {
-            registerMonthService.testGuiEmailThongBao(maDangKy.trim());
-            redirectAttributes.addFlashAttribute("successMessage", "Đã gửi email thông báo thành công!");
-        } catch (Exception e) {
-            logger.error("Failed to send email for expiring soon registration: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi gửi email: " + e.getMessage());
-        }
-        return "redirect:/admin/registermonth/expiring-soon";
-    }
+// // Validate trangThai
+// if (!List.of("Chờ duyệt", "Đã duyệt", "Từ chối").contains(trangThai)) {
+// throw new IllegalArgumentException("Trạng thái không hợp lệ.");
+// }
 
-    // Send emails for all expiring soon registrations
-    @GetMapping("/expiring-soon/send-all-emails")
-    public String sendAllEmailsExpiringSoon(RedirectAttributes redirectAttributes) {
-        logger.info("Sending emails for all expiring soon registrations");
-        List<RegisterMonth> expiringSoon = registerMonthService.getRegisterMonthsExpiringSoon();
-        int count = 0;
-        for (RegisterMonth rm : expiringSoon) {
-            try {
-                registerMonthService.testGuiEmailThongBao(rm.getMaDangKy());
-                count++;
-            } catch (Exception e) {
-                logger.warn("Failed to send email for maDangKy: {}", rm.getMaDangKy(), e);
-            }
-        }
-        redirectAttributes.addFlashAttribute("successMessage", "Đã gửi email cho " + count + " đăng ký sắp hết hạn!");
-        return "redirect:/admin/registermonth/expiring-soon";
-    }
-}
+// Optional<RegisterMonth> registrationOpt =
+// registerMonthService.getRegistrationById(maDangKy);
+// if (!registrationOpt.isPresent()) {
+// throw new IllegalArgumentException("Đăng ký không tồn tại.");
+// }
+
+// RegisterMonth registration = registrationOpt.get();
+// LocalDate ngayBatDau = LocalDate.parse(form.getNgayBatDau());
+// LocalDate ngayKetThuc = ngayBatDau.plusMonths(soThang);
+
+// // Validate date range
+// if
+// (registerMonthService.hasOverlappingRegistrationExcludingId(form.getBienSoXe(),
+// maDangKy, ngayBatDau,
+// ngayKetThuc)) {
+// throw new IllegalArgumentException(
+// "Thời gian đăng ký không hợp lệ. Thời gian mới không được trùng với các đăng
+// ký khác.");
+// }
+
+// // Update registration
+// Vehicle vehicle = vehicleRepository.findById(form.getBienSoXe())
+// .orElseThrow(
+// () -> new IllegalArgumentException("Không tìm thấy xe với biển số: " +
+// form.getBienSoXe()));
+// registration.setBienSoXe(vehicle);
+// registration.setNgayBatDau(ngayBatDau);
+// registration.setNgayKetThuc(ngayKetThuc);
+// registration.setNgayDangKy(LocalDate.now());
+// registration.setTrangThai(trangThai);
+// registration.setGhiChu(form.getGhiChu());
+
+// // Update price
+// ParkingMode hinhThuc = parkingModeRepository.findById("HT002")
+// .orElseThrow(() -> new IllegalArgumentException("Hình thức gửi tháng (HT002)
+// không tồn tại."));
+// Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(hinhThuc,
+// vehicle.getMaLoaiXe());
+// if (price == null) {
+// throw new IllegalArgumentException(
+// "Không tìm thấy giá cho xe " + form.getBienSoXe() + " với hình thức gửi
+// tháng.");
+// }
+// registration.setBangGia(price);
+// registration.setGia(price.getGia() * soThang);
+
+// registerMonthService.updateRegistration(registration);
+// redirectAttributes.addFlashAttribute("successMessage", "Cập nhật đăng ký
+// tháng thành công!");
+// } catch (IllegalArgumentException e) {
+// logger.error("Validation error: {}", e.getMessage());
+// redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+// } catch (Exception e) {
+// logger.error("Unexpected error: {}", e.getMessage(), e);
+// redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi: " +
+// e.getMessage());
+// }
+// return "redirect:/admin/registermonth";
+// }
+
+// // Show form to extend a monthly registration
+// @GetMapping("/extend/{maDangKy}")
+// public String showExtendForm(@PathVariable String maDangKy, Model model,
+// RedirectAttributes redirectAttributes) {
+// logger.info("Fetching registration for extension with maDangKy: {}",
+// maDangKy);
+// Optional<RegisterMonth> registrationOpt =
+// registerMonthService.getRegistrationById(maDangKy);
+// if (!registrationOpt.isPresent()) {
+// logger.warn("Registration not found with maDangKy: {}", maDangKy);
+// redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn
+// tại!");
+// return "redirect:/admin/registermonth";
+// }
+// model.addAttribute("registerMonth", registrationOpt.get());
+// model.addAttribute("extendForm", new RegisterMonthForm());
+// return "admin/registermonth/extend";
+// }
+
+// // Handle extension of a monthly registration
+// @PostMapping("/extend/{maDangKy}")
+// public String extendRegisterMonth(
+// @PathVariable String maDangKy,
+// @Valid @ModelAttribute("extendForm") RegisterMonthForm form,
+// BindingResult result,
+// RedirectAttributes redirectAttributes) {
+// logger.info("Extending registration with maDangKy: {} for {} months",
+// maDangKy, form.getSoThang());
+// if (result.hasErrors()) {
+// logger.error("Form validation errors: {}", result.getAllErrors());
+// redirectAttributes.addFlashAttribute("errorMessage", "Dữ liệu không hợp lệ.
+// Vui lòng kiểm tra lại.");
+// return "redirect:/admin/registermonth/extend/" + maDangKy;
+// }
+
+// try {
+// // Validate soThang
+// int soThang = form.getSoThang();
+// if (soThang != 1 && soThang != 6 && soThang != 12) {
+// throw new IllegalArgumentException("Thời gian gia hạn phải là 1, 6 hoặc 12
+// tháng.");
+// }
+
+// RegisterMonth registration = registerMonthService.giaHanDangKy(maDangKy,
+// soThang);
+// // Update price
+// ParkingMode hinhThuc = parkingModeRepository.findById("HT002")
+// .orElseThrow(() -> new IllegalArgumentException("Hình thức gửi tháng (HT002)
+// không tồn tại."));
+// Price price = priceRepository.findByMaHinhThucAndMaLoaiXe(hinhThuc,
+// registration.getBienSoXe().getMaLoaiXe());
+// if (price == null) {
+// throw new IllegalArgumentException(
+// "Không tìm thấy giá cho xe " + registration.getBienSoXe().getBienSoXe()
+// + " với hình thức gửi tháng.");
+// }
+// registration.setBangGia(price);
+// registration.setGia(price.getGia() * soThang);
+// registerMonthService.updateRegistration(registration);
+
+// redirectAttributes.addFlashAttribute("successMessage", "Gia hạn đăng ký tháng
+// thành công!");
+// } catch (IllegalArgumentException e) {
+// logger.error("Validation error: {}", e.getMessage());
+// redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+// } catch (Exception e) {
+// logger.error("Unexpected error: {}", e.getMessage(), e);
+// redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi: " +
+// e.getMessage());
+// }
+// return "redirect:/admin/registermonth";
+// }
+
+// // Search registrations by license plate
+// @GetMapping("/search")
+// public String searchRegisterMonth(@RequestParam("tuKhoa") String tuKhoa,
+// @RequestParam(defaultValue = "0") int page,
+// @RequestParam(defaultValue = "10") int size,
+// Model model) {
+// logger.info("Searching registrations with keyword: {}", tuKhoa);
+// List<RegisterMonth> registerMonthList =
+// registerMonthService.timKiemTheoBienSoXe(tuKhoa);
+// model.addAttribute("registerMonthList", registerMonthList);
+// model.addAttribute("tuKhoa", tuKhoa);
+// return "admin/registermonth/show";
+// }
+
+// // Filter active registrations
+// @GetMapping("/active")
+// public String listActiveRegisterMonth(@RequestParam(defaultValue = "0") int
+// page,
+// @RequestParam(defaultValue = "10") int size,
+// Model model) {
+// logger.info("Fetching active register months for page: {}, size: {}", page,
+// size);
+// List<RegisterMonth> registerMonthList =
+// registerMonthService.timDangKyConHieuLuc();
+// model.addAttribute("registerMonthList", registerMonthList);
+// model.addAttribute("filter", "active");
+// return "admin/registermonth/show";
+// }
+
+// // Filter expired registrations
+// @GetMapping("/expired")
+// public String listExpiredRegisterMonth(@RequestParam(defaultValue = "0") int
+// page,
+// @RequestParam(defaultValue = "10") int size,
+// Model model) {
+// logger.info("Fetching expired register months for page: {}, size: {}", page,
+// size);
+// List<RegisterMonth> registerMonthList =
+// registerMonthService.timDangKyDaHetHan();
+// model.addAttribute("registerMonthList", registerMonthList);
+// model.addAttribute("filter", "expired");
+// return "admin/registermonth/show";
+// }
+
+// // Filter expiring-soon registrations
+// @GetMapping("/expiring-soon")
+// public String listExpiringSoonRegisterMonth(@RequestParam(defaultValue = "0")
+// int page,
+// @RequestParam(defaultValue = "10") int size,
+// Model model) {
+// logger.info("Fetching expiring-soon register months for page: {}, size: {}",
+// page, size);
+// List<RegisterMonth> registerMonthList =
+// registerMonthService.getRegisterMonthsExpiringSoon();
+// model.addAttribute("registerMonthList", registerMonthList);
+// model.addAttribute("filter", "expiring-soon");
+// return "admin/registermonth/show";
+// }
+// }

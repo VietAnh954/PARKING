@@ -6,7 +6,7 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Create new vehicle</title>
+                <title>Thêm xe mới</title>
                 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
                 <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
                 <link href="/css/styles.css" rel="stylesheet" />
@@ -26,37 +26,58 @@
                                 <div class="container mt-5">
                                     <div class="row">
                                         <div class="col-md-6 col-12 mx-auto">
-                                            <h3>Create new vehicle</h3>
+                                            <h3>Thêm xe mới cho người dùng</h3>
                                             <hr />
+
+                                            <c:if test="${not empty errorMessage}">
+                                                <div class="alert alert-danger" role="alert">
+                                                    ${errorMessage}
+                                                </div>
+                                            </c:if>
+
+                                            <c:if test="${not empty successMessage}">
+                                                <div class="alert alert-success" role="alert">
+                                                    ${successMessage}
+                                                </div>
+                                            </c:if>
 
                                             <form:form method="post" action="/admin/vehicle/create"
                                                 modelAttribute="newVehicle">
                                                 <div class="mb-3 ">
                                                     <label class="form-label">BIỂN SỐ XE:</label>
                                                     <form:input type="text" class="form-control" path="bienSoXe" />
+                                                    <form:errors path="bienSoXe" cssClass="text-danger" />
                                                 </div>
                                                 <div class="mb-3 ">
                                                     <label class="form-label">MÃ LOẠI XE:</label>
-                                                    <!-- <form:input type="text" class="form-control" path="maLoaiXe" /> -->
-                                                    <form:select class="form-select" path="maLoaiXe">
-                                                        <form:option value="LX001" label="LX001 - Xe máy" />
-                                                        <form:option value="LX002" label="LX002 - Ô tô" />
-
+                                                    <form:select class="form-select" path="maLoaiXe.maLoaiXe">
+                                                        <form:option value="" label="-- Chọn loại xe --" />
+                                                        <c:forEach var="type" items="${vehicleTypes}">
+                                                            <form:option value="${type.maLoaiXe}"
+                                                                label="${type.maLoaiXe} - ${type.tenLoaiXe}" />
+                                                        </c:forEach>
                                                     </form:select>
+                                                    <form:errors path="maLoaiXe" cssClass="text-danger" />
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">TÊN XE:</label>
                                                     <form:input type="text" class="form-control" path="tenXe" />
+                                                    <form:errors path="tenXe" cssClass="text-danger" />
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">MÃ NV:</label>
-                                                    <form:input type="text" class="form-control" path="maNV" />
+                                                    <form:input type="text" class="form-control" path="maNV.maNV"
+                                                        id="maNVInput" onkeyup="disableOther('maNV')" />
+                                                    <form:errors path="maNV" cssClass="text-danger" />
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Mã SV:</label>
-                                                    <form:input type="text" class="form-control" path="maSV" />
+                                                    <form:input type="text" class="form-control" path="maSV.maSV"
+                                                        id="maSVInput" onkeyup="disableOther('maSV')" />
+                                                    <form:errors path="maSV" cssClass="text-danger" />
                                                 </div>
-                                                <button type="submit" class="btn btn-primary">Create</button>
+                                                <button type="submit" class="btn btn-primary">Thêm</button>
+                                                <a href="/admin/vehicle" class="btn btn-danger">Quay lại</a>
                                             </form:form>
                                         </div>
 
@@ -73,6 +94,28 @@
                 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
                     crossorigin="anonymous"></script>
+                <script>
+                    function disableOther(currentField) {
+                        var maNVInput = document.getElementById('maNVInput');
+                        var maSVInput = document.getElementById('maSVInput');
+
+                        if (currentField === 'maNV') {
+                            if (maNVInput.value.trim() !== '') {
+                                maSVInput.disabled = true;
+                                maSVInput.value = ''; // Clear the other field if something is entered
+                            } else {
+                                maSVInput.disabled = false;
+                            }
+                        } else if (currentField === 'maSV') {
+                            if (maSVInput.value.trim() !== '') {
+                                maNVInput.disabled = true;
+                                maNVInput.value = ''; // Clear the other field if something is entered
+                            } else {
+                                maNVInput.disabled = false;
+                            }
+                        }
+                    }
+                </script>
             </body>
 
             </html>

@@ -48,7 +48,9 @@ public class StudentVehicleController {
         Optional<Student> studentOpt = studentService.getStudentById(username);
         if (studentOpt.isPresent()) {
             Student student = studentOpt.get();
-            List<Vehicle> vehicleList = vehicleService.getVehiclesByStudentId(student.getMaSV());
+            Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(student.getMaSV(),
+                    PageRequest.of(0, Integer.MAX_VALUE));
+            List<Vehicle> vehicleList = vehiclePage.getContent();
             model.addAttribute("vehicleList", vehicleList);
             return "client/student/vehicle/list";
         }
@@ -66,7 +68,9 @@ public class StudentVehicleController {
         Optional<Student> studentOpt = studentService.getStudentById(username);
         if (studentOpt.isPresent()) {
             Student student = studentOpt.get();
-            List<Vehicle> vehicleList = vehicleService.getVehiclesByStudentId(student.getMaSV());
+            Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStudentId(student.getMaSV(),
+                    PageRequest.of(0, Integer.MAX_VALUE));
+            List<Vehicle> vehicleList = vehiclePage.getContent();
 
             // Create Pageable with sorting
             Sort sort = Sort.by("tgVao").descending();

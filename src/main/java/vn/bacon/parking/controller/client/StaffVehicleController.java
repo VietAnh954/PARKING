@@ -6,7 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import vn.bacon.parking.domain.EntryExitDetail;
 import vn.bacon.parking.domain.Staff;
 import vn.bacon.parking.domain.Vehicle;
@@ -38,7 +40,9 @@ public class StaffVehicleController {
         Optional<Staff> staffOpt = staffService.getStaffById(username);
         if (staffOpt.isPresent()) {
             Staff staff = staffOpt.get();
-            List<Vehicle> vehicleList = vehicleService.getVehiclesByStaffId(staff.getMaNV());
+            Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStaffId(staff.getMaNV(),
+                    PageRequest.of(0, Integer.MAX_VALUE));
+            List<Vehicle> vehicleList = vehiclePage.getContent();
             model.addAttribute("vehicleList", vehicleList);
             return "client/staff/vehicle/list";
         }
@@ -52,7 +56,9 @@ public class StaffVehicleController {
         Optional<Staff> staffOpt = staffService.getStaffById(username);
         if (staffOpt.isPresent()) {
             Staff staff = staffOpt.get();
-            List<Vehicle> vehicleList = vehicleService.getVehiclesByStaffId(staff.getMaNV());
+            Page<Vehicle> vehiclePage = vehicleService.getVehiclesByStaffId(staff.getMaNV(),
+                    PageRequest.of(0, Integer.MAX_VALUE));
+            List<Vehicle> vehicleList = vehiclePage.getContent();
             List<EntryExitDetail> entryExitList = new java.util.ArrayList<>();
             for (Vehicle v : vehicleList) {
                 entryExitList.addAll(entryExitDetailRepository.findAll().stream()
