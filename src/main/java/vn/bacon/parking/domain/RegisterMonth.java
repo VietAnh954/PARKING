@@ -18,7 +18,7 @@ public class RegisterMonth {
 
     @ManyToOne
     @JoinColumn(name = "MaNV", nullable = true)
-    private Staff maNV; // Nhân viên duyệt/ghi nhận
+    private Staff maNV;
 
     @Column(name = "NgayDangKy", nullable = false)
     private LocalDate ngayDangKy;
@@ -38,6 +38,9 @@ public class RegisterMonth {
     @ManyToOne
     @JoinColumn(name = "MaBangGia", nullable = false)
     private Price bangGia;
+
+    @Column(name = "Gia", nullable = false)
+    private Integer gia; // Reverted to Integer
 
     // Getters and Setters
     public String getMaDangKy() {
@@ -112,6 +115,14 @@ public class RegisterMonth {
         this.bangGia = bangGia;
     }
 
+    public Integer getGia() {
+        return gia;
+    }
+
+    public void setGia(Integer gia) {
+        this.gia = gia;
+    }
+
     public Date getNgayDangKyAsDate() {
         return ngayDangKy != null ? Date.from(ngayDangKy.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
     }
@@ -128,6 +139,6 @@ public class RegisterMonth {
     public String toString() {
         return "RegisterMonth [maDangKy=" + maDangKy + ", bienSoXe=" + bienSoXe + ", maNV=" + maNV
                 + ", ngayDangKy=" + ngayDangKy + ", ngayBatDau=" + ngayBatDau + ", ngayKetThuc=" + ngayKetThuc
-                + ", trangThai=" + trangThai + ", ghiChu=" + ghiChu + ", bangGia=" + bangGia + "]";
+                + ", trangThai=" + trangThai + ", ghiChu=" + ghiChu + ", bangGia=" + bangGia + ", gia=" + gia + "]";
     }
 }

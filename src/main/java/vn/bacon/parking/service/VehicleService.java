@@ -21,6 +21,10 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository;
     }
 
+    public Optional<Vehicle> findByBienSoXe(String bienSoXe) {
+        return vehicleRepository.findById(bienSoXe);
+    }
+
     public Vehicle saveVehicle(Vehicle vehicle) {
         return this.vehicleRepository.save(vehicle);
     }
@@ -53,6 +57,7 @@ public class VehicleService {
 
     public Page<Vehicle> getVehiclesByStaffId(String maNV, Pageable pageable) {
         return vehicleRepository.findByMaNV_MaNV(maNV, pageable);
+
     }
 
     public boolean checkBienSoXeExists(String bienSoXe) {

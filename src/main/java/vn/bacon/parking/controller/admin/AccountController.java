@@ -66,16 +66,6 @@ public class AccountController {
         return "admin/account/show";
     }
 
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("account", new Account());
-        model.addAttribute("userType", "");
-        model.addAttribute("userId", "");
-        model.addAttribute("roles", roleRepository.findAll());
-        model.addAttribute("selectedRole", 0);
-        return "admin/account/create";
-    }
-
     @GetMapping("/create/{id}")
     public String showCreateForm(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         Optional<Student> student = studentService.getStudentById(id);

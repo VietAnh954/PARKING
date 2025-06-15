@@ -25,6 +25,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
 
     boolean existsByMaSV_MaSV(String maSV);
 
+    boolean existsByMaNV_MaNV(String maNV);
+
     Page<Vehicle> findByMaNVIsNotNull(Pageable pageable);
 
     Page<Vehicle> findByMaSVIsNotNull(Pageable pageable);

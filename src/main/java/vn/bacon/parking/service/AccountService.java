@@ -149,6 +149,10 @@ public class AccountService {
         return true;
     }
 
+    // public Page<Account> getAllAccounts(Pageable pageable) {
+    // return accountRepository.findAll(pageable);
+    // }
+
     public Page<Account> searchAccountsByUsername(String username, Pageable pageable) {
         return accountRepository.findByUsernameContainingIgnoreCase(username, pageable);
     }

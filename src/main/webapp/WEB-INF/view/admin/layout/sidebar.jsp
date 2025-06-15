@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
+
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
@@ -13,24 +14,13 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Quản lý xe vào/ ra
                         </a>
-                        <!-- Menu Đăng Ký Tháng với Dropdown -->
-                        <a class="nav-link collapsed" href="/admin/registermonth" data-bs-toggle="collapse"
-                            data-bs-target="#collapseRegisterMonth" aria-expanded="false"
-                            aria-controls="collapseRegisterMonth">
+                        <a class="nav-link" href="/admin/request">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Đăng Ký Tháng
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            Quản lý đăng ký tháng
                         </a>
-                        <div class="collapse" id="collapseRegisterMonth" aria-labelledby="headingRegisterMonth"
-                            data-bs-parent="#sidenavAccordion">
-                            <ul class="sb-sidenav-menu-nested nav">
-                                <li><a class="nav-link" href="/admin/request">Xử lý yêu cầu đăng ký tháng</a></li>
-                                <li><a class="nav-link" href="/admin/registermonth">Đăng ký tháng</a></li>
-                            </ul>
-                        </div>
-                        <a class="nav-link" href="/admin/account">
+                        <a class="nav-link" href="/admin/vehicle">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Tài khoản
+                            Đăng Ký Xe
                         </a>
                         <a class="nav-link" href="/admin/student">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
@@ -44,17 +34,30 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Lớp
                         </a>
+                        <!-- Menu Đăng Ký Tháng với Dropdown -->
+                        <!-- <a class="nav-link collapsed" href="/admin/registermonth" data-bs-toggle="collapse"
 
-
-                        <a class="nav-link" href="/admin/vehicle">
+                            data-bs-target="#collapseRegisterMonth" aria-expanded="false"
+                            aria-controls="collapseRegisterMonth">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Đăng Ký Xe
+                            Đăng Ký Tháng
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
+                        <div class="collapse" id="collapseRegisterMonth" aria-labelledby="headingRegisterMonth"
+                            data-bs-parent="#sidenavAccordion">
+                            <ul class="sb-sidenav-menu-nested nav">
+                                <li><a class="nav-link" href="/admin/request">Xử lý yêu cầu đăng ký tháng</a></li>
+                                <li><a class="nav-link" href="/admin/registermonth">Đăng ký tháng</a></li>
+                            </ul>
+
+                        </div> -->
+
                         <a class="nav-link" href="/admin/price">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Bảng giá xe
                         </a>
                         <!-- <div class="sb-sidenav-menu-heading">Interface</div>
+
                  <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                     <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                     Layouts
@@ -106,6 +109,7 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                     Tables
                 </a> -->
+
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">

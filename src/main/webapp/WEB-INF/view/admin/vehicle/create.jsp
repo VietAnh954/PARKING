@@ -26,7 +26,7 @@
                                 <div class="container mt-5">
                                     <div class="row">
                                         <div class="col-md-6 col-12 mx-auto">
-                                            <h3>Create new vehicle</h3>
+                                            <h3>Thêm xe mới cho người dùng</h3>
                                             <hr />
 
                                             <c:if test="${not empty errorMessage}">

@@ -1,13 +1,12 @@
 package vn.bacon.parking.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,13 +106,13 @@ public class EntryExitService {
         logger.debug("Set tgVao to: {}", tgVao);
 
         ParkingMode parkingMode;
-        Integer gia = null;
+        Integer gia;
 
         if (isLecturer) {
             parkingMode = parkingModeRepository.findById("HT001")
                     .orElseThrow(() -> new Exception("Hình thức gửi HT001 không tồn tại."));
             gia = 0;
-        } else if (registerMonthService.hasActiveRegistrationForVehicle(bienSoXe)) {
+        } else if (registerMonthService.hasValidApprovedMonthlyRegistration(bienSoXe)) {
             parkingMode = parkingModeRepository.findById("HT002")
                     .orElseThrow(() -> new Exception("Hình thức gửi tháng HT002 không tồn tại."));
             gia = 0;
@@ -181,10 +180,10 @@ public class EntryExitService {
             }
         }
 
-        Integer gia = null;
+        Integer gia;
         if (isLecturer) {
             gia = 0;
-        } else if (registerMonthService.hasActiveRegistrationForVehicle(vehicle.getBienSoXe())) {
+        } else if (registerMonthService.hasValidApprovedMonthlyRegistration(vehicle.getBienSoXe())) {
             gia = 0;
         } else {
             ParkingMode parkingMode = entry.getHinhThuc();
@@ -206,7 +205,6 @@ public class EntryExitService {
         EntryExitDetail savedEntry = entryExitDetailRepository.save(entry);
         logger.debug("Saved exit entry: {}", savedEntry);
         return savedEntry;
-
     }
 
     public Page<EntryExitDetail> getAllEntries(Pageable pageable) {

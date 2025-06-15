@@ -29,7 +29,6 @@ public class RegisterMonthService {
     private final ParkingModeRepository parkingModeRepository;
     private final PriceRepository priceRepository;
 
-  
     public RegisterMonthService(
             RegisterMonthRepository registerMonthRepository,
             JavaMailSender mailSender,
@@ -45,6 +44,21 @@ public class RegisterMonthService {
         if (registration.getBienSoXe() == null) {
             throw new IllegalArgumentException("Xe là bắt buộc.");
         }
+        if (registration.getGia() == null || registration.getGia() <= 0) {
+            throw new IllegalArgumentException("Giá tiền không được để trống hoặc không hợp lệ.");
+        }
+        if (registration.getNgayBatDau() == null || registration.getNgayKetThuc() == null) {
+            throw new IllegalArgumentException("Ngày bắt đầu và ngày kết thúc không được để trống.");
+        }
+
+        // Check for overlapping date ranges
+        String bienSoXe = registration.getBienSoXe().getBienSoXe();
+        LocalDate ngayBatDau = registration.getNgayBatDau();
+        LocalDate ngayKetThuc = registration.getNgayKetThuc();
+        if (registerMonthRepository.existsByBienSoXe_BienSoXeAndDateRangeOverlap(bienSoXe, ngayBatDau, ngayKetThuc)) {
+            throw new IllegalArgumentException(
+                    "Xe này đã có đăng ký trong khoảng thời gian từ " + ngayBatDau + " đến " + ngayKetThuc + ".");
+        }
 
         Vehicle vehicle = registration.getBienSoXe();
         ParkingMode hinhThuc = parkingModeRepository.findById("HT002")
@@ -59,15 +73,55 @@ public class RegisterMonthService {
         return registerMonthRepository.save(registration);
     }
 
+    // New method to check for valid and approved monthly registration
+    public boolean hasValidApprovedMonthlyRegistration(String bienSoXe) {
+        LocalDate today = LocalDate.now();
+        return registerMonthRepository
+                .existsByBienSoXe_BienSoXeAndTrangThaiAndNgayBatDauLessThanEqualAndNgayKetThucGreaterThanEqual(
+                        bienSoXe, "Đã duyệt", today, today);
+    }
+
+    // Existing method (updated to exclude "Chờ duyệt" if needed)
     public boolean hasActiveRegistrationForVehicle(String bienSoXe) {
         return registerMonthRepository.existsByBienSoXe_BienSoXeAndTrangThaiInAndNgayKetThucGreaterThanEqual(
-                bienSoXe, Arrays.asList("Chờ duyệt", "Đã duyệt"), LocalDate.now());
+                bienSoXe, Arrays.asList("Đã duyệt"), LocalDate.now());
     }
 
     public boolean hasActiveRegistrationForVehicleExcludingId(String bienSoXe, String maDangKy) {
         return registerMonthRepository
                 .existsByBienSoXe_BienSoXeAndMaDangKyNotAndTrangThaiInAndNgayKetThucGreaterThanEqual(
                         bienSoXe, maDangKy, Arrays.asList("Chờ duyệt", "Đã duyệt"), LocalDate.now());
+    }
+
+    // Updated to check for overlapping registrations
+    public boolean hasOverlappingRegistration(String bienSoXe, LocalDate ngayBatDau, LocalDate ngayKetThuc) {
+        return registerMonthRepository.existsByBienSoXe_BienSoXeAndDateRangeOverlap(
+                bienSoXe, ngayBatDau, ngayKetThuc);
+    }
+
+    // Updated to check for overlapping registrations excluding a specific maDangKy
+    public boolean hasOverlappingRegistrationExcludingId(String bienSoXe, String maDangKy, LocalDate ngayBatDau,
+            LocalDate ngayKetThuc) {
+        return registerMonthRepository.existsByBienSoXe_BienSoXeAndMaDangKyNotAndDateRangeOverlap(
+                bienSoXe, maDangKy, ngayBatDau, ngayKetThuc);
+    }
+
+    // New method to validate new registration date range
+    public boolean isValidNewRegistrationDateRange(String bienSoXe, LocalDate ngayBatDau, LocalDate ngayKetThuc) {
+        // Check for overlap with any existing registration
+        if (hasOverlappingRegistration(bienSoXe, ngayBatDau, ngayKetThuc)) {
+            return false;
+        }
+
+        // Find the latest ngayKetThuc for the vehicle
+        Optional<LocalDate> latestKetThuc = registerMonthRepository.findLatestNgayKetThucByBienSoXe(bienSoXe);
+        if (latestKetThuc.isPresent()) {
+            // New ngayBatDau must be after or on the latest ngayKetThuc
+            return !ngayBatDau.isBefore(latestKetThuc.get());
+        }
+
+        // No existing registrations, any future date is valid
+        return true;
     }
 
     public List<RegisterMonth> getRegistrationsByVehicleId(String bienSoXe) {
@@ -87,6 +141,26 @@ public class RegisterMonthService {
     public RegisterMonth updateRegistration(RegisterMonth registration) {
         if (registration.getMaDangKy() == null) {
             throw new IllegalArgumentException("Mã đăng ký không được để trống.");
+        }
+        if (registration.getBienSoXe() == null) {
+            throw new IllegalArgumentException("Xe là bắt buộc.");
+        }
+        if (registration.getGia() == null || registration.getGia() <= 0) {
+            throw new IllegalArgumentException("Giá tiền không được để trống hoặc không hợp lệ.");
+        }
+        if (registration.getNgayBatDau() == null || registration.getNgayKetThuc() == null) {
+            throw new IllegalArgumentException("Ngày bắt đầu và ngày kết thúc không được để trống.");
+        }
+
+        // Check for overlapping date ranges, excluding the current registration
+        String bienSoXe = registration.getBienSoXe().getBienSoXe();
+        String maDangKy = registration.getMaDangKy();
+        LocalDate ngayBatDau = registration.getNgayBatDau();
+        LocalDate ngayKetThuc = registration.getNgayKetThuc();
+        if (registerMonthRepository.existsByBienSoXe_BienSoXeAndMaDangKyNotAndDateRangeOverlap(
+                bienSoXe, maDangKy, ngayBatDau, ngayKetThuc)) {
+            throw new IllegalArgumentException(
+                    "Xe này đã có đăng ký khác trong khoảng thời gian từ " + ngayBatDau + " đến " + ngayKetThuc + ".");
         }
 
         Vehicle vehicle = registration.getBienSoXe();
@@ -202,5 +276,12 @@ public class RegisterMonthService {
         return registerMonthRepository.findAll(pageable);
     }
 
-    
+    public Page<RegisterMonth> getActiveRegisterMonthPage(Pageable pageable) {
+        return registerMonthRepository.findByNgayKetThucGreaterThanEqual(LocalDate.now(), pageable);
+    }
+
+    public Page<RegisterMonth> getExpiredRegisterMonthPage(Pageable pageable) {
+        return registerMonthRepository.findByNgayKetThucLessThan(LocalDate.now(), pageable);
+    }
+
 }
