@@ -134,4 +134,44 @@ public class StudentProfileController {
             return "redirect:/student/profile";
         }
     }
+
+    // Show change password form
+    @GetMapping("/profile/change-password")
+    public String showChangePasswordForm() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Optional<Student> student = studentService.getStudentById(username);
+        if (student.isPresent()) {
+            return "client/student/profile/changepassword";
+        }
+        return "redirect:/";
+    }
+
+    // Change password
+    @PostMapping("/profile/change-password")
+    public String changePassword(
+            @RequestParam("oldPassword") String oldPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Optional<Student> studentOpt = studentService.getStudentById(username);
+        if (!studentOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thông tin sinh viên!");
+            return "redirect:/student/profile";
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới và xác nhận không khớp!");
+            return "redirect:/student/profile/change-password";
+        }
+        boolean changed = accountService.changePassword(username, oldPassword, newPassword);
+        if (changed) {
+            redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công!");
+            return "redirect:/student/profile";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu cũ không đúng!");
+            return "redirect:/student/profile/change-password";
+        }
+    }
 }

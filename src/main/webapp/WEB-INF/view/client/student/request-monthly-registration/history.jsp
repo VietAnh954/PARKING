@@ -29,34 +29,176 @@
            line-height: 1.6;
            padding-top: 80px;
            margin: 0;
+           min-height: 100vh;
+           display: flex;
+           flex-direction: column;
        }
        .main-content {
-           width: 1500px;
-           height: 800px;
+           flex: 1;
+           width: 100%;
+           max-width: 1500px;
            margin: 0 auto;
-           padding: 2rem 0;
+           padding: 2rem;
            display: flex;
            align-items: flex-start;
            justify-content: center;
+           position: relative;
        }
        .card {
            border: none;
            border-radius: 12px;
-           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+           box-shadow: 0 10px 30px rgba(67, 97, 238, 0.15);
            overflow: hidden;
            width: 100%;
-           max-width: 1400px;
+           max-width: 1200px;
+           background-color: #ffffff;
+           margin-bottom: 2rem;
        }
        .card-header {
-           background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+           background: linear-gradient(135deg, #4361ee, #3f37c9);
            color: white;
-           padding: 1.5rem;
+           padding: 2rem;
+           text-align: center;
            border-bottom: none;
        }
+       .card-header h1 {
+           font-weight: 700;
+           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+           margin: 0;
+           font-size: 2rem;
+           color: white;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           gap: 0.75rem;
+       }
+       .card-header h1 i {
+           font-size: 1.75rem;
+       }
+       .card-header h1 span {
+           position: relative;
+           display: inline-block;
+       }
+       .card-header h1 span::after {
+           content: '';
+           position: absolute;
+           bottom: -4px;
+           left: 0;
+           width: 100%;
+           height: 2px;
+           background-color: rgba(255, 255, 255, 0.5);
+           transform: scaleX(0);
+           transition: transform 0.3s ease;
+       }
+       .card-header:hover h1 span::after {
+           transform: scaleX(1);
+       }
        .card-body {
-           padding: 2.5rem;
+           padding: 1.5rem;
+           background-color: #ffffff;
+           max-height: calc(100vh - 250px);
            overflow-y: auto;
-           max-height: calc(800px - 150px);
+       }
+       .table-responsive {
+           margin: -0.5rem -1.5rem;
+           padding: 0.5rem 1.5rem;
+           overflow-x: auto;
+       }
+       .table {
+           margin-bottom: 0;
+           background-color: #ffffff;
+           border-collapse: separate;
+           border-spacing: 0;
+           width: 100%;
+           min-width: 800px;
+       }
+       .table thead th {
+           background-color: #f8f9fa;
+           color: #2b2d42;
+           font-weight: 600;
+           padding: 1rem;
+           border-bottom: 2px solid #e2e8f0;
+           text-transform: uppercase;
+           font-size: 0.75rem;
+           letter-spacing: 0.5px;
+           white-space: nowrap;
+           position: sticky;
+           top: 0;
+           z-index: 1;
+           background-clip: padding-box;
+       }
+       .table tbody td {
+           padding: 1rem;
+           vertical-align: middle;
+           border-bottom: 1px solid #e2e8f0;
+           color: #2b2d42;
+           font-size: 0.875rem;
+       }
+       .table tbody tr:last-child td {
+           border-bottom: none;
+       }
+       .table tbody tr:hover {
+           background-color: rgba(67, 97, 238, 0.05);
+       }
+       .btn {
+           border-radius: 6px;
+           padding: 0.5rem 1rem;
+           font-weight: 600;
+           transition: all 0.2s ease;
+           font-size: 0.875rem;
+           letter-spacing: 0.3px;
+           display: inline-flex;
+           align-items: center;
+           justify-content: center;
+           gap: 0.5rem;
+           min-width: 100px;
+       }
+       .btn i {
+           font-size: 0.875rem;
+       }
+       .btn-primary {
+           background: linear-gradient(135deg, #4361ee, #3f37c9);
+           border: none;
+           color: #ffffff;
+       }
+       .btn-primary:hover {
+           transform: translateY(-1px);
+           box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+       }
+       .btn-primary:active {
+           transform: translateY(0);
+       }
+       .alert {
+           border-radius: 8px;
+           padding: 1rem 1.25rem;
+           margin-bottom: 1.5rem;
+           border: none;
+           font-weight: 500;
+       }
+       .alert-success {
+           background-color: rgba(76, 201, 240, 0.1);
+           border-left: 4px solid #4cc9f0;
+           color: #2b2d42;
+       }
+       .alert-danger {
+           background-color: rgba(247, 37, 133, 0.1);
+           border-left: 4px solid #f72585;
+           color: #2b2d42;
+       }
+       .status-badge {
+           padding: 0.35rem 0.75rem;
+           border-radius: 20px;
+           font-size: 0.75rem;
+           font-weight: 600;
+           display: inline-block;
+       }
+       .status-pending {
+           background-color: rgba(247, 37, 133, 0.1);
+           color: #f72585;
+       }
+       .status-approved {
+           background-color: rgba(76, 201, 240, 0.1);
+           color: #4cc9f0;
        }
        h1 {
            font-weight: 700;
@@ -102,25 +244,23 @@
            transform: translateY(-2px);
            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
        }
-       @media (max-width: 1500px) {
+       @media (max-width: 768px) {
            .main-content {
-               width: 100%;
-               height: auto;
                padding: 1rem;
            }
-           .card-body {
-               max-height: none;
+           .card-header {
+               padding: 1.25rem;
            }
-       }
-       @media (max-width: 768px) {
-           .card-body {
-               padding: 1.5rem;
-           }
-           h1 {
+           .card-header h1 {
                font-size: 1.5rem;
            }
-           th, td {
-               padding: 0.75rem;
+           .card-body {
+               padding: 1rem;
+           }
+           .btn {
+               padding: 0.4rem 0.8rem;
+               font-size: 0.8125rem;
+               min-width: 90px;
            }
        }
    </style>
@@ -129,8 +269,8 @@
    <jsp:include page="../../layout/header.jsp"/>
    <div class="main-content">
        <div class="card shadow-sm">
-           <div class="card-header text-center">
-               <h1 class="mb-0"><i class="fas fa-history me-2"></i>Lịch Sử Đăng Ký Tháng</h1>
+           <div class="card-header">
+               <h1><i class="fas fa-history"></i><span>Lịch Sử Đăng Ký Tháng</span></h1>
            </div>
            <div class="card-body">
                <c:if test="${not empty successMessage}">
