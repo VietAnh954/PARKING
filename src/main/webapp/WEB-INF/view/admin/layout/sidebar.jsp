@@ -31,11 +31,11 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                         Nhân Viên
                     </a>
+                    <a class="nav-link" href="/admin/class">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        Lớp
+                    </a>
                 </sec:authorize>
-                <a class="nav-link" href="/admin/class">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                    Lớp
-                </a>
                 <a class="nav-link" href="/admin/price">
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Bảng giá xe
