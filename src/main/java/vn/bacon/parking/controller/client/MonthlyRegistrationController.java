@@ -380,4 +380,38 @@ public class MonthlyRegistrationController {
         }
         return "redirect:/student/request-history";
     }
+
+    @GetMapping("/request-monthly-registration/view")
+    public String viewRegistration(@RequestParam String maDangKy, Model model, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        String maSV = auth.getName().trim();
+        String trimmedMaDangKy = maDangKy.trim();
+        logger.info("Đang xem đăng ký với Mã: '{}', đã trim: '{}', cho sinh viên: '{}'", maDangKy, trimmedMaDangKy,
+                maSV);
+
+        Optional<RegisterMonth> registrationOpt = registerMonthService.getRegistrationById(trimmedMaDangKy);
+        if (!registrationOpt.isPresent()) {
+            logger.warn("Không tìm thấy đăng ký với Mã: '{}'", trimmedMaDangKy);
+            redirectAttributes.addFlashAttribute("errorMessage", "Đăng ký không tồn tại!");
+            return "redirect:/student/request-history";
+        }
+
+        RegisterMonth registration = registrationOpt.get();
+        String requestMaSV = registration.getBienSoXe().getMaSV() != null
+                ? registration.getBienSoXe().getMaSV().getMaSV().trim()
+                : null;
+        if (requestMaSV == null || !requestMaSV.equals(maSV)) {
+            logger.warn("Sinh viên '{}' không sở hữu đăng ký '{}'. MaSV của xe: '{}'", maSV, trimmedMaDangKy,
+                    requestMaSV);
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn không có quyền xem đăng ký này!");
+            return "redirect:/student/request-history";
+        }
+
+        model.addAttribute("registration", registration);
+        model.addAttribute("maSV", maSV);
+        return "client/student/request-monthly-registration/view";
+    }
 }
